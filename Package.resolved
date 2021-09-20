@@ -1,0 +1,79 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "combine-schedulers",
+        "repositoryURL": "https://github.com/pointfreeco/combine-schedulers",
+        "state": {
+          "branch": null,
+          "revision": "6bde3b0063ba8e7537b43744948535ca7e9e0dad",
+          "version": "0.5.2"
+        }
+      },
+      {
+        "package": "FlowStacks",
+        "repositoryURL": "https://www.github.com/johnpatrickmorgan/FlowStacks",
+        "state": {
+          "branch": null,
+          "revision": "4ed960a0ad8bb1623d18eb31a3fc483410555f73",
+          "version": "0.0.13"
+        }
+      },
+      {
+        "package": "swift-case-paths",
+        "repositoryURL": "https://github.com/pointfreeco/swift-case-paths",
+        "state": {
+          "branch": null,
+          "revision": "d226d167bd4a68b51e352af5655c92bce8ee0463",
+          "version": "0.7.0"
+        }
+      },
+      {
+        "package": "swift-collections",
+        "repositoryURL": "https://github.com/apple/swift-collections",
+        "state": {
+          "branch": null,
+          "revision": "07e47b1e93e5a1e0ef0c50fcb2d6739fb6be4003",
+          "version": "1.0.0"
+        }
+      },
+      {
+        "package": "swift-composable-architecture",
+        "repositoryURL": "https://github.com/pointfreeco/swift-composable-architecture",
+        "state": {
+          "branch": null,
+          "revision": "a1aac6cfd654051d0ab5e626462afff36c399219",
+          "version": "0.27.1"
+        }
+      },
+      {
+        "package": "swift-custom-dump",
+        "repositoryURL": "https://github.com/pointfreeco/swift-custom-dump",
+        "state": {
+          "branch": null,
+          "revision": "1a2947d25d43e295c6f5e83f54696d590620b364",
+          "version": "0.1.3"
+        }
+      },
+      {
+        "package": "swift-identified-collections",
+        "repositoryURL": "https://github.com/pointfreeco/swift-identified-collections",
+        "state": {
+          "branch": null,
+          "revision": "c8e6a40209650ab619853cd4ce89a0aa51792754",
+          "version": "0.3.0"
+        }
+      },
+      {
+        "package": "xctest-dynamic-overlay",
+        "repositoryURL": "https://github.com/pointfreeco/xctest-dynamic-overlay",
+        "state": {
+          "branch": null,
+          "revision": "50a70a9d3583fe228ce672e8923010c8df2deddd",
+          "version": "0.2.1"
+        }
+      }
+    ]
+  },
+  "version": 1
+}
