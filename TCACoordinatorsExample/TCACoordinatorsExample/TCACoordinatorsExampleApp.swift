@@ -74,20 +74,18 @@ typealias AppCoordinatorReducer = Reducer<
 
 let appCoordinatorReducer: AppCoordinatorReducer = screenReducer
   .forEachIndexedScreen(environment: { _ in .init() })
+  .updateScreensOnInteraction()
   .combined(
     with: Reducer { state, action, environment in
       switch action {
       case .screenAction(_, .numbersList(.numberSelected(let number))):
-        state.screens.append(.numberDetail(.init(number: number)))
+        state.push(.numberDetail(.init(number: number)))
 
       case .screenAction(_, .numberDetail(.goBackTapped)):
-        state.screens.removeLast()
+        state.popTo(/ScreenState.numbersList)
 
       case .screenAction(_, .numberDetail(.showDouble(let number))):
-        state.screens.append(.numberDetail(.init(number: number * 2)))
-
-      case .updateScreens(let screens):
-        state.screens = screens
+        state.push(.numberDetail(.init(number: number * 2)))
 
       default:
         break
@@ -143,20 +141,18 @@ typealias IdentifiedAppCoordinatorReducer = Reducer<
 
 let identifiedAppCoordinatorReducer: IdentifiedAppCoordinatorReducer = screenReducer
   .forEachIdentifiedScreen(environment: { _ in .init() })
+  .updateScreensOnInteraction()
   .combined(
     with: Reducer { state, action, environment in
       switch action {
       case .screenAction(_, .numbersList(.numberSelected(let number))):
-        state.screens.append(.numberDetail(.init(number: number)))
+        state.push(.numberDetail(.init(number: number)))
 
       case .screenAction(_, .numberDetail(.goBackTapped)):
-        state.screens.removeLast()
+        state.pop()
 
       case .screenAction(_, .numberDetail(.showDouble(let number))):
-        state.screens.append(.numberDetail(.init(number: number * 2)))
-
-      case .updateScreens(let screens):
-        state.screens = screens
+        state.push(.numberDetail(.init(number: number * 2)))
 
       default:
         break
@@ -223,7 +219,6 @@ struct NumbersListView: View {
       }
     }
     .navigationTitle("Numbers")
-    .transition(.slide)
   }
 }
 

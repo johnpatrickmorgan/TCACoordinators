@@ -65,20 +65,18 @@ The coordinator's reducer uses `forEachIndexedScreen` to apply the `screenReduce
 ```swift
 let coordinatorReducer: Reducer<CoordinatorState, CoordinatorAction, Void> = screenReducer
   .forEachIndexedScreen(environment: { _ in })
+  .updateScreensOnInteraction()
   .combined(
     with: Reducer { state, action, environment in
       switch action {
       case .screenAction(_, .numbersList(.numberSelected(let number))):
-        state.screens.append(.numberDetail(.init(number: number)))
+        state.push(.numberDetail(.init(number: number)))
 
       case .screenAction(_, .numberDetail(.goBackTapped)):
-        state.screens.removeLast()
+        state.pop()
 
       case .screenAction(_, .numberDetail(.showDouble(let number))):
-        state.screens.append(.numberDetail(.init(number: number * 2)))
-
-      case .updateScreens(let screens):
-        state.screens = screens
+        state.push(.numberDetail(.init(number: number * 2)))
 
       default:
         break
@@ -91,9 +89,11 @@ let coordinatorReducer: Reducer<CoordinatorState, CoordinatorAction, Void> = scr
 
 Note the call to `cancelEffectsOnDismiss()` at the end. It's often desirable to cancel any in-flight effects initiated by a particular screen when that screen is popped or dismissed. This would normally require a fair amount of boilerplate, but can now be achieved by simply chaining a call to `cancelEffectsOnDismiss()` on the reducer. 
 
+The call to `updateScreensOnInteraction()` ensures the screens array is updated whenever the user swipes back or taps the back button.
+
 ### Step 3 - Create a coordinator view
 
-With that in place, a `CoordinatorView` can be created. It will use a `NavigationStore` to ensure invisible `NavigationLinks` are added to support the navigation flow. The `NavigationStore` takes a closure that can create the view for any screen in the navigation flow. A `SwitchStore` is the natural way to achieve that, with a `CaseLet` for each of the possible screens:
+With that in place, a `CoordinatorView` can be created. It will use a `NavigationStore`, which translates the array of screens into a nested list of views with invisible `NavigationLinks`. The `NavigationStore` takes a closure that can create the view for any screen in the navigation flow. A `SwitchStore` is the natural way to achieve that, with a `CaseLet` for each of the possible screens:
 
 ```swift
 struct CoordinatorView: View {
@@ -120,9 +120,9 @@ struct CoordinatorView: View {
 
 ## Advantages
 
-This allows navigation to be managed with a single piece of state. New screens can be pushed with `state.screens.append(newScreenState)`, popped with `state.screens.removeLast()`, and you can pop to the root screen with `state.screens = Array(state.screens.prefix(1))`. if the user taps or swipes back, or uses the long press gesture to go further back, the navigation state will automatically get updated to reflect the change. And you can easily pop back to the root or to a specific screen, because the navigation stack can be examined at runtime.
+This allows navigation to be managed with a single piece of state. As well as mutating the array directly, there are some useful protocol extensions to allow common interactions such as `state.push(newScreen)`, `state.pop()`, `state.popToRoot()`, or even `state.popTo(/ScreenState.numbersList)`. If the user taps or swipes back, or uses the long press gesture to go further back, the navigation state will automatically get updated to reflect the change.
 
-This approach is flexible too - if the flow of screens needs to change, the change can be made easily in one place. The screen views themselves no longer need to have any knowledge of any other screens in the navigation flow - they can simply send an action and leave the coordinator to decide whether a new view should be pushed or presented - which makes it easy to re-use them in different contexts.
+This approach is flexible: if the flow of screens needs to change, the change can be made easily in one place. The screen views themselves no longer need to have any knowledge of any other screens in the navigation flow - they can simply send an action and leave the coordinator to decide whether a new view should be pushed or presented - which makes it easy to re-use them in different contexts.
 
 ## Child Coordinators
 
@@ -142,4 +142,4 @@ This library uses [FlowStacks](https://github.com/johnpatrickmorgan/FlowStacks) 
 
 ## Limitations
 
-SwiftUI does not currently allow more than one screen to be pushed, presented or dismissed in a single update, though it is possible to pop any number of views in one update.
+SwiftUI does not currently support all possible mutations of the screens array. It does not allow more than one screen to be pushed, presented or dismissed in a single update. It's possible to pop any number of screens in one update for navigation flows but not for presentation flows. Hopefully, these limitations are temporary.
