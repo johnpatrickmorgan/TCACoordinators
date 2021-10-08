@@ -12,11 +12,13 @@ First, identify all possible screens that are part of the particular navigation 
 
 ```swift
 enum ScreenState: Equatable {
+  case home(HomeState)
   case numbersList(NumbersListState)
   case numberDetail(NumberDetailState)
 }
 
 enum ScreenAction {
+  case home(HomeAction)
   case numbersList(NumbersListAction)
   case numberDetail(NumberDetailAction)
 }
@@ -26,6 +28,12 @@ And the screen reducer will combine each individual screens' reducers into one:
 
 ```swift
 let screenReducer = Reducer<ScreenState, ScreenAction, Void>.combine(
+  homeReducer
+    .pullback(
+      state: /ScreenState.home,
+      action: /ScreenAction.home,
+      environment: { _ in }
+    ),
   numbersListReducer
     .pullback(
       state: /ScreenState.numbersList,
@@ -69,14 +77,23 @@ let coordinatorReducer: Reducer<CoordinatorState, CoordinatorAction, Void> = scr
   .combined(
     with: Reducer { state, action, environment in
       switch action {
+      case .screenAction(_, .home(.startTapped)):
+        state.push(.numbersList(.init()))
+        
       case .screenAction(_, .numbersList(.numberSelected(let number))):
         state.push(.numberDetail(.init(number: number)))
-
-      case .screenAction(_, .numberDetail(.goBackTapped)):
-        state.pop()
-
+        
       case .screenAction(_, .numberDetail(.showDouble(let number))):
         state.push(.numberDetail(.init(number: number * 2)))
+
+      case .screenAction(_, .numberDetail(.popTapped)):
+        state.pop()
+        
+      case .screenAction(_, .numberDetail(.popToNumbersList)):
+        state.popTo(/ScreenState.numbersList)
+        
+      case .screenAction(_, .numberDetail(.popToRootTapped)):
+        state.popToRoot()
 
       default:
         break
@@ -103,6 +120,11 @@ struct CoordinatorView: View {
     NavigationStore(store: store) { scopedStore in
       SwitchStore(scopedStore) {
         CaseLet(
+          state: /ScreenState.home,
+          action: ScreenAction.home,
+          then: HomeView.init
+        )
+        CaseLet(
           state: /ScreenState.numbersList,
           action: ScreenAction.numbersList,
           then: NumbersListView.init
@@ -122,7 +144,7 @@ struct CoordinatorView: View {
 
 This allows navigation to be managed with a single piece of state. As well as mutating the array directly, there are some useful protocol extensions to allow common interactions such as `state.push(newScreen)`, `state.pop()`, `state.popToRoot()`, or even `state.popTo(/ScreenState.numbersList)`. If the user taps or swipes back, or uses the long press gesture to go further back, the navigation state will automatically get updated to reflect the change.
 
-This approach is flexible: if the flow of screens needs to change, the change can be made easily in one place. The screen views themselves no longer need to have any knowledge of any other screens in the navigation flow - they can simply send an action and leave the coordinator to decide whether a new view should be pushed or presented - which makes it easy to re-use them in different contexts.
+This approach is flexible: if the flow of screens needs to change, the change can be made easily in one place. The screen views and reducers (along with their state and action types) no longer need to have any knowledge of any other screens in the navigation flow - they can simply send an action and leave the coordinator to decide whether a new view should be pushed or presented - which makes it easy to re-use them in different contexts.
 
 ## Child Coordinators
 

@@ -37,6 +37,11 @@ struct AppCoordinatorView: View {
     NavigationStore(store: store) { scopedStore in
       SwitchStore(scopedStore) {
         CaseLet(
+          state: /ScreenState.home,
+          action: ScreenAction.home,
+          then: HomeView.init
+        )
+        CaseLet(
           state: /ScreenState.numbersList,
           action: ScreenAction.numbersList,
           then: NumbersListView.init
@@ -60,7 +65,7 @@ enum AppCoordinatorAction: IndexedScreenCoordinatorAction {
 struct AppCoordinatorState: Equatable, IndexedScreenCoordinatorState {
 
   static let initialState = AppCoordinatorState(
-    screens: [.numbersList(.init(numbers: Array(0..<100)))]
+    screens: [.home(.init())]
   )
 
   var screens: [ScreenState]
@@ -78,14 +83,23 @@ let appCoordinatorReducer: AppCoordinatorReducer = screenReducer
   .combined(
     with: Reducer { state, action, environment in
       switch action {
+      case .screenAction(_, .home(.startTapped)):
+        state.push(.numbersList(.init(numbers: Array(0..<100))))
+        
       case .screenAction(_, .numbersList(.numberSelected(let number))):
         state.push(.numberDetail(.init(number: number)))
-
-      case .screenAction(_, .numberDetail(.goBackTapped)):
-        state.popTo(/ScreenState.numbersList)
-
+        
       case .screenAction(_, .numberDetail(.showDouble(let number))):
         state.push(.numberDetail(.init(number: number * 2)))
+
+      case .screenAction(_, .numberDetail(.popTapped)):
+        state.pop()
+        
+      case .screenAction(_, .numberDetail(.popToNumbersList)):
+        state.popTo(/ScreenState.numbersList)
+        
+      case .screenAction(_, .numberDetail(.popToRootTapped)):
+        state.popToRoot()
 
       default:
         break
@@ -106,6 +120,11 @@ struct IdentifiedAppCoordinatorView: View {
     NavigationStore(store: store) { scopedStore in
       SwitchStore(scopedStore) {
         CaseLet(
+          state: /ScreenState.home,
+          action: ScreenAction.home,
+          then: HomeView.init
+        )
+        CaseLet(
           state: /ScreenState.numbersList,
           action: ScreenAction.numbersList,
           then: NumbersListView.init
@@ -121,9 +140,9 @@ struct IdentifiedAppCoordinatorView: View {
 }
 
 struct IdentifiedAppCoordinatorState: Equatable, IdentifiedScreenCoordinatorState {
-
+  
   static let initialState = IdentifiedAppCoordinatorState(
-    screens: [.numbersList(.init(numbers: Array(0..<100)))]
+    screens: [.home(.init())]
   )
 
   var screens: IdentifiedArrayOf<ScreenState>
@@ -145,14 +164,23 @@ let identifiedAppCoordinatorReducer: IdentifiedAppCoordinatorReducer = screenRed
   .combined(
     with: Reducer { state, action, environment in
       switch action {
+      case .screenAction(_, .home(.startTapped)):
+        state.push(.numbersList(.init(numbers: Array(0..<100))))
+        
       case .screenAction(_, .numbersList(.numberSelected(let number))):
         state.push(.numberDetail(.init(number: number)))
-
-      case .screenAction(_, .numberDetail(.goBackTapped)):
-        state.pop()
-
+        
       case .screenAction(_, .numberDetail(.showDouble(let number))):
         state.push(.numberDetail(.init(number: number * 2)))
+
+      case .screenAction(_, .numberDetail(.popTapped)):
+        state.pop()
+        
+      case .screenAction(_, .numberDetail(.popToNumbersList)):
+        state.popTo(/ScreenState.numbersList)
+        
+      case .screenAction(_, .numberDetail(.popToRootTapped)):
+        state.popToRoot()
 
       default:
         break
@@ -166,17 +194,21 @@ let identifiedAppCoordinatorReducer: IdentifiedAppCoordinatorReducer = screenRed
 
 enum ScreenAction {
 
+  case home(HomeAction)
   case numbersList(NumbersListAction)
   case numberDetail(NumberDetailAction)
 }
 
 enum ScreenState: Equatable, Identifiable {
 
+  case home(HomeState)
   case numbersList(NumbersListState)
   case numberDetail(NumberDetailState)
 
   var id: UUID {
     switch self {
+    case .home(let state):
+      return state.id
     case .numbersList(let state):
       return state.id
     case .numberDetail(let state):
@@ -188,6 +220,12 @@ enum ScreenState: Equatable, Identifiable {
 struct ScreenEnvironment {}
 
 let screenReducer = Reducer<ScreenState, ScreenAction, ScreenEnvironment>.combine(
+  homeReducer
+    .pullback(
+      state: /ScreenState.home,
+      action: /ScreenAction.home,
+      environment: { _ in HomeEnvironment() }
+    ),
   numbersListReducer
     .pullback(
       state: /ScreenState.numbersList,
@@ -201,6 +239,42 @@ let screenReducer = Reducer<ScreenState, ScreenAction, ScreenEnvironment>.combin
       environment: { _ in NumberDetailEnvironment() }
     )
 )
+
+// Home
+
+struct HomeView: View {
+
+  let store: Store<HomeState, HomeAction>
+
+  var body: some View {
+    WithViewStore(store) { viewStore in
+      VStack {
+        Button("Start", action: {
+          viewStore.send(.startTapped)
+        })
+      }
+    }
+    .navigationTitle("Home")
+  }
+}
+
+enum HomeAction {
+
+  case startTapped
+}
+
+struct HomeState: Equatable {
+
+  let id = UUID()
+}
+
+struct HomeEnvironment {}
+
+let homeReducer = Reducer<
+  HomeState, HomeAction, HomeEnvironment
+> { state, action, environment in
+  return .none
+}
 
 // NumbersList
 
@@ -260,8 +334,14 @@ struct NumberDetailView: View {
         Button("Show double") {
           viewStore.send(.showDouble(viewStore.number))
         }
-        Button("Go back") {
-          viewStore.send(.goBackTapped)
+        Button("Pop") {
+          viewStore.send(.popTapped)
+        }
+        Button("Pop to root") {
+          viewStore.send(.popToRootTapped)
+        }
+        Button("Pop to numbers list") {
+          viewStore.send(.popToNumbersList)
         }
       }
       .navigationTitle("Number \(viewStore.number)")
@@ -271,7 +351,9 @@ struct NumberDetailView: View {
 
 enum NumberDetailAction {
 
-  case goBackTapped
+  case popTapped
+  case popToRootTapped
+  case popToNumbersList
   case incrementAfterDelayTapped
   case incrementTapped
   case showDouble(Int)
@@ -288,7 +370,7 @@ struct NumberDetailEnvironment {}
 let numberDetailReducer = Reducer<NumberDetailState, NumberDetailAction, NumberDetailEnvironment> {
   state, action, environment in
   switch action {
-  case .goBackTapped:
+  case .popToRootTapped, .popTapped, .popToNumbersList, .showDouble:
     return .none
     
   case .incrementAfterDelayTapped:
@@ -299,9 +381,6 @@ let numberDetailReducer = Reducer<NumberDetailState, NumberDetailAction, NumberD
     
   case .incrementTapped:
     state.number += 1
-    return .none
-    
-  case .showDouble:
     return .none
   }
 }
