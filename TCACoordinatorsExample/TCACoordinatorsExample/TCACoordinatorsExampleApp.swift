@@ -4,35 +4,87 @@ import TCACoordinators
 
 @main
 struct TCACoordinatorsExampleApp: App {
-
+  
   var body: some Scene {
     WindowGroup {
-      NavigationView {
-        AppCoordinatorView(
-          store: Store(
-            initialState: .initialState,
-            reducer: appCoordinatorReducer,
-            environment: AppCoordinatorEnvironment()
-          )
+      MainTabCoordinatorView(store: .init(
+          initialState: .initialState,
+          reducer: mainTabCoordinatorReducer,
+          environment: .init()
         )
-//        IdentifiedAppCoordinatorView(
-//          store: Store(
-//            initialState: .initialState,
-//            reducer: identifiedAppCoordinatorReducer,
-//            environment: AppCoordinatorEnvironment()
-//          )
-//        )
-      }
+      )
     }
   }
 }
 
-// AppCoordinator
+// MainTabCoordinator
 
-struct AppCoordinatorView: View {
+struct MainTabCoordinatorView: View {
+  
+  let store: Store<MainTabCoordinatorState, MainTabCoordinatorAction>
+  
+  var body: some View {
+    TabView {
+      NavigationView {
+        IndexedNavCoordinatorView(
+          store: Store(
+            initialState: .initialState,
+            reducer: indexedNavCoordinatorReducer,
+            environment: IndexedNavCoordinatorEnvironment()
+          )
+        )
+      }.tabItem { Text("Indexed") }
+      NavigationView {
+        IdentifiedNavCoordinatorView(
+          store: Store(
+            initialState: .initialState,
+            reducer: identifiedNavCoordinatorReducer,
+            environment: IndexedNavCoordinatorEnvironment()
+          )
+        )
+      }.tabItem { Text("Identified") }
+    }
+  }
+}
 
-  let store: Store<AppCoordinatorState, AppCoordinatorAction>
+enum MainTabCoordinatorAction {
+  
+  case identified(IdentifiedNavCoordinatorAction)
+  case indexed(IndexedNavCoordinatorAction)
+}
 
+struct MainTabCoordinatorState: Equatable {
+  
+  static let initialState = MainTabCoordinatorState(
+    identified: .initialState,
+    indexed: .initialState
+  )
+  
+  var identified: IdentifiedNavCoordinatorState
+  var indexed: IndexedNavCoordinatorState
+}
+
+struct MainTabCoordinatorEnvironment {}
+
+typealias MainTabCoordinatorReducer = Reducer<
+  MainTabCoordinatorState, MainTabCoordinatorAction, MainTabCoordinatorEnvironment
+>
+
+let mainTabCoordinatorReducer: MainTabCoordinatorReducer = .combine(
+  identifiedNavCoordinatorReducer
+    .pullback(
+      state: \MainTabCoordinatorState.identified,
+      action: /MainTabCoordinatorAction.identified,
+      environment: { _ in .init() }
+    )
+)
+
+// IndexedNavCoordinator
+
+struct IndexedNavCoordinatorView: View {
+  
+  let store: Store<IndexedNavCoordinatorState, IndexedNavCoordinatorAction>
+  
   var body: some View {
     NavigationStore(store: store) { scopedStore in
       SwitchStore(scopedStore) {
@@ -56,28 +108,28 @@ struct AppCoordinatorView: View {
   }
 }
 
-enum AppCoordinatorAction: IndexedScreenCoordinatorAction {
-
+enum IndexedNavCoordinatorAction: IndexedScreenCoordinatorAction {
+  
   case screenAction(Int, action: ScreenAction)
   case updateScreens([ScreenState])
 }
 
-struct AppCoordinatorState: Equatable, IndexedScreenCoordinatorState {
-
-  static let initialState = AppCoordinatorState(
+struct IndexedNavCoordinatorState: Equatable, IndexedScreenCoordinatorState {
+  
+  static let initialState = IndexedNavCoordinatorState(
     screens: [.home(.init())]
   )
-
+  
   var screens: [ScreenState]
 }
 
-struct AppCoordinatorEnvironment {}
+struct IndexedNavCoordinatorEnvironment {}
 
-typealias AppCoordinatorReducer = Reducer<
-  AppCoordinatorState, AppCoordinatorAction, AppCoordinatorEnvironment
+typealias IndexedNavCoordinatorReducer = Reducer<
+  IndexedNavCoordinatorState, IndexedNavCoordinatorAction, IndexedNavCoordinatorEnvironment
 >
 
-let appCoordinatorReducer: AppCoordinatorReducer = screenReducer
+let indexedNavCoordinatorReducer: IndexedNavCoordinatorReducer = screenReducer
   .forEachIndexedScreen(environment: { _ in .init() })
   .updateScreensOnInteraction()
   .combined(
@@ -91,7 +143,7 @@ let appCoordinatorReducer: AppCoordinatorReducer = screenReducer
         
       case .screenAction(_, .numberDetail(.showDouble(let number))):
         state.push(.numberDetail(.init(number: number * 2)))
-
+        
       case .screenAction(_, .numberDetail(.popTapped)):
         state.pop()
         
@@ -100,7 +152,7 @@ let appCoordinatorReducer: AppCoordinatorReducer = screenReducer
         
       case .screenAction(_, .numberDetail(.popToRootTapped)):
         state.popToRoot()
-
+        
       default:
         break
       }
@@ -110,12 +162,12 @@ let appCoordinatorReducer: AppCoordinatorReducer = screenReducer
   .cancelEffectsOnDismiss()
 
 
-// IdentifiedAppCoordinator
+// IdentifiedNavCoordinator
 
-struct IdentifiedAppCoordinatorView: View {
-
-  let store: Store<IdentifiedAppCoordinatorState, IdentifiedAppCoordinatorAction>
-
+struct IdentifiedNavCoordinatorView: View {
+  
+  let store: Store<IdentifiedNavCoordinatorState, IdentifiedNavCoordinatorAction>
+  
   var body: some View {
     NavigationStore(store: store) { scopedStore in
       SwitchStore(scopedStore) {
@@ -139,26 +191,26 @@ struct IdentifiedAppCoordinatorView: View {
   }
 }
 
-struct IdentifiedAppCoordinatorState: Equatable, IdentifiedScreenCoordinatorState {
+struct IdentifiedNavCoordinatorState: Equatable, IdentifiedScreenCoordinatorState {
   
-  static let initialState = IdentifiedAppCoordinatorState(
+  static let initialState = IdentifiedNavCoordinatorState(
     screens: [.home(.init())]
   )
-
+  
   var screens: IdentifiedArrayOf<ScreenState>
 }
 
-enum IdentifiedAppCoordinatorAction: IdentifiedScreenCoordinatorAction {
-
+enum IdentifiedNavCoordinatorAction: IdentifiedScreenCoordinatorAction {
+  
   case screenAction(ScreenState.ID, action: ScreenAction)
   case updateScreens(IdentifiedArrayOf<ScreenState>)
 }
 
-typealias IdentifiedAppCoordinatorReducer = Reducer<
-  IdentifiedAppCoordinatorState, IdentifiedAppCoordinatorAction, AppCoordinatorEnvironment
+typealias IdentifiedNavCoordinatorReducer = Reducer<
+  IdentifiedNavCoordinatorState, IdentifiedNavCoordinatorAction, IndexedNavCoordinatorEnvironment
 >
 
-let identifiedAppCoordinatorReducer: IdentifiedAppCoordinatorReducer = screenReducer
+let identifiedNavCoordinatorReducer: IdentifiedNavCoordinatorReducer = screenReducer
   .forEachIdentifiedScreen(environment: { _ in .init() })
   .updateScreensOnInteraction()
   .combined(
@@ -172,7 +224,7 @@ let identifiedAppCoordinatorReducer: IdentifiedAppCoordinatorReducer = screenRed
         
       case .screenAction(_, .numberDetail(.showDouble(let number))):
         state.push(.numberDetail(.init(number: number * 2)))
-
+        
       case .screenAction(_, .numberDetail(.popTapped)):
         state.pop()
         
@@ -181,7 +233,7 @@ let identifiedAppCoordinatorReducer: IdentifiedAppCoordinatorReducer = screenRed
         
       case .screenAction(_, .numberDetail(.popToRootTapped)):
         state.popToRoot()
-
+        
       default:
         break
       }
@@ -193,18 +245,18 @@ let identifiedAppCoordinatorReducer: IdentifiedAppCoordinatorReducer = screenRed
 // Screen
 
 enum ScreenAction {
-
+  
   case home(HomeAction)
   case numbersList(NumbersListAction)
   case numberDetail(NumberDetailAction)
 }
 
 enum ScreenState: Equatable, Identifiable {
-
+  
   case home(HomeState)
   case numbersList(NumbersListState)
   case numberDetail(NumberDetailState)
-
+  
   var id: UUID {
     switch self {
     case .home(let state):
@@ -243,9 +295,9 @@ let screenReducer = Reducer<ScreenState, ScreenAction, ScreenEnvironment>.combin
 // Home
 
 struct HomeView: View {
-
+  
   let store: Store<HomeState, HomeAction>
-
+  
   var body: some View {
     WithViewStore(store) { viewStore in
       VStack {
@@ -259,12 +311,12 @@ struct HomeView: View {
 }
 
 enum HomeAction {
-
+  
   case startTapped
 }
 
 struct HomeState: Equatable {
-
+  
   let id = UUID()
 }
 
@@ -279,9 +331,9 @@ let homeReducer = Reducer<
 // NumbersList
 
 struct NumbersListView: View {
-
+  
   let store: Store<NumbersListState, NumbersListAction>
-
+  
   var body: some View {
     WithViewStore(store) { viewStore in
       List(viewStore.numbers, id: \.self) { number in
@@ -297,12 +349,12 @@ struct NumbersListView: View {
 }
 
 enum NumbersListAction {
-
+  
   case numberSelected(Int)
 }
 
 struct NumbersListState: Equatable {
-
+  
   let id = UUID()
   let numbers: [Int]
 }
@@ -318,9 +370,9 @@ let numbersListReducer = Reducer<
 // NumberDetail
 
 struct NumberDetailView: View {
-
+  
   let store: Store<NumberDetailState, NumberDetailAction>
-
+  
   var body: some View {
     WithViewStore(store) { viewStore in
       VStack(spacing: 8.0) {
@@ -350,7 +402,7 @@ struct NumberDetailView: View {
 }
 
 enum NumberDetailAction {
-
+  
   case popTapped
   case popToRootTapped
   case popToNumbersList
@@ -360,7 +412,7 @@ enum NumberDetailAction {
 }
 
 struct NumberDetailState: Equatable {
-
+  
   let id = UUID()
   var number: Int
 }
