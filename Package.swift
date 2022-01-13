@@ -13,7 +13,7 @@ let package = Package(
       targets: ["TCACoordinators"]),
   ],
   dependencies: [
-    .package(url: "https://github.com/johnpatrickmorgan/FlowStacks", "0.0.10" ... "0.0.14"),
+    .package(url: "https://github.com/johnpatrickmorgan/FlowStacks", from: "0.1.1"),
     .package(url: "https://github.com/pointfreeco/swift-composable-architecture", from: "0.27.1"),
   ],
   targets: [
