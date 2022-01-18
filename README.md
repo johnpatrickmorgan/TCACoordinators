@@ -79,7 +79,7 @@ The coordinator's action should include two special cases. The first includes an
 
 ```swift
 enum CoordinatorAction: IndexedRouterAction {
-  case screenAction(Int, ScreenAction)
+  case routeAction(Int, ScreenAction)
   case updateRoutes([Route<ScreenState>])
 }
 ```
@@ -92,19 +92,19 @@ let coordinatorReducer: Reducer<CoordinatorState, CoordinatorAction, Void> = scr
   .withRouteReducer(
     Reducer { state, action, environment in
       switch action {
-      case .screenAction(_, .home(.startTapped)):
+      case .routeAction(_, .home(.startTapped)):
         state.routes.presentSheet(.numbersList(.init()), embedInNavigationView: true)
         
-      case .screenAction(_, .numbersList(.numberSelected(let number))):
+      case .routeAction(_, .numbersList(.numberSelected(let number))):
         state.routes.push(.numberDetail(.init(number: number)))
 
-      case .screenAction(_, .numberDetail(.goBackTapped)):
+      case .routeAction(_, .numberDetail(.goBackTapped)):
         state.routes.goBack()
         
-      case .screenAction(_, .numberDetail(.goBackToNumbersList)):
+      case .routeAction(_, .numberDetail(.goBackToNumbersList)):
         state.routes.goBackTo(/.numbersList)
         
-      case .screenAction(_, .numberDetail(.goBackToRootTapped)):
+      case .routeAction(_, .numberDetail(.goBackToRootTapped)):
         state.routes.goBackToRoot()
 
       default:
