@@ -46,19 +46,19 @@ And the screen reducer will combine each individual screens' reducers into one:
 let screenReducer = Reducer<ScreenState, ScreenAction, Void>.combine(
   homeReducer
     .pullback(
-      state: /ScreenState.home,
+      state: \ScreenState.home,
       action: /ScreenAction.home,
       environment: { _ in }
     ),
   numbersListReducer
     .pullback(
-      state: /ScreenState.numbersList,
+      state: \ScreenState.numbersList,
       action: /ScreenAction.numbersList,
       environment: { _ in }
     ),
   numberDetailReducer
     .pullback(
-      state: /ScreenState.numberDetail,
+      state: \ScreenState.numberDetail,
       action: /ScreenAction.numberDetail,
       environment: { _ in }
     )
