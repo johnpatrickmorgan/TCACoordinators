@@ -79,7 +79,7 @@ The coordinator's action should include two special cases. The first includes an
 
 ```swift
 enum CoordinatorAction: IndexedRouterAction {
-  case routeAction(Int, ScreenAction)
+  case routeAction(Int, action: ScreenAction)
   case updateRoutes([Route<ScreenState>])
 }
 ```
