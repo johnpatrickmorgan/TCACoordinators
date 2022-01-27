@@ -26,29 +26,30 @@ struct MainTabCoordinatorView: View {
   let store: Store<MainTabCoordinatorState, MainTabCoordinatorAction>
   
   var body: some View {
-    TabView {
-        IndexedNavCoordinatorView(
-          store: Store(
-            initialState: .initialState,
-            reducer: indexedNavCoordinatorReducer,
-            environment: IndexedNavCoordinatorEnvironment()
-          )
-        ).tabItem { Text("Indexed") }
-        IdentifiedCoordinatorView(
-          store: Store(
-            initialState: .initialState,
-            reducer: identifiedCoordinatorReducer,
-            environment: IdentifiedCoordinatorEnvironment()
-          )
-        ).tabItem { Text("Identified") }
+    WithViewStore(store) { viewStore in
+      TabView {
+          IndexedCoordinatorView(
+            store: store.scope(
+              state: \MainTabCoordinatorState.indexed,
+              action: MainTabCoordinatorAction.indexed
+            )
+          ).tabItem { Text("Indexed") }
+          IdentifiedCoordinatorView(
+            store: store.scope(
+              state: \MainTabCoordinatorState.identified,
+              action: MainTabCoordinatorAction.identified
+            )
+          ).tabItem { Text("Identified") }
+      }
     }
+    
   }
 }
 
 enum MainTabCoordinatorAction {
   
   case identified(IdentifiedCoordinatorAction)
-  case indexed(IndexedNavCoordinatorAction)
+  case indexed(IndexedCoordinatorAction)
 }
 
 struct MainTabCoordinatorState: Equatable {
@@ -59,7 +60,7 @@ struct MainTabCoordinatorState: Equatable {
   )
   
   var identified: IdentifiedCoordinatorState
-  var indexed: IndexedNavCoordinatorState
+  var indexed: IndexedCoordinatorState
 }
 
 struct MainTabCoordinatorEnvironment {}
@@ -69,6 +70,12 @@ typealias MainTabCoordinatorReducer = Reducer<
 >
 
 let mainTabCoordinatorReducer: MainTabCoordinatorReducer = .combine(
+  indexedCoordinatorReducer
+    .pullback(
+      state: \MainTabCoordinatorState.indexed,
+      action: /MainTabCoordinatorAction.indexed,
+      environment: { _ in .init() }
+    ),
   identifiedCoordinatorReducer
     .pullback(
       state: \MainTabCoordinatorState.identified,

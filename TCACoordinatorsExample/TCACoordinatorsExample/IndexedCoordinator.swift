@@ -3,9 +3,9 @@ import ComposableArchitecture
 import TCACoordinators
 import FlowStacks
 
-struct IndexedNavCoordinatorView: View {
+struct IndexedCoordinatorView: View {
 
-  let store: Store<IndexedNavCoordinatorState, IndexedNavCoordinatorAction>
+  let store: Store<IndexedCoordinatorState, IndexedCoordinatorAction>
 
   var body: some View {
     TCARouter(store) { screen in
@@ -30,28 +30,28 @@ struct IndexedNavCoordinatorView: View {
   }
 }
 
-enum IndexedNavCoordinatorAction: IndexedRouterAction {
+enum IndexedCoordinatorAction: IndexedRouterAction {
 
   case routeAction(Int, action: ScreenAction)
   case updateRoutes([Route<ScreenState>])
 }
 
-struct IndexedNavCoordinatorState: Equatable, IndexedRouterState {
+struct IndexedCoordinatorState: Equatable, IndexedRouterState {
 
-  static let initialState = IndexedNavCoordinatorState(
+  static let initialState = IndexedCoordinatorState(
     routes: [.root(.home(.init()), embedInNavigationView: true)]
   )
 
   var routes: [Route<ScreenState>]
 }
 
-struct IndexedNavCoordinatorEnvironment {}
+struct IndexedCoordinatorEnvironment {}
 
-typealias IndexedNavCoordinatorReducer = Reducer<
-  IndexedNavCoordinatorState, IndexedNavCoordinatorAction, IndexedNavCoordinatorEnvironment
+typealias IndexedCoordinatorReducer = Reducer<
+  IndexedCoordinatorState, IndexedCoordinatorAction, IndexedCoordinatorEnvironment
 >
 
-let indexedNavCoordinatorReducer: IndexedNavCoordinatorReducer = screenReducer
+let indexedCoordinatorReducer: IndexedCoordinatorReducer = screenReducer
   .forEachIndexedRoute(environment: { _ in ScreenEnvironment() })
   .withRouteReducer(
     Reducer { state, action, environment in
