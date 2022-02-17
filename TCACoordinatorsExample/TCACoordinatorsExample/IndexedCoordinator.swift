@@ -65,7 +65,7 @@ let indexedCoordinatorReducer: IndexedCoordinatorReducer = screenReducer
         state.routes.presentSheet(.numberDetail(.init(number: number * 2)))
 
       case .routeAction(_, .numberDetail(.goBackTapped)):
-        state.routes.dismiss()
+        state.routes.goBack()
 
       case .routeAction(_, .numberDetail(.goBackToNumbersList)):
         return .routeWithDelaysIfUnsupported(state.routes) {

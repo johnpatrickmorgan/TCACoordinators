@@ -15,8 +15,8 @@
         "repositoryURL": "https://github.com/johnpatrickmorgan/FlowStacks",
         "state": {
           "branch": null,
-          "revision": "bbcacda8d4a88fe0e65733ecf2942226e70803cb",
-          "version": "0.1.2"
+          "revision": "48a3cd8d2726ab745cb66ed21289ab01c4089186",
+          "version": "0.1.6"
         }
       },
       {
@@ -51,8 +51,8 @@
         "repositoryURL": "https://github.com/pointfreeco/swift-custom-dump",
         "state": {
           "branch": null,
-          "revision": "51698ece74ecf31959d3fa81733f0a5363ef1b4e",
-          "version": "0.3.0"
+          "revision": "e9205f159983984511d86faa8f4bc3eaca475269",
+          "version": "0.4.0"
         }
       },
       {
