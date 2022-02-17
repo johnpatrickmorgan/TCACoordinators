@@ -1,7 +1,6 @@
 import SwiftUI
 import ComposableArchitecture
 import TCACoordinators
-import FlowStacks
 
 @main
 struct TCACoordinatorsExampleApp: App {
