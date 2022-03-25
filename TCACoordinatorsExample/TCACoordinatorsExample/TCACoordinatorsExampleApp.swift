@@ -46,6 +46,12 @@ struct MainTabCoordinatorView: View {
             action: MainTabCoordinatorAction.greeting
           )
         ).tabItem { Text("Shared State") }
+        ResetPasswordCoordinatorView(
+          store: store.scope(
+            state: \MainTabCoordinatorState.resetPassword,
+            action: MainTabCoordinatorAction.resetPassword
+          )
+        ).tabItem { Text("Reset Password") }
       }
     }
   }
@@ -56,6 +62,7 @@ enum MainTabCoordinatorAction {
   case identified(IdentifiedCoordinatorAction)
   case indexed(IndexedCoordinatorAction)
   case greeting(GreetingCoordinatorAction)
+  case resetPassword(ResetPasswordCoordinatorAction)
 }
 
 struct MainTabCoordinatorState: Equatable {
@@ -63,12 +70,14 @@ struct MainTabCoordinatorState: Equatable {
   static let initialState = MainTabCoordinatorState(
     identified: .initialState,
     indexed: .initialState,
-    greeting: .initialState
+    greeting: .initialState,
+    resetPassword: .initialState
   )
   
   var identified: IdentifiedCoordinatorState
   var indexed: IndexedCoordinatorState
   var greeting: GreetingCoordinatorState
+  var resetPassword: ResetPasswordCoordinatorState
 }
 
 struct MainTabCoordinatorEnvironment {}
@@ -95,5 +104,11 @@ let mainTabCoordinatorReducer: MainTabCoordinatorReducer = .combine(
       state: \MainTabCoordinatorState.greeting,
       action: /MainTabCoordinatorAction.greeting,
       environment: { _ in .init() }
+    ),
+  resetPasswordCoordinatorReducer
+    .pullback(
+      state: \MainTabCoordinatorState.resetPassword,
+      action: /MainTabCoordinatorAction.resetPassword,
+      environment: { _ in }
     )
 )
