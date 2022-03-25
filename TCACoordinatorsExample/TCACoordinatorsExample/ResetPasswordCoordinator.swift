@@ -27,11 +27,44 @@ struct ResetPasswordCoordinatorView: View {
 }
 
 struct ResetPasswordCoordinatorState: Equatable, IndexedRouterState {
+  enum ScreenIdentifier {
+    case forgotPassword
+    case forgotPasswordSuccess
+  }
+  
   static let initialState = ResetPasswordCoordinatorState(
-    routes: [.root(.forgotPassword(.init(email: "")), embedInNavigationView: true)]
+    screenIdentifiers: [.root(.forgotPassword, embedInNavigationView: true)]
   )
 
-  var routes: [Route<ResetPasswordScreenState>]
+  var email = ""
+  var screenIdentifiers: [Route<ScreenIdentifier>]
+  var routes: [Route<ResetPasswordScreenState>] {
+    get {
+      screenIdentifiers.map {
+        $0.map {
+          switch $0 {
+          case .forgotPassword:
+            return .forgotPassword(.init(email: email))
+          case .forgotPasswordSuccess:
+            return .forgotPasswordSuccess(.init(email: email))
+          }
+        }
+      }
+    }
+    set {
+      screenIdentifiers = newValue.map {
+        $0.map {
+          switch $0 {
+          case .forgotPassword(let state):
+            email = state.email
+            return .forgotPassword
+          case .forgotPasswordSuccess:
+            return .forgotPasswordSuccess
+          }
+        }
+      }
+    }
+  }
 }
 
 enum ResetPasswordCoordinatorAction: IndexedRouterAction {
@@ -46,10 +79,10 @@ let resetPasswordCoordinatorReducer: ResetPasswordCoordinatorReducer = resetPass
   .withRouteReducer(Reducer { state, action, _ in
     switch action {
     case .routeAction(let i, .forgotPassword(.emailConfirmed(let email))):
-      state.routes.push(.forgotPasswordSuccess(.init(email: email)))
+      state.screenIdentifiers.push(.forgotPasswordSuccess)
 
     case .routeAction(_, .forgotPasswordSuccess(.goBack)):
-      state.routes.goBack()
+      state.screenIdentifiers.goBack()
 
     default:
       break
