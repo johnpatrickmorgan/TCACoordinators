@@ -197,7 +197,7 @@ return Effect.routeWithDelaysIfUnsupported(state.routes) {
 
 ## Composing child coordinators
 
-The coordinator is just like any other UI unit in the Composable Architecture - comprising a `View` and a `Reducer` with `State` and `Action` types. This means they can be composed in all the normal ways SwiftUI and TCA allow. You can present a coordinator, add it to a `TabView`, even push or present a child coordinator from a parent coordinator by adding it to the routes array.
+The coordinator is just like any other UI unit in the Composable Architecture - comprising a `View` and a `Reducer` with `State` and `Action` types. This means they can be composed in all the normal ways SwiftUI and TCA allow. You can present a coordinator, add it to a `TabView`, even push or present a child coordinator from a parent coordinator by adding it to the routes array. When doing so, it is best that the child coordinator is only ever the last element of the parent's routes array, as it will take over responsibility for pushing and presenting new screens until dismissed. Otherwise, the parent might attempt to push screen(s) when the child is already pushing screen(s), causing a conflict.
 
 
 ## Identifying screens
