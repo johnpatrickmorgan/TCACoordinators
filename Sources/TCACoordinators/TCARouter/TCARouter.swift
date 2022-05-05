@@ -22,7 +22,7 @@ public struct TCARouter<
 
   func scopedStore(id: ID, screen: Screen, index: Int) -> Store<Screen, ScreenAction> {
     store.scope(
-      state: { routes($0)[index].screen },
+      state: { routes($0)[safe: index]?.screen ?? screen },
       action: { action(id, $0) }
     )
   }
@@ -88,4 +88,11 @@ extension TCARouter where ID == Int {
 extension Route: Identifiable where Screen: Identifiable {
   
   public var id: Screen.ID { screen.id }
+}
+
+extension Collection {
+  /// Returns the element at the specified index if it is within bounds, otherwise nil.
+  subscript(safe index: Index) -> Element? {
+    return indices.contains(index) ? self[index] : nil
+  }
 }
