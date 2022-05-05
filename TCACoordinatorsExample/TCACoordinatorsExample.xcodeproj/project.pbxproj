@@ -20,6 +20,12 @@
 		5248864B26F2A26500970899 /* TCACoordinatorsExampleUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5248864A26F2A26500970899 /* TCACoordinatorsExampleUITests.swift */; };
 		5248864D26F2A26500970899 /* TCACoordinatorsExampleUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5248864C26F2A26500970899 /* TCACoordinatorsExampleUITestsLaunchTests.swift */; };
 		5248866026F2A53B00970899 /* TCACoordinators in Frameworks */ = {isa = PBXBuildFile; productRef = 5248865F26F2A53B00970899 /* TCACoordinators */; };
+		529822D2283D76AD0011112B /* GameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 529822CE283D76AD0011112B /* GameView.swift */; };
+		529822D3283D76AD0011112B /* AppCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 529822CF283D76AD0011112B /* AppCoordinator.swift */; };
+		529822D4283D76AD0011112B /* LogInCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 529822D0283D76AD0011112B /* LogInCoordinator.swift */; };
+		529822D5283D76AD0011112B /* GameCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 529822D1283D76AD0011112B /* GameCoordinator.swift */; };
+		529822D7283D76F60011112B /* WelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 529822D6283D76F60011112B /* WelcomeView.swift */; };
+		529822D9283D77060011112B /* LogInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 529822D8283D77060011112B /* LogInView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -53,6 +59,12 @@
 		5248864A26F2A26500970899 /* TCACoordinatorsExampleUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TCACoordinatorsExampleUITests.swift; sourceTree = "<group>"; };
 		5248864C26F2A26500970899 /* TCACoordinatorsExampleUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TCACoordinatorsExampleUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		5248865A26F2A2C200970899 /* TCACoordinators */ = {isa = PBXFileReference; lastKnownFileType = folder; name = TCACoordinators; path = ..; sourceTree = "<group>"; };
+		529822CE283D76AD0011112B /* GameView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameView.swift; sourceTree = "<group>"; };
+		529822CF283D76AD0011112B /* AppCoordinator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppCoordinator.swift; sourceTree = "<group>"; };
+		529822D0283D76AD0011112B /* LogInCoordinator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LogInCoordinator.swift; sourceTree = "<group>"; };
+		529822D1283D76AD0011112B /* GameCoordinator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameCoordinator.swift; sourceTree = "<group>"; };
+		529822D6283D76F60011112B /* WelcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeView.swift; sourceTree = "<group>"; };
+		529822D8283D77060011112B /* LogInView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogInView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -107,6 +119,7 @@
 			isa = PBXGroup;
 			children = (
 				5248862F26F2A26200970899 /* TCACoordinatorsExampleApp.swift */,
+				529822CD283D76AD0011112B /* Game */,
 				524087E3278E3D950048C6EE /* IdentifiedCoordinator.swift */,
 				524087E1278E3D950048C6EE /* IndexedCoordinator.swift */,
 				524087E2278E3D950048C6EE /* Screen.swift */,
@@ -154,6 +167,19 @@
 			children = (
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		529822CD283D76AD0011112B /* Game */ = {
+			isa = PBXGroup;
+			children = (
+				529822CE283D76AD0011112B /* GameView.swift */,
+				529822CF283D76AD0011112B /* AppCoordinator.swift */,
+				529822D0283D76AD0011112B /* LogInCoordinator.swift */,
+				529822D1283D76AD0011112B /* GameCoordinator.swift */,
+				529822D6283D76F60011112B /* WelcomeView.swift */,
+				529822D8283D77060011112B /* LogInView.swift */,
+			);
+			path = Game;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -289,10 +315,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				529822D9283D77060011112B /* LogInView.swift in Sources */,
+				529822D5283D76AD0011112B /* GameCoordinator.swift in Sources */,
 				524087E4278E3D950048C6EE /* IndexedCoordinator.swift in Sources */,
+				529822D4283D76AD0011112B /* LogInCoordinator.swift in Sources */,
 				5248863026F2A26200970899 /* TCACoordinatorsExampleApp.swift in Sources */,
+				529822D7283D76F60011112B /* WelcomeView.swift in Sources */,
 				524087E5278E3D950048C6EE /* Screen.swift in Sources */,
+				529822D3283D76AD0011112B /* AppCoordinator.swift in Sources */,
 				524087E6278E3D950048C6EE /* IdentifiedCoordinator.swift in Sources */,
+				529822D2283D76AD0011112B /* GameView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
