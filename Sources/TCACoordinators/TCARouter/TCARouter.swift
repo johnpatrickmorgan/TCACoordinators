@@ -20,9 +20,9 @@ public struct TCARouter<
 
   @ViewBuilder var screenContent: (Store<Screen, ScreenAction>) -> ScreenContent
 
-  func scopedStore(id: ID, screen: Screen) -> Store<Screen, ScreenAction> {
+  func scopedStore(id: ID, screen: Screen, index: Int) -> Store<Screen, ScreenAction> {
     store.scope(
-      state: { _ in screen },
+      state: { routes($0)[index].screen },
       action: { action(id, $0) }
     )
   }
@@ -36,7 +36,7 @@ public struct TCARouter<
         ),
         buildView: { screen, index in
           let id = identifier(screen, index)
-          screenContent(scopedStore(id: id, screen: screen))
+          screenContent(scopedStore(id: id, screen: screen, index: index))
         }
       )
     }
