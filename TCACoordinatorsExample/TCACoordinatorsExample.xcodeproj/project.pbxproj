@@ -20,6 +20,8 @@
 		5248864B26F2A26500970899 /* TCACoordinatorsExampleUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5248864A26F2A26500970899 /* TCACoordinatorsExampleUITests.swift */; };
 		5248864D26F2A26500970899 /* TCACoordinatorsExampleUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5248864C26F2A26500970899 /* TCACoordinatorsExampleUITestsLaunchTests.swift */; };
 		5248866026F2A53B00970899 /* TCACoordinators in Frameworks */ = {isa = PBXBuildFile; productRef = 5248865F26F2A53B00970899 /* TCACoordinators */; };
+		526C545C2823CBC200266143 /* GameCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526C545B2823CBC200266143 /* GameCoordinator.swift */; };
+		526C545E2823CBEE00266143 /* GameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 526C545D2823CBEE00266143 /* GameView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -53,6 +55,8 @@
 		5248864A26F2A26500970899 /* TCACoordinatorsExampleUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TCACoordinatorsExampleUITests.swift; sourceTree = "<group>"; };
 		5248864C26F2A26500970899 /* TCACoordinatorsExampleUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TCACoordinatorsExampleUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		5248865A26F2A2C200970899 /* TCACoordinators */ = {isa = PBXFileReference; lastKnownFileType = folder; name = TCACoordinators; path = ..; sourceTree = "<group>"; };
+		526C545B2823CBC200266143 /* GameCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameCoordinator.swift; sourceTree = "<group>"; };
+		526C545D2823CBEE00266143 /* GameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -107,6 +111,8 @@
 			isa = PBXGroup;
 			children = (
 				5248862F26F2A26200970899 /* TCACoordinatorsExampleApp.swift */,
+				526C545B2823CBC200266143 /* GameCoordinator.swift */,
+				526C545D2823CBEE00266143 /* GameView.swift */,
 				524087E3278E3D950048C6EE /* IdentifiedCoordinator.swift */,
 				524087E1278E3D950048C6EE /* IndexedCoordinator.swift */,
 				524087E2278E3D950048C6EE /* Screen.swift */,
@@ -289,9 +295,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				526C545C2823CBC200266143 /* GameCoordinator.swift in Sources */,
 				524087E4278E3D950048C6EE /* IndexedCoordinator.swift in Sources */,
 				5248863026F2A26200970899 /* TCACoordinatorsExampleApp.swift in Sources */,
 				524087E5278E3D950048C6EE /* Screen.swift in Sources */,
+				526C545E2823CBEE00266143 /* GameView.swift in Sources */,
 				524087E6278E3D950048C6EE /* IdentifiedCoordinator.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
