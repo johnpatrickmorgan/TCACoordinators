@@ -20,23 +20,23 @@ public struct TCARouter<
 
   @ViewBuilder var screenContent: (Store<Screen, ScreenAction>) -> ScreenContent
 
-  func scopedStore(id: ID, screen: Screen) -> Store<Screen, ScreenAction> {
-    store.scope(
-      state: { _ in screen },
-      action: { action(id, $0) }
+  func scopedStore(index: Int, screen: Screen) -> Store<Screen, ScreenAction> {
+    let id = identifier(screen, index)
+    return store.scope(
+        state: { routes($0)[safe: index]?.screen ?? screen },
+        action: { action(id, $0) }
     )
   }
 
   public var body: some View {
-    WithViewStore(store) { viewStore in
+    WithViewStore(store, removeDuplicates: { routes($0).map(\.style) == routes($1).map(\.style) }) { viewStore in
       Router(
         viewStore.binding(
           get: routes,
           send: updateRoutes
         ),
         buildView: { screen, index in
-          let id = identifier(screen, index)
-          screenContent(scopedStore(id: id, screen: screen))
+          screenContent(scopedStore(index: index, screen: screen))
         }
       )
     }
@@ -86,6 +86,12 @@ extension TCARouter where ID == Int {
 }
 
 extension Route: Identifiable where Screen: Identifiable {
-  
   public var id: Screen.ID { screen.id }
 }
+
+extension Collection {
+   /// Returns the element at the specified index if it is within bounds, otherwise nil.
+   subscript(safe index: Index) -> Element? {
+     return indices.contains(index) ? self[index] : nil
+   }
+ }
