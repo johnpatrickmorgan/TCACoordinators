@@ -15,8 +15,8 @@
         "repositoryURL": "https://github.com/johnpatrickmorgan/FlowStacks",
         "state": {
           "branch": null,
-          "revision": "48a3cd8d2726ab745cb66ed21289ab01c4089186",
-          "version": "0.1.6"
+          "revision": "30132357d65b22281ea52e1456aa658390f34805",
+          "version": "0.2.0"
         }
       },
       {
@@ -24,8 +24,8 @@
         "repositoryURL": "https://github.com/pointfreeco/swift-case-paths",
         "state": {
           "branch": null,
-          "revision": "241301b67d8551c26d8f09bd2c0e52cc49f18007",
-          "version": "0.8.0"
+          "revision": "ce9c0d897db8a840c39de64caaa9b60119cf4be8",
+          "version": "0.8.1"
         }
       },
       {
@@ -42,8 +42,8 @@
         "repositoryURL": "https://github.com/pointfreeco/swift-composable-architecture",
         "state": {
           "branch": null,
-          "revision": "ba9c626ab1b2b6af8cf684eebb2ab472fa5b6753",
-          "version": "0.33.1"
+          "revision": "2828dc44f6e3f81d84bcaba72c1ab1c0121d66f6",
+          "version": "0.34.0"
         }
       },
       {
