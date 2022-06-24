@@ -22,9 +22,13 @@ public struct TCARouter<
 
   func scopedStore(index: Int, screen: Screen) -> Store<Screen, ScreenAction> {
     let id = identifier(screen, index)
+    var screen = screen
     return store.scope(
-        state: { routes($0)[safe: index]?.screen ?? screen },
-        action: { action(id, $0) }
+      state: {
+        screen = routes($0)[safe: index]?.screen ?? screen
+        return screen
+      },
+      action: { action(id, $0) }
     )
   }
 
