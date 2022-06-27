@@ -23,27 +23,25 @@ struct MainTabCoordinatorView: View {
   let store: Store<MainTabCoordinatorState, MainTabCoordinatorAction>
 
   var body: some View {
-    WithViewStore(store) { _ in
-      TabView {
-        IndexedCoordinatorView(
-          store: store.scope(
-            state: \MainTabCoordinatorState.indexed,
-            action: MainTabCoordinatorAction.indexed
-          )
-        ).tabItem { Text("Indexed") }
-        IdentifiedCoordinatorView(
-          store: store.scope(
-            state: \MainTabCoordinatorState.identified,
-            action: MainTabCoordinatorAction.identified
-          )
-        ).tabItem { Text("Identified") }
-        AppCoordinatorView(
-          store: store.scope(
-            state: \MainTabCoordinatorState.app,
-            action: MainTabCoordinatorAction.app
-          )
-        ).tabItem { Text("App") }
-      }
+    TabView {
+      IndexedCoordinatorView(
+        store: store.scope(
+          state: \MainTabCoordinatorState.indexed,
+          action: MainTabCoordinatorAction.indexed
+        )
+      ).tabItem { Text("Indexed") }
+      IdentifiedCoordinatorView(
+        store: store.scope(
+          state: \MainTabCoordinatorState.identified,
+          action: MainTabCoordinatorAction.identified
+        )
+      ).tabItem { Text("Identified") }
+      AppCoordinatorView(
+        store: store.scope(
+          state: \MainTabCoordinatorState.app,
+          action: MainTabCoordinatorAction.app
+        )
+      ).tabItem { Text("App") }
     }
   }
 }
