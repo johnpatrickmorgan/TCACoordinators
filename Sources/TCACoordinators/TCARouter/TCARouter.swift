@@ -35,7 +35,7 @@ public struct TCARouter<
   public var body: some View {
     WithViewStore(store, removeDuplicates: { routes($0).map(\.style) == routes($1).map(\.style) }) { viewStore in
       Router(
-        viewStore.binding(
+        ViewStore(store).binding(
           get: routes,
           send: updateRoutes
         ),
