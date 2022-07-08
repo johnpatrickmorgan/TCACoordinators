@@ -21,14 +21,16 @@ public struct TCARouter<
   @ViewBuilder var screenContent: (Store<Screen, ScreenAction>) -> ScreenContent
 
   func scopedStore(index: Int, screen: Screen) -> Store<Screen, ScreenAction> {
-    let id = identifier(screen, index)
     var screen = screen
     return store.scope(
       state: {
         screen = routes($0)[safe: index]?.screen ?? screen
         return screen
       },
-      action: { action(id, $0) }
+      action: {
+        let id = identifier(screen, index)
+        return action(id, $0)
+      }
     )
   }
 
