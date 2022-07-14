@@ -41,7 +41,8 @@ struct MainTabCoordinatorView: View {
           state: \MainTabCoordinatorState.app,
           action: MainTabCoordinatorAction.app
         )
-      ).tabItem { Text("App") }
+      ).tabItem { Text("Game") }
+      MyApp().tabItem { Text("Form") }
     }
   }
 }
