@@ -25,14 +25,12 @@
 		528FEDED2880BD94007765AD /* FinalScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 528FEDE72880BC60007765AD /* FinalScreen.swift */; };
 		528FEDEE2880BD94007765AD /* AppFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 528FEDE42880BC60007765AD /* AppFlow.swift */; };
 		528FEDEF2880BD94007765AD /* FormAppCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 528FEDE62880BC60007765AD /* FormAppCoordinator.swift */; };
-		528FEDF02880BD94007765AD /* MyApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 528FEDE52880BC60007765AD /* MyApp.swift */; };
 		528FEDF12880BD94007765AD /* Step2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 528FEDE92880BC61007765AD /* Step2.swift */; };
 		528FEDF22880BD95007765AD /* Step3.swift in Sources */ = {isa = PBXBuildFile; fileRef = 528FEDEA2880BC61007765AD /* Step3.swift */; };
 		528FEDF32880BD95007765AD /* Step1.swift in Sources */ = {isa = PBXBuildFile; fileRef = 528FEDE82880BC61007765AD /* Step1.swift */; };
 		528FEDF42880BD95007765AD /* FinalScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 528FEDE72880BC60007765AD /* FinalScreen.swift */; };
 		528FEDF52880BD95007765AD /* AppFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 528FEDE42880BC60007765AD /* AppFlow.swift */; };
 		528FEDF62880BD95007765AD /* FormAppCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 528FEDE62880BC60007765AD /* FormAppCoordinator.swift */; };
-		528FEDF72880BD95007765AD /* MyApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 528FEDE52880BC60007765AD /* MyApp.swift */; };
 		528FEDF82880BD95007765AD /* Step2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 528FEDE92880BC61007765AD /* Step2.swift */; };
 		529822D2283D76AD0011112B /* GameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 529822CE283D76AD0011112B /* GameView.swift */; };
 		529822D3283D76AD0011112B /* AppCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 529822CF283D76AD0011112B /* AppCoordinator.swift */; };
@@ -74,7 +72,6 @@
 		5248864C26F2A26500970899 /* TCACoordinatorsExampleUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TCACoordinatorsExampleUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		5248865A26F2A2C200970899 /* TCACoordinators */ = {isa = PBXFileReference; lastKnownFileType = folder; name = TCACoordinators; path = ..; sourceTree = "<group>"; };
 		528FEDE42880BC60007765AD /* AppFlow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppFlow.swift; sourceTree = "<group>"; };
-		528FEDE52880BC60007765AD /* MyApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyApp.swift; sourceTree = "<group>"; };
 		528FEDE62880BC60007765AD /* FormAppCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormAppCoordinator.swift; sourceTree = "<group>"; };
 		528FEDE72880BC60007765AD /* FinalScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinalScreen.swift; sourceTree = "<group>"; };
 		528FEDE82880BC61007765AD /* Step1.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Step1.swift; sourceTree = "<group>"; };
@@ -197,7 +194,6 @@
 				528FEDE62880BC60007765AD /* FormAppCoordinator.swift */,
 				528FEDE42880BC60007765AD /* AppFlow.swift */,
 				528FEDE72880BC60007765AD /* FinalScreen.swift */,
-				528FEDE52880BC60007765AD /* MyApp.swift */,
 				528FEDE82880BC61007765AD /* Step1.swift */,
 				528FEDE92880BC61007765AD /* Step2.swift */,
 				528FEDEA2880BC61007765AD /* Step3.swift */,
@@ -365,7 +361,6 @@
 				529822D3283D76AD0011112B /* AppCoordinator.swift in Sources */,
 				524087E6278E3D950048C6EE /* IdentifiedCoordinator.swift in Sources */,
 				528FEDF62880BD95007765AD /* FormAppCoordinator.swift in Sources */,
-				528FEDF72880BD95007765AD /* MyApp.swift in Sources */,
 				529822D2283D76AD0011112B /* GameView.swift in Sources */,
 				528FEDF32880BD95007765AD /* Step1.swift in Sources */,
 			);
@@ -378,7 +373,6 @@
 				524087E8278E3D9F0048C6EE /* IndexedCoordinator.swift in Sources */,
 				528FEDEE2880BD94007765AD /* AppFlow.swift in Sources */,
 				5248864126F2A26500970899 /* TCACoordinatorsExampleTests.swift in Sources */,
-				528FEDF02880BD94007765AD /* MyApp.swift in Sources */,
 				528FEDED2880BD94007765AD /* FinalScreen.swift in Sources */,
 				524087E7278E3D9F0048C6EE /* IdentifiedCoordinator.swift in Sources */,
 				528FEDF12880BD94007765AD /* Step2.swift in Sources */,

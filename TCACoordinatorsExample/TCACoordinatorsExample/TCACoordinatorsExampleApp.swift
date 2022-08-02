@@ -42,7 +42,12 @@ struct MainTabCoordinatorView: View {
           action: MainTabCoordinatorAction.app
         )
       ).tabItem { Text("Game") }
-      MyApp().tabItem { Text("Form") }
+      FormAppCoordinatorView(
+        store: store.scope(
+          state: \MainTabCoordinatorState.form,
+          action: MainTabCoordinatorAction.form
+        )
+      ).tabItem { Text("Form") }
     }
   }
 }
@@ -51,18 +56,21 @@ enum MainTabCoordinatorAction {
   case identified(IdentifiedCoordinatorAction)
   case indexed(IndexedCoordinatorAction)
   case app(AppCoordinatorAction)
+  case form(FormAppCoordinatorAction)
 }
 
 struct MainTabCoordinatorState: Equatable {
   static let initialState = MainTabCoordinatorState(
     identified: .initialState,
     indexed: .initialState,
-    app: .initialState
+    app: .initialState,
+    form: .initialState
   )
 
   var identified: IdentifiedCoordinatorState
   var indexed: IndexedCoordinatorState
   var app: AppCoordinatorState
+  var form: FormAppCoordinatorState
 }
 
 struct MainTabCoordinatorEnvironment {}
@@ -89,5 +97,11 @@ let mainTabCoordinatorReducer: MainTabCoordinatorReducer = .combine(
       state: \MainTabCoordinatorState.app,
       action: /MainTabCoordinatorAction.app,
       environment: { _ in .init() }
+    ),
+  formAppCoordinatorReducer
+    .pullback(
+      state: \MainTabCoordinatorState.form,
+      action: /MainTabCoordinatorAction.form,
+      environment: { _ in .test }
     )
 )
