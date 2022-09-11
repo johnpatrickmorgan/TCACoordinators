@@ -14,7 +14,7 @@ extension Reducer {
   func tagRouteEffectsForCancellation<RouteAction, CoordinatorID: Hashable, RouteID: Hashable>(
     coordinatorId: CoordinatorID,
     routeAction: CasePath<Action, (RouteID, RouteAction)>
-  ) -> Reducer {
+  ) -> Self {
     return Reducer { state, action, environment in
       let effect = self.run(&state, action, environment)
 
@@ -36,7 +36,7 @@ extension Reducer {
     coordinatorId: CoordinatorID,
     routes: @escaping (State) -> C,
     getIdentifier: @escaping (C.Element, C.Index) -> RouteID
-  ) -> Reducer
+  ) -> Self
   {
     return Reducer { state, action, environment in
       let preRoutes = routes(state)
