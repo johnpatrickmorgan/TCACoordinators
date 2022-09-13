@@ -13,8 +13,8 @@ public extension Reducer where State: IndexedRouterState, Action: IndexedRouterA
   /// - Returns: The new reducer.
   func withRouteReducer(
     cancelEffectsOnDismiss: Bool = true,
-    _ routeReducer: Reducer
-  ) -> Reducer {
+    _ routeReducer: Self
+  ) -> Self {
     self.withRouteReducer(
       routes: \State.routes,
       routeAction: /Action.routeAction,
@@ -35,8 +35,8 @@ public extension Reducer where State: IdentifiedRouterState, Action: IdentifiedR
   /// - Returns: The new reducer.
   func withRouteReducer(
     cancelEffectsOnDismiss: Bool = true,
-    _ routeReducer: Reducer
-  ) -> Reducer {
+    _ routeReducer: Self
+  ) -> Self {
     self.withRouteReducer(
       routes: \State.routes,
       routeAction: /Action.routeAction,
@@ -62,8 +62,8 @@ public extension Reducer {
     routeAction: CasePath<Action, (RouteID, ScreenAction)>,
     coordinatorIdForCancellation: CoordinatorID?,
     getIdentifier: @escaping (C.Element, C.Index) -> RouteID,
-    routeReducer: Reducer
-  ) -> Reducer
+    routeReducer: Self
+  ) -> Self
   {
     guard let coordinatorId = coordinatorIdForCancellation else {
       return self.combined(with: routeReducer)

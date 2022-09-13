@@ -85,7 +85,7 @@ extension Reducer {
   func updateScreensOnInteraction<Routes>(
     updateRoutes: CasePath<Action, Routes>,
     state toLocalState: WritableKeyPath<State, Routes>
-  ) -> Reducer {
+  ) -> Self {
     return self.combined(with: Reducer { state, action, environment in
       if let routes = updateRoutes.extract(from: action) {
         state[keyPath: toLocalState] = routes
