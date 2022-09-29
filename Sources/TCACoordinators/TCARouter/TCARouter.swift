@@ -21,21 +21,23 @@ public struct TCARouter<
   @ViewBuilder var screenContent: (Store<Screen, ScreenAction>) -> ScreenContent
 
   func scopedStore(index: Int, screen: Screen) -> Store<Screen, ScreenAction> {
-    let id = identifier(screen, index)
     var screen = screen
     return store.scope(
       state: {
         screen = routes($0)[safe: index]?.screen ?? screen
         return screen
       },
-      action: { action(id, $0) }
+      action: {
+        let id = identifier(screen, index)
+        return action(id, $0)
+      }
     )
   }
 
   public var body: some View {
     WithViewStore(store, removeDuplicates: { routes($0).map(\.style) == routes($1).map(\.style) }) { viewStore in
       Router(
-        viewStore.binding(
+        ViewStore(store).binding(
           get: routes,
           send: updateRoutes
         ),
