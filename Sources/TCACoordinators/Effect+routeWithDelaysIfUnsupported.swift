@@ -15,7 +15,7 @@ public extension Effect where Output: IndexedRouterAction, Failure == Never {
   /// - Parameter transform: A closure transforming the routes into their new state.
   /// - Returns: An Effect stream of actions with incremental updates to routes over time. If the proposed change is supported
   ///   within a single update, the Effect stream will include only one element.
-  static func routeWithDelaysIfUnsupported(_ routes: [Route<Output.Screen>], _ transform: (inout [Route<Output.Screen>]) -> Void) -> Effect {
+  static func routeWithDelaysIfUnsupported(_ routes: [Route<Output.Screen>], _ transform: (inout [Route<Output.Screen>]) -> Void) -> Self {
     var transformedRoutes = routes
     transform(&transformedRoutes)
     let steps = RouteSteps.calculateSteps(from: routes, to: transformedRoutes)
@@ -36,7 +36,7 @@ public extension Effect where Output: IdentifiedRouterAction, Failure == Never {
   /// - Parameter transform: A closure transforming the routes into their new state.
   /// - Returns: An Effect stream of actions with incremental updates to routes over time. If the proposed change is supported
   ///   within a single update, the Effect stream will include only one element.
-  static func routeWithDelaysIfUnsupported(_ routes: IdentifiedArrayOf<Route<Output.Screen>>, _ transform: (inout IdentifiedArrayOf<Route<Output.Screen>>) -> Void) -> Effect {
+  static func routeWithDelaysIfUnsupported(_ routes: IdentifiedArrayOf<Route<Output.Screen>>, _ transform: (inout IdentifiedArrayOf<Route<Output.Screen>>) -> Void) -> Self {
     var transformedRoutes = routes
     transform(&transformedRoutes)
     let steps = RouteSteps.calculateSteps(from: Array(routes), to: Array(transformedRoutes))
