@@ -22,29 +22,15 @@
          </BuildActionEntry>
          <BuildActionEntry
             buildForTesting = "YES"
-            buildForRunning = "YES"
+            buildForRunning = "NO"
             buildForProfiling = "NO"
             buildForArchiving = "NO"
-            buildForAnalyzing = "YES">
+            buildForAnalyzing = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "TCACoordinatorsTests"
                BuildableName = "TCACoordinatorsTests"
                BlueprintName = "TCACoordinatorsTests"
-               ReferencedContainer = "container:">
-            </BuildableReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "YES"
-            buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "TCACoordinatorsExamples"
-               BuildableName = "TCACoordinatorsExamples"
-               BlueprintName = "TCACoordinatorsExamples"
                ReferencedContainer = "container:">
             </BuildableReference>
          </BuildActionEntry>
