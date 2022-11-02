@@ -144,7 +144,7 @@ struct FinalScreenEnvironment {
 typealias FinalScreenReducer = Reducer<FinalScreenState, FinalScreenAction, FinalScreenEnvironment>
 
 extension FinalScreenReducer {
-  static let finalScreen = Reducer { state, action, environment in
+  static let finalScreen = FinalScreenReducer { state, action, environment in
     switch action {
     case .submit:
       guard let job = state.job else { return .none }

@@ -58,5 +58,5 @@ struct Step2Environment {
 typealias Step2Reducer = Reducer<Step2State, Step2Action, Step2Environment>
 
 extension Step2Reducer {
-  static let step2 = Reducer.empty.binding()
+  static let step2 = Step2Reducer.empty.binding()
 }

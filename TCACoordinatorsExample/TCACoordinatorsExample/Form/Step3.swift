@@ -91,7 +91,7 @@ struct Step3Environment {
 typealias Step3Reducer = Reducer<Step3State, Step3Action, Step3Environment>
 
 extension Step3Reducer {
-  static let step3 = Reducer { state, action, environment in
+  static let step3 = Step3Reducer { state, action, environment in
     switch action {
     case .getOccupations:
       return environment

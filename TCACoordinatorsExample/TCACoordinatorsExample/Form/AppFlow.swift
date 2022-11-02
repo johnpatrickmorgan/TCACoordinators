@@ -1,4 +1,5 @@
 import ComposableArchitecture
+import Foundation
 
 enum AppFlowState: Equatable, Identifiable {
   case step1(Step1State)
