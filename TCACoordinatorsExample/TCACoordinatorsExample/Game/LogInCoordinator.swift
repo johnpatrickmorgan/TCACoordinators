@@ -59,6 +59,52 @@ struct LogInCoordinatorView: View {
   }
 }
 
+struct LogInCoordinator: ReducerProtocol {
+  struct State: Equatable, IdentifiedRouterState {
+    static let initialState = LogInCoordinatorState(
+      routes: [.root(.welcome(.init()), embedInNavigationView: true)]
+    )
+
+    var routes: IdentifiedArrayOf<Route<LogInScreenState>>
+  }
+  enum Action: IdentifiedRouterAction {
+    case routeAction(ScreenState.ID, action: LogInScreenAction)
+    case updateRoutes(IdentifiedArrayOf<Route<LogInScreenState>>)
+  }
+  var body: some ReducerProtocol<State, Action> {
+    Reduce<State, Action>(
+      logInScreenReducer
+        .forEachIdentifiedRoute(environment: { _ in .init() })
+        .withRouteReducer(Reducer<State, Action, LogInCoordinatorEnvironment> { state, action, _ in
+          switch action {
+          case .routeAction(_, .welcome(.logInTapped)):
+            state.routes.push(.logIn(.init()))
+
+          default:
+            break
+          }
+          return .none
+        }),
+      environment: LogInCoordinatorEnvironment()
+    )
+//    RouteReduce { state, action in
+//      
+//      ...
+//      
+//    },
+//    forEachIdentifiedRoute: {
+//      LogInScreen()
+//    }
+      
+//    Reduce { state, action in
+//
+//    }.forEachIdentifiedRoute(environment: (), cancelEffectsOnDismiss: true) {
+//      LogInScreen()
+//    }
+    
+  }
+}
+
 struct LogInCoordinatorState: Equatable, IdentifiedRouterState {
   static let initialState = LogInCoordinatorState(
     routes: [.root(.welcome(.init()), embedInNavigationView: true)]
@@ -68,6 +114,7 @@ struct LogInCoordinatorState: Equatable, IdentifiedRouterState {
 }
 
 enum LogInCoordinatorAction: IdentifiedRouterAction {
+  
   case routeAction(ScreenState.ID, action: LogInScreenAction)
   case updateRoutes(IdentifiedArrayOf<Route<LogInScreenState>>)
 }

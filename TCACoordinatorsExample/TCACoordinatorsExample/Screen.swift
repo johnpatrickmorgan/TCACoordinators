@@ -49,6 +49,45 @@ let screenReducer = Reducer<ScreenState, ScreenAction, ScreenEnvironment>.combin
       environment: { _ in NumberDetailEnvironment() }
     )
 )
+struct Screen: ReducerProtocol {
+  enum Action {
+    
+    case home(HomeAction)
+    case numbersList(NumbersListAction)
+    case numberDetail(NumberDetailAction)
+  }
+
+  enum State: Equatable, Identifiable {
+    
+    case home(HomeState)
+    case numbersList(NumbersListState)
+    case numberDetail(NumberDetailState)
+    
+    var id: UUID {
+      switch self {
+      case .home(let state):
+        return state.id
+      case .numbersList(let state):
+        return state.id
+      case .numberDetail(let state):
+        return state.id
+      }
+    }
+  }
+  
+  var body: some ReducerProtocol<State, Action> {
+    EmptyReducer()
+      .ifCaseLet(/State.home, action: /Action.home) {
+        Reduce(homeReducer, environment: .init())
+      }
+      .ifCaseLet(/State.numbersList, action: /Action.numbersList) {
+        Reduce(numbersListReducer, environment: .init())
+      }
+      .ifCaseLet(/State.numberDetail, action: /Action.numberDetail) {
+        Reduce(numberDetailReducer, environment: .init())
+      }
+  }
+}
 
 // Home
 

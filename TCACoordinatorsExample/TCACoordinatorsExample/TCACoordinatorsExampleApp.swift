@@ -9,8 +9,7 @@ struct TCACoordinatorsExampleApp: App {
       MainTabCoordinatorView(
         store: .init(
           initialState: .initialState,
-          reducer: mainTabCoordinatorReducer,
-          environment: .init()
+          reducer: MainTabCoordinator()
         )
       )
     }
@@ -20,88 +19,72 @@ struct TCACoordinatorsExampleApp: App {
 // MainTabCoordinator
 
 struct MainTabCoordinatorView: View {
-  let store: Store<MainTabCoordinatorState, MainTabCoordinatorAction>
+  let store: Store<MainTabCoordinator.State, MainTabCoordinator.Action>
 
   var body: some View {
     TabView {
       IndexedCoordinatorView(
         store: store.scope(
-          state: \MainTabCoordinatorState.indexed,
-          action: MainTabCoordinatorAction.indexed
+          state: \MainTabCoordinator.State.indexed,
+          action: MainTabCoordinator.Action.indexed
         )
       ).tabItem { Text("Indexed") }
       IdentifiedCoordinatorView(
         store: store.scope(
-          state: \MainTabCoordinatorState.identified,
-          action: MainTabCoordinatorAction.identified
+          state: \MainTabCoordinator.State.identified,
+          action: MainTabCoordinator.Action.identified
         )
       ).tabItem { Text("Identified") }
       AppCoordinatorView(
         store: store.scope(
-          state: \MainTabCoordinatorState.app,
-          action: MainTabCoordinatorAction.app
+          state: \MainTabCoordinator.State.app,
+          action: MainTabCoordinator.Action.app
         )
       ).tabItem { Text("Game") }
       FormAppCoordinatorView(
         store: store.scope(
-          state: \MainTabCoordinatorState.form,
-          action: MainTabCoordinatorAction.form
+          state: \MainTabCoordinator.State.form,
+          action: MainTabCoordinator.Action.form
         )
       ).tabItem { Text("Form") }
     }
   }
 }
 
-enum MainTabCoordinatorAction {
-  case identified(IdentifiedCoordinatorAction)
-  case indexed(IndexedCoordinatorAction)
-  case app(AppCoordinatorAction)
-  case form(FormAppCoordinatorAction)
-}
+struct MainTabCoordinator: ReducerProtocol {
+  enum Action {
+    case identified(IdentifiedCoordinator.Action)
+    case indexed(IndexedCoordinatorAction)
+    case app(AppCoordinatorAction)
+    case form(FormAppCoordinator.Action)
+  }
 
-struct MainTabCoordinatorState: Equatable {
-  static let initialState = MainTabCoordinatorState(
-    identified: .initialState,
-    indexed: .initialState,
-    app: .initialState,
-    form: .initialState
-  )
-
-  var identified: IdentifiedCoordinatorState
-  var indexed: IndexedCoordinatorState
-  var app: AppCoordinatorState
-  var form: FormAppCoordinatorState
-}
-
-struct MainTabCoordinatorEnvironment {}
-
-typealias MainTabCoordinatorReducer = Reducer<
-  MainTabCoordinatorState, MainTabCoordinatorAction, MainTabCoordinatorEnvironment
->
-
-let mainTabCoordinatorReducer: MainTabCoordinatorReducer = .combine(
-  indexedCoordinatorReducer
-    .pullback(
-      state: \MainTabCoordinatorState.indexed,
-      action: /MainTabCoordinatorAction.indexed,
-      environment: { _ in .init() }
-    ),
-  identifiedCoordinatorReducer
-    .pullback(
-      state: \MainTabCoordinatorState.identified,
-      action: /MainTabCoordinatorAction.identified,
-      environment: { _ in .init() }
-    ),
-  appCoordinatorReducer
-    .pullback(
-      state: \MainTabCoordinatorState.app,
-      action: /MainTabCoordinatorAction.app,
-      environment: { _ in .init() }
-    ),
-  formAppCoordinatorReducer
-    .pullback(
-      state: \MainTabCoordinatorState.form,
-      action: /MainTabCoordinatorAction.form,
-      environment: { _ in .test }
+  struct State: Equatable {
+    static let initialState = State(
+      identified: .initialState,
+      indexed: .initialState,
+      app: .initialState,
+      form: .initialState
     )
-)
+
+    var identified: IdentifiedCoordinator.State
+    var indexed: IndexedCoordinatorState
+    var app: AppCoordinatorState
+    var form: FormAppCoordinator.State
+  }
+  
+  var body: some ReducerProtocol<State, Action> {
+    Scope(state: \.indexed, action: /Action.indexed) {
+      Reduce(indexedCoordinatorReducer, environment: .init())
+    }
+    Scope(state: \.identified, action: /Action.identified) {
+      IdentifiedCoordinator()
+    }
+    Scope(state: \.app, action: /Action.app) {
+      Reduce(appCoordinatorReducer, environment: .init())
+    }
+    Scope(state: \.form, action: /Action.form) {
+      FormAppCoordinator()
+    }
+  }
+}

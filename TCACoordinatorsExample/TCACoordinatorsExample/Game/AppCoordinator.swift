@@ -23,6 +23,50 @@ struct AppCoordinatorView: View {
   }
 }
 
+struct GameApp: ReducerProtocol {
+  struct State {
+    static let initialState = AppCoordinatorState(logIn: .initialState, game: .initialState(), isLoggedIn: false)
+    
+    var logIn: LogInCoordinatorState
+    var game: GameCoordinatorState
+    
+    var isLoggedIn: Bool
+  }
+  
+  enum Action {
+    case logIn(LogInCoordinatorAction)
+    case game(GameCoordinatorAction)
+  }
+  
+  var body: some ReducerProtocol<State, Action> {
+    Scope(state: \.logIn, action: /Action.logIn) {
+      Reduce(
+        logInCoordinatorReducer,
+        environment: .init()
+      )
+    }
+    Scope(state: \.game, action: /Action.game) {
+      Reduce(
+        gameCoordinatorReducer,
+        environment: .init()
+      )
+    }
+    Reduce { state, action in
+      switch action {
+      case .logIn(.routeAction(_, .logIn(.logInTapped(let name)))):
+        state.game = .initialState(playerName: name)
+        state.isLoggedIn = true
+      case .game(.routeAction(_, .game(.logOutButtonTapped))):
+        state.logIn = .initialState
+        state.isLoggedIn = false
+      default:
+        break
+      }
+      return .none
+    }
+  }
+}
+
 struct AppCoordinatorState: Equatable {
   var logIn: LogInCoordinatorState
   var game: GameCoordinatorState

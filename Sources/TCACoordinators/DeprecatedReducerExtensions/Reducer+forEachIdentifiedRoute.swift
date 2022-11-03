@@ -2,18 +2,27 @@ import ComposableArchitecture
 import FlowStacks
 import Foundation
 import SwiftUI
-
-extension Reducer {
   
-  /// Lifts a screen reducer to one that operates on an `Array` of `Route<Screen>`s. The resulting reducer will
+@available(
+  *,
+  deprecated,
+  message:
+    """
+    'Reducer' has been deprecated in favor of 'ReducerProtocol'.
+    See equivalent extensions on ReducerProtocol.
+    """
+)
+extension Reducer where State: Identifiable {
+  
+  /// Lifts a screen reducer to one that operates on an `IdentifiedArray` of `Route<Screen>`s. The resulting reducer will
   /// update the routes whenever the user navigates back, e.g. by swiping.
   ///
   /// - Parameters:
   ///   - environment: A function that transforms `CoordinatorEnvironment` into `Environment`.
   /// - Returns: A reducer that works on `CoordinatorState`, `CoordinatorAction`, `CoordinatorEnvironment`.
-  public func forEachIndexedRoute<
-    CoordinatorState: IndexedRouterState,
-    CoordinatorAction: IndexedRouterAction,
+  public func forEachIdentifiedRoute<
+    CoordinatorState: IdentifiedRouterState,
+    CoordinatorAction: IdentifiedRouterAction,
     CoordinatorEnvironment
   >(
     environment toLocalEnvironment: @escaping (CoordinatorEnvironment) -> Environment,
@@ -26,7 +35,7 @@ extension Reducer {
   State == CoordinatorState.Screen
   {
     self
-      .forEachIndexedRoute(
+      .forEachIdentifiedRoute(
         state: \CoordinatorState.routes,
         action: /CoordinatorAction.routeAction,
         updateRoutes: /CoordinatorAction.updateRoutes,
@@ -36,19 +45,19 @@ extension Reducer {
       )
   }
   
-  /// Lifts a screen reducer to one that operates on an `Array` of `Route<Screen>`s. The resulting reducer will
+  /// Lifts a screen reducer to one that operates on an `IdentifiedArray` of `Route<Screen>`s. The resulting reducer will
   /// update the routes whenever the user navigates back, e.g. by swiping.
   ///
   /// - Parameters:
   ///   - state: A key path that can get/set a collection of routes inside `CoordinatorState`.
-  ///   - action: A case path that can extract/embed `(Array.Index, Action)` from `CoordinatorAction`.
+  ///   - action: A case path that can extract/embed `(Screen.ID, Action)` from `CoordinatorAction`.
   ///   - updateRoutes: A case path that can update the routes as a `CoordinatorAction`.
   ///   - environment: A function that transforms `CoordinatorEnvironment` into `Environment`.
   /// - Returns: A reducer that works on `CoordinatorState`, `CoordinatorAction`, `CoordinatorEnvironment`.
-  public func forEachIndexedRoute<CoordinatorState, CoordinatorAction, CoordinatorEnvironment>(
-    state toLocalState: WritableKeyPath<CoordinatorState, [Route<State>]>,
-    action toLocalAction: CasePath<CoordinatorAction, (Int, Action)>,
-    updateRoutes: CasePath<CoordinatorAction, [Route<State>]>,
+  public func forEachIdentifiedRoute<CoordinatorState, CoordinatorAction, CoordinatorEnvironment>(
+    state toLocalState: WritableKeyPath<CoordinatorState, IdentifiedArrayOf<Route<State>>>,
+    action toLocalAction: CasePath<CoordinatorAction, (State.ID, Action)>,
+    updateRoutes: CasePath<CoordinatorAction, IdentifiedArrayOf<Route<State>>>,
     environment toLocalEnvironment: @escaping (CoordinatorEnvironment) -> Environment,
     file: StaticString = #fileID,
     line: UInt = #line
@@ -56,8 +65,6 @@ extension Reducer {
   {
     self
       .onRoutes()
-      // This uses a deprecated method, but it is safe to use whenever the array is transformed only in
-      // index-stable ways, such as pushing and popping in a navigation stack.
       .forEach(
         state: toLocalState,
         action: toLocalAction,
@@ -69,5 +76,30 @@ extension Reducer {
         updateRoutes: updateRoutes,
         state: toLocalState
       )
+  }
+}
+
+extension AnyReducer {
+  
+  /// Lifts a Screen reducer to one that acts on Route<Screen>.
+  /// - Returns: The new reducer.
+  func onRoutes() -> AnyReducer<Route<State>, Action, Environment> {
+    return AnyReducer<Route<State>, Action, Environment> { state, action, environment in
+      self.run(&state.screen, action, environment)
+    }
+  }
+  
+  /// Ensures the routes are updated whenever the user navigates back, e.g. by swiping.
+  /// - Returns: The new reducer.
+  func updateScreensOnInteraction<Routes>(
+    updateRoutes: CasePath<Action, Routes>,
+    state toLocalState: WritableKeyPath<State, Routes>
+  ) -> Self {
+    return self.combined(with: AnyReducer { state, action, environment in
+      if let routes = updateRoutes.extract(from: action) {
+        state[keyPath: toLocalState] = routes
+      }
+      return .none
+    })
   }
 }

@@ -3,7 +3,7 @@ import FlowStacks
 import Foundation
 import SwiftUI
 
-extension Reducer {
+extension AnyReducer {
   
   /// Transforms a reducer into one that tags route actions' effects for cancellation with the `coordinatorId`
   /// and route index.
@@ -15,7 +15,7 @@ extension Reducer {
     coordinatorId: CoordinatorID,
     routeAction: CasePath<Action, (RouteID, RouteAction)>
   ) -> Self {
-    return Reducer { state, action, environment in
+    return AnyReducer { state, action, environment in
       let effect = self.run(&state, action, environment)
 
       if let (routeId, _) = routeAction.extract(from: action) {
@@ -38,7 +38,7 @@ extension Reducer {
     getIdentifier: @escaping (C.Element, C.Index) -> RouteID
   ) -> Self
   {
-    return Reducer { state, action, environment in
+    return AnyReducer { state, action, environment in
       let preRoutes = routes(state)
       let effect = self.run(&state, action, environment)
       let postRoutes = routes(state)
@@ -57,11 +57,4 @@ extension Reducer {
       return Effect.merge(effects)
     }
   }
-}
-
-/// Identifier for a particular route within a particular coordinator.
-private struct CancellationIdentity<CoordinatorID: Hashable, RouteID: Hashable>: Hashable {
-
-  let coordinatorId: CoordinatorID
-  let routeId: RouteID
 }
