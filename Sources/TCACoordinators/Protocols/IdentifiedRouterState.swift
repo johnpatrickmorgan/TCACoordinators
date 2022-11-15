@@ -10,5 +10,3 @@ public protocol IdentifiedRouterState {
   /// An identified array of routes representing a navigation/presentation stack.
   var routes: IdentifiedArrayOf<Route<Screen>> { get set }
 }
-
-public typealias IdentifiedRouter<State, Action> = ReducerProtocol<State, Action> where State: IdentifiedRouterState, Action: IdentifiedRouterAction, State.Screen == Action.Screen

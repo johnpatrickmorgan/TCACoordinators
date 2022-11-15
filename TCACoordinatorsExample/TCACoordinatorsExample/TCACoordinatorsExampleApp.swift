@@ -54,7 +54,7 @@ struct MainTabCoordinatorView: View {
 struct MainTabCoordinator: ReducerProtocol {
   enum Action {
     case identified(IdentifiedCoordinator.Action)
-    case indexed(IndexedCoordinatorAction)
+    case indexed(IndexedCoordinator.Action)
     case app(AppCoordinatorAction)
     case form(FormAppCoordinator.Action)
   }
@@ -68,14 +68,14 @@ struct MainTabCoordinator: ReducerProtocol {
     )
 
     var identified: IdentifiedCoordinator.State
-    var indexed: IndexedCoordinatorState
+    var indexed: IndexedCoordinator.State
     var app: AppCoordinatorState
     var form: FormAppCoordinator.State
   }
   
   var body: some ReducerProtocol<State, Action> {
     Scope(state: \.indexed, action: /Action.indexed) {
-      Reduce(indexedCoordinatorReducer, environment: .init())
+      IndexedCoordinator()
     }
     Scope(state: \.identified, action: /Action.identified) {
       IdentifiedCoordinator()

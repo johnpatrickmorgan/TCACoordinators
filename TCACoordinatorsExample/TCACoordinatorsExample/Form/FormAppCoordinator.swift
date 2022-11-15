@@ -3,6 +3,8 @@ import SwiftUI
 import TCACoordinators
 
 struct FormAppCoordinator: ReducerProtocol {
+  struct CancellationID {}
+  
   struct State: IdentifiedRouterState, Equatable {
     static let initialState = Self(routeIDs: [.root(.step1, embedInNavigationView: true)])
 
@@ -68,8 +70,6 @@ struct FormAppCoordinator: ReducerProtocol {
     case routeAction(FormScreen.State.ID, action: FormScreen.Action)
   }
   
-  static let cancellationId = UUID()
-  
   var body: some ReducerProtocol<State, Action> {
     Reduce { state, action in
       switch action {
@@ -106,10 +106,9 @@ struct FormAppCoordinator: ReducerProtocol {
       default:
         return .none
       }
-    }.forEachIdentifiedRoute(
-      coordinatorIdForCancellation: FormAppCoordinator.cancellationId) {
+    }.forEachIdentifiedRoute(coordinatorIdType: CancellationID.self) {
         FormScreen(environment: .test)
-      }.debug()
+      }
   }
 }
 

@@ -29,21 +29,6 @@ struct IdentifiedCoordinatorView: View {
   }
 }
 
-struct IdentifiedCoordinatorState: Equatable, IdentifiedRouterState {
-  
-  static let initialState = IdentifiedCoordinatorState(
-    routes: [.root(.home(.init()), embedInNavigationView: true)]
-  )
-  
-  var routes: IdentifiedArrayOf<Route<ScreenState>>
-}
-
-enum IdentifiedCoordinatorAction: IdentifiedRouterAction {
-  
-  case routeAction(ScreenState.ID, action: ScreenAction)
-  case updateRoutes(IdentifiedArrayOf<Route<ScreenState>>)
-}
-
 struct IdentifiedCoordinator: ReducerProtocol {
   struct CancellationId {}
   
@@ -63,7 +48,7 @@ struct IdentifiedCoordinator: ReducerProtocol {
   }
   
   var body: some ReducerProtocol<State, Action> {
-    Reduce { state, action in
+    return Reduce<State, Action> { state, action in
       switch action {
       case .routeAction(_, .home(.startTapped)):
         state.routes.presentSheet(.numbersList(.init(numbers: Array(0..<4))), embedInNavigationView: true)

@@ -3,18 +3,18 @@ import ComposableArchitecture
 import XCTest
 
 @MainActor
-final class ForEachIdentifiedRouteTests: XCTestCase {
+final class IndexedRouterTests: XCTestCase {
   func testActionPropagation() {
     let scheduler = DispatchQueue.test
     let store = TestStore(
-      initialState: Parent.State(routes: [.root(.init(id: "first", count: 42)), .sheet(.init(id: "second", count: 11))]),
+      initialState: Parent.State(routes: [.root(.init(count: 42)), .sheet(.init(count: 11))]),
       reducer: Parent(scheduler: scheduler)
     )
-    store.send(.routeAction("first", action: .increment)) {
-      $0.routes[id: "first"]?.screen.count += 1
+    store.send(.routeAction(0, action: .increment)) {
+      $0.routes[0].screen.count += 1
     }
-    store.send(.routeAction("second", action: .increment)) {
-      $0.routes[id: "second"]?.screen.count += 1
+    store.send(.routeAction(1, action: .increment)) {
+      $0.routes[1].screen.count += 1
     }
   }
 
@@ -23,30 +23,29 @@ final class ForEachIdentifiedRouteTests: XCTestCase {
     let store = TestStore(
       initialState: Parent.State(
         routes: [
-          .root(.init(id: "first", count: 42)),
-          .sheet(.init(id: "second", count: 11))
+          .root(.init(count: 42)),
+          .sheet(.init(count: 11))
         ]
       ),
       reducer: Parent(scheduler: scheduler)
     )
     // Expect increment action after 1 second.
-    await store.send(.routeAction("second", action: .incrementLaterTapped))
+    await store.send(.routeAction(1, action: .incrementLaterTapped))
     await scheduler.advance(by: .seconds(1))
-    await store.receive(.routeAction("second", action: .increment)) {
-      $0.routes[id: "second"]?.screen.count += 1
+    await store.receive(.routeAction(1, action: .increment)) {
+      $0.routes[1].screen.count += 1
     }
     // Expect increment action to be cancelled if screen is removed.
-    await store.send(.routeAction("second", action: .incrementLaterTapped))
-    await store.send(.updateRoutes([.root(.init(id: "first", count: 42))])) {
-      $0.routes = [.root(.init(id: "first", count: 42))]
+    await store.send(.routeAction(1, action: .incrementLaterTapped))
+    await store.send(.updateRoutes([.root(.init(count: 42))])) {
+      $0.routes = [.root(.init(count: 42))]
     }
   }
 }
 
-struct Child: ReducerProtocol {
+private struct Child: ReducerProtocol {
   let scheduler: TestSchedulerOf<DispatchQueue>
-  struct State: Equatable, Identifiable {
-    var id: String
+  struct State: Equatable {
     var count = 0
   }
 
@@ -71,23 +70,23 @@ struct Child: ReducerProtocol {
   }
 }
 
-struct Parent: ReducerProtocol {
+private struct Parent: ReducerProtocol {
   let scheduler: TestSchedulerOf<DispatchQueue>
   struct CancellationId {}
-  struct State: Equatable, IdentifiedRouterState {
-    var routes: IdentifiedArrayOf<Route<Child.State>>
+  struct State: Equatable, IndexedRouterState {
+    var routes: [Route<Child.State>]
   }
 
-  enum Action: IdentifiedRouterAction, Equatable {
-    case routeAction(Child.State.ID, action: Child.Action)
-    case updateRoutes(IdentifiedArrayOf<Route<Child.State>>)
+  enum Action: IndexedRouterAction, Equatable {
+    case routeAction(Int, action: Child.Action)
+    case updateRoutes([Route<Child.State>])
   }
 
   var body: some ReducerProtocol<State, Action> {
     Reduce<State, Action> { _, _ in
       .none
     }
-    .forEachIdentifiedRoute(coordinatorIdType: CancellationId.self) {
+    .forEachIndexedRoute(coordinatorIdType: CancellationId.self) {
       Child(scheduler: scheduler)
     }
   }
