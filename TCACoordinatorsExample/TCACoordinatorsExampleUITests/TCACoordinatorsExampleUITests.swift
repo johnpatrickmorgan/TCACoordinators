@@ -1,5 +1,3 @@
 import XCTest
 
-class TCACoordinatorsExampleUITests: XCTestCase {
-  
-}
+class TCACoordinatorsExampleUITests: XCTestCase {}

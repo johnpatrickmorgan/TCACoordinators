@@ -35,7 +35,7 @@ public struct TCARouter<
   }
 
   public var body: some View {
-    WithViewStore(store, removeDuplicates: { routes($0).map(\.style) == routes($1).map(\.style) }) { viewStore in
+    WithViewStore(store, removeDuplicates: { routes($0).map(\.style) == routes($1).map(\.style) }) { _ in
       Router(
         ViewStore(store).binding(
           get: routes,
@@ -49,10 +49,9 @@ public struct TCARouter<
   }
 }
 
-extension TCARouter where Screen: Identifiable {
-
+public extension TCARouter where Screen: Identifiable {
   /// Convenience initializer for managing screens in an `IdentifiedArray`.
-  public init(
+  init(
     store: Store<CoordinatorState, CoordinatorAction>,
     routes: @escaping (CoordinatorState) -> IdentifiedArrayOf<Route<Screen>>,
     updateRoutes: @escaping (IdentifiedArrayOf<Route<Screen>>) -> CoordinatorAction,
@@ -70,10 +69,9 @@ extension TCARouter where Screen: Identifiable {
   }
 }
 
-extension TCARouter where ID == Int {
-
+public extension TCARouter where ID == Int {
   /// Convenience initializer for managing screens in an `Array`, identified by index.
-  public init(
+  init(
     store: Store<CoordinatorState, CoordinatorAction>,
     routes: @escaping (CoordinatorState) -> [Route<Screen>],
     updateRoutes: @escaping ([Route<Screen>]) -> CoordinatorAction,
@@ -96,8 +94,8 @@ extension Route: Identifiable where Screen: Identifiable {
 }
 
 extension Collection {
-   /// Returns the element at the specified index if it is within bounds, otherwise nil.
-   subscript(safe index: Index) -> Element? {
-     return indices.contains(index) ? self[index] : nil
-   }
- }
+  /// Returns the element at the specified index if it is within bounds, otherwise nil.
+  subscript(safe index: Index) -> Element? {
+    return indices.contains(index) ? self[index] : nil
+  }
+}

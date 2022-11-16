@@ -1,9 +1,8 @@
-import SwiftUI
 import ComposableArchitecture
+import SwiftUI
 import TCACoordinators
 
 struct IndexedCoordinatorView: View {
-  
   let store: Store<IndexedCoordinator.State, IndexedCoordinator.Action>
   
   var body: some View {
@@ -30,28 +29,26 @@ struct IndexedCoordinatorView: View {
 }
 
 struct IndexedCoordinator: ReducerProtocol {
-  struct CancellationId {}
+  struct CancellationID {}
   
   struct State: Equatable, IndexedRouterState {
-    
     static let initialState = State(
       routes: [.root(.home(.init()), embedInNavigationView: true)]
     )
     
-    var routes: Array<Route<Screen.State>>
+    var routes: [Route<Screen.State>]
   }
 
   enum Action: IndexedRouterAction {
-    
     case routeAction(Int, action: Screen.Action)
-    case updateRoutes(Array<Route<Screen.State>>)
+    case updateRoutes([Route<Screen.State>])
   }
   
   var body: some ReducerProtocol<State, Action> {
     return Reduce<State, Action> { state, action in
       switch action {
       case .routeAction(_, .home(.startTapped)):
-        state.routes.presentSheet(.numbersList(.init(numbers: Array(0..<4))), embedInNavigationView: true)
+        state.routes.presentSheet(.numbersList(.init(numbers: Array(0 ..< 4))), embedInNavigationView: true)
         
       case .routeAction(_, .numbersList(.numberSelected(let number))):
         state.routes.push(.numberDetail(.init(number: number)))
@@ -76,7 +73,7 @@ struct IndexedCoordinator: ReducerProtocol {
         break
       }
       return .none
-    }.forEachIndexedRoute(coordinatorIdType: CancellationId.self) {
+    }.forEachIndexedRoute(coordinatorIdType: CancellationID.self) {
       Screen()
     }
   }

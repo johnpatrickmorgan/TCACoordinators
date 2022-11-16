@@ -5,10 +5,10 @@ struct ForEachIndexedRoute<CoordinatorReducer: ReducerProtocol, ScreenReducer: R
   let coordinatorReducer: CoordinatorReducer
   let screenReducer: ScreenReducer
   let coordinatorIdForCancellation: CoordinatorID?
-  let toLocalState: WritableKeyPath<CoordinatorReducer.State, Array<Route<ScreenReducer.State>>>
+  let toLocalState: WritableKeyPath<CoordinatorReducer.State, [Route<ScreenReducer.State>]>
   let toLocalAction: CasePath<CoordinatorReducer.Action, (Int, ScreenReducer.Action)>
-  let updateRoutes: CasePath<CoordinatorReducer.Action, Array<Route<ScreenReducer.State>>>
-  
+  let updateRoutes: CasePath<CoordinatorReducer.Action, [Route<ScreenReducer.State>]>
+
   var reducer: AnyReducer<CoordinatorReducer.State, CoordinatorReducer.Action, Void> {
     let x: AnyReducer<CoordinatorReducer.State, CoordinatorReducer.Action, Void> = AnyReducer<ScreenReducer.State, ScreenReducer.Action, Void>(screenReducer)
       .forEachIndexedRoute(
@@ -26,7 +26,7 @@ struct ForEachIndexedRoute<CoordinatorReducer: ReducerProtocol, ScreenReducer: R
         routeReducer: AnyReducer(coordinatorReducer)
       )
   }
-  
+
   var body: some ReducerProtocol<CoordinatorReducer.State, CoordinatorReducer.Action> {
     Reduce(reducer, environment: ())
   }
@@ -35,9 +35,9 @@ struct ForEachIndexedRoute<CoordinatorReducer: ReducerProtocol, ScreenReducer: R
 public extension ReducerProtocol {
   func forEachIndexedRoute<ScreenReducer: ReducerProtocol, CoordinatorID: Hashable>(
     coordinatorIdForCancellation: CoordinatorID?,
-    toLocalState: WritableKeyPath<Self.State, Array<Route<ScreenReducer.State>>>,
+    toLocalState: WritableKeyPath<Self.State, [Route<ScreenReducer.State>]>,
     toLocalAction: CasePath<Self.Action, (Int, ScreenReducer.Action)>,
-    updateRoutes: CasePath<Self.Action, Array<Route<ScreenReducer.State>>>,
+    updateRoutes: CasePath<Self.Action, [Route<ScreenReducer.State>]>,
     @ReducerBuilderOf<ScreenReducer> screenReducer: () -> ScreenReducer
   ) -> some ReducerProtocol<State, Action> {
     return ForEachIndexedRoute(
@@ -65,7 +65,7 @@ public extension ReducerProtocol where State: IndexedRouterState, Action: Indexe
       updateRoutes: /Action.updateRoutes
     )
   }
-  
+
   func forEachIndexedRoute<ScreenReducer: ReducerProtocol>(
     coordinatorIdType: Any.Type?,
     @ReducerBuilderOf<ScreenReducer> screenReducer: () -> ScreenReducer

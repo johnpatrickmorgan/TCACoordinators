@@ -3,7 +3,7 @@ import Foundation
 import SwiftUI
 
 struct WelcomeView: View {
-  let store: Store<WelcomeState, WelcomeAction>
+  let store: Store<Welcome.State, Welcome.Action>
 
   var body: some View {
     WithViewStore(store) { viewStore in
@@ -18,18 +18,16 @@ struct WelcomeView: View {
   }
 }
 
-enum WelcomeAction {
-  case logInTapped
-}
+struct Welcome: ReducerProtocol {
+  struct State: Equatable {
+    let id = UUID()
+  }
 
-struct WelcomeState: Equatable {
-  let id = UUID()
-}
+  enum Action {
+    case logInTapped
+  }
 
-struct WelcomeEnvironment {}
-
-let welcomeReducer = Reducer<
-  WelcomeState, WelcomeAction, WelcomeEnvironment
-> { _, _, _ in
-  .none
+  var body: some ReducerProtocol<State, Action> {
+    EmptyReducer()
+  }
 }

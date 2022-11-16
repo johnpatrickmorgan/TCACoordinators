@@ -2,56 +2,51 @@ import ComposableArchitecture
 import SwiftUI
 import TCACoordinators
 
-enum LogInScreenAction {
-  case welcome(WelcomeAction)
-  case logIn(LogInAction)
-}
+struct LogInScreen: ReducerProtocol {
+  enum Action {
+    case welcome(Welcome.Action)
+    case logIn(LogIn.Action)
+  }
 
-enum LogInScreenState: Equatable, Identifiable {
-  case welcome(WelcomeState)
-  case logIn(LogInState)
+  enum State: Equatable, Identifiable {
+    case welcome(Welcome.State)
+    case logIn(LogIn.State)
 
-  var id: UUID {
-    switch self {
-    case .welcome(let state):
-      return state.id
-    case .logIn(let state):
-      return state.id
+    var id: UUID {
+      switch self {
+      case .welcome(let state):
+        return state.id
+      case .logIn(let state):
+        return state.id
+      }
     }
+  }
+
+  var body: some ReducerProtocol<State, Action> {
+    EmptyReducer()
+      .ifCaseLet(/State.welcome, action: /Action.welcome) {
+        Welcome()
+      }
+      .ifCaseLet(/State.logIn, action: /Action.logIn) {
+        LogIn()
+      }
   }
 }
 
-struct LogInScreenEnvironment {}
-
-let logInScreenReducer = Reducer<LogInScreenState, LogInScreenAction, LogInScreenEnvironment>.combine(
-  welcomeReducer
-    .pullback(
-      state: /LogInScreenState.welcome,
-      action: /LogInScreenAction.welcome,
-      environment: { _ in WelcomeEnvironment() }
-    ),
-  logInReducer
-    .pullback(
-      state: /LogInScreenState.logIn,
-      action: /LogInScreenAction.logIn,
-      environment: { _ in LogInEnvironment() }
-    )
-)
-
 struct LogInCoordinatorView: View {
-  let store: Store<LogInCoordinatorState, LogInCoordinatorAction>
+  let store: Store<LogInCoordinator.State, LogInCoordinator.Action>
 
   var body: some View {
     TCARouter(store) { screen in
       SwitchStore(screen) {
         CaseLet(
-          state: /LogInScreenState.welcome,
-          action: LogInScreenAction.welcome,
+          state: /LogInScreen.State.welcome,
+          action: LogInScreen.Action.welcome,
           then: WelcomeView.init
         )
         CaseLet(
-          state: /LogInScreenState.logIn,
-          action: LogInScreenAction.logIn,
+          state: /LogInScreen.State.logIn,
+          action: LogInScreen.Action.logIn,
           then: LogInView.init
         )
       }
@@ -60,80 +55,31 @@ struct LogInCoordinatorView: View {
 }
 
 struct LogInCoordinator: ReducerProtocol {
+  struct CancellationID {}
   struct State: Equatable, IdentifiedRouterState {
-    static let initialState = LogInCoordinatorState(
+    static let initialState = LogInCoordinator.State(
       routes: [.root(.welcome(.init()), embedInNavigationView: true)]
     )
-
-    var routes: IdentifiedArrayOf<Route<LogInScreenState>>
+    var routes: IdentifiedArrayOf<Route<LogInScreen.State>>
   }
+
   enum Action: IdentifiedRouterAction {
-    case routeAction(ScreenState.ID, action: LogInScreenAction)
-    case updateRoutes(IdentifiedArrayOf<Route<LogInScreenState>>)
+    case routeAction(LogInScreen.State.ID, action: LogInScreen.Action)
+    case updateRoutes(IdentifiedArrayOf<Route<LogInScreen.State>>)
   }
+
   var body: some ReducerProtocol<State, Action> {
-    Reduce<State, Action>(
-      logInScreenReducer
-        .forEachIdentifiedRoute(environment: { _ in .init() })
-        .withRouteReducer(Reducer<State, Action, LogInCoordinatorEnvironment> { state, action, _ in
-          switch action {
-          case .routeAction(_, .welcome(.logInTapped)):
-            state.routes.push(.logIn(.init()))
+    Reduce { state, action in
+      switch action {
+      case .routeAction(_, .welcome(.logInTapped)):
+        state.routes.push(.logIn(.init()))
 
-          default:
-            break
-          }
-          return .none
-        }),
-      environment: LogInCoordinatorEnvironment()
-    )
-//    RouteReduce { state, action in
-//      
-//      ...
-//      
-//    },
-//    forEachIdentifiedRoute: {
-//      LogInScreen()
-//    }
-      
-//    Reduce { state, action in
-//
-//    }.forEachIdentifiedRoute(environment: (), cancelEffectsOnDismiss: true) {
-//      LogInScreen()
-//    }
-    
+      default:
+        break
+      }
+      return .none
+    }.forEachIdentifiedRoute(coordinatorIdType: CancellationID.self) {
+      LogInScreen()
+    }
   }
 }
-
-struct LogInCoordinatorState: Equatable, IdentifiedRouterState {
-  static let initialState = LogInCoordinatorState(
-    routes: [.root(.welcome(.init()), embedInNavigationView: true)]
-  )
-
-  var routes: IdentifiedArrayOf<Route<LogInScreenState>>
-}
-
-enum LogInCoordinatorAction: IdentifiedRouterAction {
-  
-  case routeAction(ScreenState.ID, action: LogInScreenAction)
-  case updateRoutes(IdentifiedArrayOf<Route<LogInScreenState>>)
-}
-
-struct LogInCoordinatorEnvironment {}
-
-typealias LogInCoordinatorReducer = Reducer<
-  LogInCoordinatorState, LogInCoordinatorAction, LogInCoordinatorEnvironment
->
-
-let logInCoordinatorReducer: LogInCoordinatorReducer = logInScreenReducer
-  .forEachIdentifiedRoute(environment: { _ in .init() })
-  .withRouteReducer(Reducer { state, action, _ in
-    switch action {
-    case .routeAction(_, .welcome(.logInTapped)):
-      state.routes.push(.logIn(.init()))
-
-    default:
-      break
-    }
-    return .none
-  })

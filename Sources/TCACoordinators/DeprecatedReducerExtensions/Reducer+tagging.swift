@@ -4,7 +4,6 @@ import Foundation
 import SwiftUI
 
 extension AnyReducer {
-  
   /// Transforms a reducer into one that tags route actions' effects for cancellation with the `coordinatorId`
   /// and route index.
   /// - Parameter coordinatorId: A stable identifier for the coordinator. It should match the one used in a
@@ -26,7 +25,7 @@ extension AnyReducer {
       }
     }
   }
-  
+
   /// Transforms a reducer into one that cancels tagged route actions when that route is no
   /// longer shown, identifying routes by their index.
   /// - Parameter coordinatorId: A stable identifier for the coordinator.
@@ -36,18 +35,17 @@ extension AnyReducer {
     coordinatorId: CoordinatorID,
     routes: @escaping (State) -> C,
     getIdentifier: @escaping (C.Element, C.Index) -> RouteID
-  ) -> Self
-  {
+  ) -> Self {
     return AnyReducer { state, action, environment in
       let preRoutes = routes(state)
       let effect = self.run(&state, action, environment)
       let postRoutes = routes(state)
 
       var effects: [Effect<Action, Never>] = [effect]
-      
+
       let preIds = zip(preRoutes, preRoutes.indices).map(getIdentifier)
       let postIds = zip(postRoutes, postRoutes.indices).map(getIdentifier)
-      
+
       let dismissedIds = Set(preIds).subtracting(postIds)
       for dismissedId in dismissedIds {
         let identity = CancellationIdentity(coordinatorId: coordinatorId, routeId: dismissedId)

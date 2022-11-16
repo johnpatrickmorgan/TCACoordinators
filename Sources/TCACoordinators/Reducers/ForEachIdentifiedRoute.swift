@@ -8,7 +8,7 @@ struct ForEachIdentifiedRoute<CoordinatorReducer: ReducerProtocol, ScreenReducer
   let toLocalState: WritableKeyPath<CoordinatorReducer.State, IdentifiedArrayOf<Route<ScreenReducer.State>>>
   let toLocalAction: CasePath<CoordinatorReducer.Action, (ScreenReducer.State.ID, ScreenReducer.Action)>
   let updateRoutes: CasePath<CoordinatorReducer.Action, IdentifiedArrayOf<Route<ScreenReducer.State>>>
-  
+
   var body: some ReducerProtocol<CoordinatorReducer.State, CoordinatorReducer.Action> {
     CancelEffectsOnDismiss(
       coordinatedScreensReducer: EmptyReducer()
@@ -61,7 +61,7 @@ public extension ReducerProtocol where State: IdentifiedRouterState, Action: Ide
       updateRoutes: /Action.updateRoutes
     )
   }
-  
+
   func forEachIdentifiedRoute<ScreenReducer: ReducerProtocol>(
     coordinatorIdType: Any.Type?,
     @ReducerBuilderOf<ScreenReducer> screenReducer: () -> ScreenReducer

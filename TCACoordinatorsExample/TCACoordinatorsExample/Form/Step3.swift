@@ -2,7 +2,7 @@ import ComposableArchitecture
 import SwiftUI
 
 struct Step3View: View {
-  let store: Store<Step3State, Step3Action>
+  let store: Store<Step3.State, Step3.Action>
 
   var body: some View {
     WithViewStore(store) { viewStore in
@@ -45,73 +45,44 @@ struct Step3View: View {
   }
 }
 
-struct Step3View_Previews: PreviewProvider {
-  static var previews: some View {
-    NavigationView {
-      Step3View(
-        store: .init(
-          initialState: .init(),
-          reducer: .step3,
-          environment: Step3Environment(
-            mainQueue: .main,
-            getOccupations: {
-              .task {
-                [
-                  "iOS Developer",
-                  "Android Developer",
-                  "Web Developer",
-                  "Project Manager",
-                ]
-              }
-            }
-          )
-        )
-      )
-    }
+struct Step3: ReducerProtocol {
+  struct State: Equatable {
+    var selectedOccupation: String?
+    var occupations: [String] = []
   }
-}
 
-public struct Step3State: Equatable {
-  var selectedOccupation: String?
-  var occupations: [String] = []
-}
+  enum Action: Equatable {
+    case getOccupations
+    case receiveOccupations(Result<[String], Never>)
+    case selectOccupation(String)
+    case nextButtonTapped
+  }
 
-public enum Step3Action: Equatable {
-  case getOccupations
-  case receiveOccupations(Result<[String], Never>)
-  case selectOccupation(String)
-  case nextButtonTapped
-}
-
-struct Step3Environment {
   let mainQueue: AnySchedulerOf<DispatchQueue>
   let getOccupations: () -> Effect<[String], Never>
-}
 
-typealias Step3Reducer = Reducer<Step3State, Step3Action, Step3Environment>
+  var body: some ReducerProtocol<State, Action> {
+    Reduce { state, action in
+      switch action {
+      case .getOccupations:
+        return getOccupations()
+          .receive(on: mainQueue)
+          .catchToEffect(Action.receiveOccupations)
 
-extension Step3Reducer {
-  static let step3 = Step3Reducer { state, action, environment in
-    switch action {
-    case .getOccupations:
-      return environment
-        .getOccupations()
-        .receive(on: environment.mainQueue)
-        .catchToEffect(Action.receiveOccupations)
+      case .receiveOccupations(.success(let occupations)):
+        state.occupations = occupations
+        return .none
 
-    case .receiveOccupations(.success(let occupations)):
-      state.occupations = occupations
-      return .none
+      case .selectOccupation(let occupation):
+        if state.occupations.contains(occupation) {
+          state.selectedOccupation = state.selectedOccupation == occupation ? nil : occupation
+        }
 
-    case .selectOccupation(let occupation):
-      if state.occupations.contains(occupation) {
-        state.selectedOccupation = state.selectedOccupation == occupation ? nil : occupation
+        return .none
+
+      case .nextButtonTapped:
+        return .none
       }
-
-      return .none
-
-    case .nextButtonTapped:
-      return .none
     }
   }
 }

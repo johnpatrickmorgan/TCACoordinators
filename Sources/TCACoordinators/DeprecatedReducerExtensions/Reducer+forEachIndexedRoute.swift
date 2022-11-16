@@ -7,13 +7,13 @@ import SwiftUI
   *,
   deprecated,
   message:
-    """
-    'Reducer' has been deprecated in favor of 'ReducerProtocol'.
-    See equivalent extensions on ReducerProtocol.
-    """
+  """
+  'Reducer' has been deprecated in favor of 'ReducerProtocol'.
+  See equivalent extensions on ReducerProtocol.
+  """
 )
-extension Reducer {
-  
+extension Reducer
+{
   /// Lifts a screen reducer to one that operates on an `Array` of `Route<Screen>`s. The resulting reducer will
   /// update the routes whenever the user navigates back, e.g. by swiping.
   ///
@@ -29,10 +29,10 @@ extension Reducer {
     file: StaticString = #fileID,
     line: UInt = #line
   ) -> Reducer<CoordinatorState, CoordinatorAction, CoordinatorEnvironment>
-  where
-  CoordinatorAction.ScreenAction == Action,
-  CoordinatorAction.Screen == CoordinatorState.Screen,
-  State == CoordinatorState.Screen
+    where
+    CoordinatorAction.ScreenAction == Action,
+    CoordinatorAction.Screen == CoordinatorState.Screen,
+    State == CoordinatorState.Screen
   {
     self
       .forEachIndexedRoute(
@@ -44,7 +44,7 @@ extension Reducer {
         line: line
       )
   }
-  
+
   /// Lifts a screen reducer to one that operates on an `Array` of `Route<Screen>`s. The resulting reducer will
   /// update the routes whenever the user navigates back, e.g. by swiping.
   ///

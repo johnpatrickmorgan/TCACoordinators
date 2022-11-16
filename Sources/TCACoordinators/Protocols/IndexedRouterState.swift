@@ -1,5 +1,5 @@
-import Foundation
 import FlowStacks
+import Foundation
 
 /// A protocol standardizing naming conventions for state types that contain routes
 /// within an `IdentifiedArray`.

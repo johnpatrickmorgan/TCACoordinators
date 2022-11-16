@@ -7,14 +7,13 @@ import SwiftUI
   *,
   deprecated,
   message:
-    """
-    'Reducer' has been deprecated in favor of 'ReducerProtocol'.
-    See `forEachIdentifiedRoute` and `forEachIdentifiedRoute` extensions on ReducerProtocol,
-    which include parameters to cancel effects on dismiss.
-    """
+  """
+  'Reducer' has been deprecated in favor of 'ReducerProtocol'.
+  See `forEachIdentifiedRoute` and `forEachIdentifiedRoute` extensions on ReducerProtocol,
+  which include parameters to cancel effects on dismiss.
+  """
 )
 public extension Reducer where State: IndexedRouterState, Action: IndexedRouterAction {
-
   /// Transforms a reducer so that it tags effects for cancellation based on their index, then combines
   /// it with the provided route reducer, cancelling route effects for any route that has been dismissed.
   ///
@@ -39,14 +38,13 @@ public extension Reducer where State: IndexedRouterState, Action: IndexedRouterA
   *,
   deprecated,
   message:
-    """
-    'Reducer' has been deprecated in favor of 'ReducerProtocol'.
-    See `forEachIdentifiedRoute` and `forEachIdentifiedRoute` extensions on ReducerProtocol,
-    which include parameters to cancel effects on dismiss.
-    """
+  """
+  'Reducer' has been deprecated in favor of 'ReducerProtocol'.
+  See `forEachIdentifiedRoute` and `forEachIdentifiedRoute` extensions on ReducerProtocol,
+  which include parameters to cancel effects on dismiss.
+  """
 )
 public extension Reducer where State: IdentifiedRouterState, Action: IdentifiedRouterAction, State.Screen == Action.Screen {
-
   /// Transforms a reducer so that it tags effects for cancellation based on their identity, then combines
   /// it with the provided route reducer, cancelling route effects for any route that has been dismissed.
   ///
@@ -71,14 +69,13 @@ public extension Reducer where State: IdentifiedRouterState, Action: IdentifiedR
   *,
   deprecated,
   message:
-    """
-    'Reducer' has been deprecated in favor of 'ReducerProtocol'.
-    See `forEachIdentifiedRoute` and `forEachIdentifiedRoute` extensions on ReducerProtocol,
-    which include parameters to cancel effects on dismiss.
-    """
+  """
+  'Reducer' has been deprecated in favor of 'ReducerProtocol'.
+  See `forEachIdentifiedRoute` and `forEachIdentifiedRoute` extensions on ReducerProtocol,
+  which include parameters to cancel effects on dismiss.
+  """
 )
 public extension Reducer {
-  
   /// Transforms a reducer so that it tags effects for cancellation based on their `CoordinatorID` and RouteID`,
   /// then combines it with the provided route reducer, cancelling route effects for any route that has been dismissed.
   ///
@@ -93,8 +90,7 @@ public extension Reducer {
     coordinatorIdForCancellation: CoordinatorID?,
     getIdentifier: @escaping (C.Element, C.Index) -> RouteID,
     routeReducer: Self
-  ) -> Self
-  {
+  ) -> Self {
     guard let coordinatorId = coordinatorIdForCancellation else {
       return self.combined(with: routeReducer)
     }

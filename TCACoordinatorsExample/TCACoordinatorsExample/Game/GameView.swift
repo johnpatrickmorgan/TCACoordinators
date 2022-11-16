@@ -5,22 +5,22 @@ import UIKit
 
 // Adapted from: https://github.com/pointfreeco/swift-composable-architecture/tree/main/Examples/TicTacToe/tic-tac-toe/Sources/GameCore
 
-public struct GameView: UIViewControllerRepresentable {
-  let store: Store<GameState, GameAction>
+struct GameView: UIViewControllerRepresentable {
+  let store: Store<Game.State, Game.Action>
 
-  public typealias UIViewControllerType = GameViewController
+  typealias UIViewControllerType = GameViewController
 
-  public func makeUIViewController(context: Context) -> GameViewController {
+  func makeUIViewController(context: Context) -> GameViewController {
     GameViewController(store: self.store)
   }
 
-  public func updateUIViewController(_ uiViewController: GameViewController, context: Context) {}
+  func updateUIViewController(_ uiViewController: GameViewController, context: Context) {}
 }
 
-public final class GameViewController: UIViewController {
-  let store: Store<GameState, GameAction>
-  let viewStore: ViewStore<ViewState, GameAction>
-  let _viewStore: ViewStore<GameState, GameAction>
+final class GameViewController: UIViewController {
+  let store: Store<Game.State, Game.Action>
+  let viewStore: ViewStore<ViewState, Game.Action>
+  let _viewStore: ViewStore<Game.State, Game.Action>
   private var cancellables: Set<AnyCancellable> = []
 
   struct ViewState: Equatable {
@@ -29,7 +29,7 @@ public final class GameViewController: UIViewController {
     let isPlayAgainButtonHidden: Bool
     let title: String?
 
-    init(state: GameState) {
+    init(state: Game.State) {
       self.board = state.board.map { $0.map { $0?.label ?? "" } }
       self.isGameEnabled = !state.board.hasWinner && !state.board.isFilled
       self.isPlayAgainButtonHidden = !state.board.hasWinner && !state.board.isFilled
@@ -42,7 +42,7 @@ public final class GameViewController: UIViewController {
     }
   }
 
-  public init(store: Store<GameState, GameAction>) {
+  init(store: Store<Game.State, Game.Action>) {
     self.store = store
     self.viewStore = ViewStore(store.scope(state: ViewState.init))
     self._viewStore = ViewStore(store)
@@ -54,7 +54,7 @@ public final class GameViewController: UIViewController {
     fatalError("init(coder:) has not been implemented")
   }
 
-  override public func viewDidLoad() {
+  override func viewDidLoad() {
     super.viewDidLoad()
 
     self.navigationItem.title = "Tic-Tac-Toe"
@@ -200,29 +200,85 @@ public final class GameViewController: UIViewController {
   }
 }
 
-/// A collection of three elements.
-public struct Three<Element>: CustomStringConvertible {
-  public var first: Element
-  public var second: Element
-  public var third: Element
+struct Game: ReducerProtocol {
+  struct State: Equatable {
+    let id = UUID()
+    var board: Three<Three<Player?>> = .empty
+    var currentPlayer: Player = .x
+    var oPlayerName: String
+    var xPlayerName: String
 
-  public init(_ first: Element, _ second: Element, _ third: Element) {
+    init(oPlayerName: String, xPlayerName: String) {
+      self.oPlayerName = oPlayerName
+      self.xPlayerName = xPlayerName
+    }
+
+    var currentPlayerName: String {
+      switch self.currentPlayer {
+      case .o: return self.oPlayerName
+      case .x: return self.xPlayerName
+      }
+    }
+  }
+
+  enum Action: Equatable {
+    case cellTapped(row: Int, column: Int)
+    case playAgainButtonTapped
+    case logOutButtonTapped
+    case quitButtonTapped
+  }
+
+  var body: some ReducerProtocol<State, Action> {
+    Reduce { state, action in
+      switch action {
+      case let .cellTapped(row, column):
+        guard
+          state.board[row][column] == nil,
+          !state.board.hasWinner
+        else { return .none }
+
+        state.board[row][column] = state.currentPlayer
+
+        if !state.board.hasWinner {
+          state.currentPlayer.toggle()
+        }
+
+        return .none
+
+      case .playAgainButtonTapped:
+        state = Game.State(oPlayerName: state.oPlayerName, xPlayerName: state.xPlayerName)
+        return .none
+
+      case .quitButtonTapped, .logOutButtonTapped:
+        return .none
+      }
+    }
+  }
+}
+
+/// A collection of three elements.
+struct Three<Element>: CustomStringConvertible {
+  var first: Element
+  var second: Element
+  var third: Element
+
+  init(_ first: Element, _ second: Element, _ third: Element) {
     self.first = first
     self.second = second
     self.third = third
   }
 
-  public func map<T>(_ transform: (Element) -> T) -> Three<T> {
+  func map<T>(_ transform: (Element) -> T) -> Three<T> {
     .init(transform(self.first), transform(self.second), transform(self.third))
   }
 
-  public var description: String {
+  var description: String {
     return "[\(self.first),\(self.second),\(self.third)]"
   }
 }
 
 extension Three: MutableCollection {
-  public subscript(offset: Int) -> Element {
+  subscript(offset: Int) -> Element {
     _read {
       switch offset {
       case 0: yield self.first
@@ -241,9 +297,9 @@ extension Three: MutableCollection {
     }
   }
 
-  public var startIndex: Int { 0 }
-  public var endIndex: Int { 3 }
-  public func index(after i: Int) -> Int { i + 1 }
+  var startIndex: Int { 0 }
+  var endIndex: Int { 3 }
+  func index(after i: Int) -> Int { i + 1 }
 }
 
 extension Three: RandomAccessCollection {}
@@ -251,18 +307,18 @@ extension Three: RandomAccessCollection {}
 extension Three: Equatable where Element: Equatable {}
 extension Three: Hashable where Element: Hashable {}
 
-public enum Player: Equatable {
+enum Player: Equatable {
   case o
   case x
 
-  public mutating func toggle() {
+  mutating func toggle() {
     switch self {
     case .o: self = .x
     case .x: self = .o
     }
   }
 
-  public var label: String {
+  var label: String {
     switch self {
     case .o: return "⭕️"
     case .x: return "❌"
@@ -270,70 +326,14 @@ public enum Player: Equatable {
   }
 }
 
-public struct GameState: Equatable {
-  let id = UUID()
-  public var board: Three<Three<Player?>> = .empty
-  public var currentPlayer: Player = .x
-  public var oPlayerName: String
-  public var xPlayerName: String
-
-  public init(oPlayerName: String, xPlayerName: String) {
-    self.oPlayerName = oPlayerName
-    self.xPlayerName = xPlayerName
-  }
-
-  public var currentPlayerName: String {
-    switch self.currentPlayer {
-    case .o: return self.oPlayerName
-    case .x: return self.xPlayerName
-    }
-  }
-}
-
-public enum GameAction: Equatable {
-  case cellTapped(row: Int, column: Int)
-  case playAgainButtonTapped
-  case logOutButtonTapped
-  case quitButtonTapped
-}
-
-public struct GameEnvironment {
-  public init() {}
-}
-
-public let gameReducer = Reducer<GameState, GameAction, GameEnvironment> { state, action, _ in
-  switch action {
-  case let .cellTapped(row, column):
-    guard
-      state.board[row][column] == nil,
-      !state.board.hasWinner
-    else { return .none }
-
-    state.board[row][column] = state.currentPlayer
-
-    if !state.board.hasWinner {
-      state.currentPlayer.toggle()
-    }
-
-    return .none
-
-  case .playAgainButtonTapped:
-    state = GameState(oPlayerName: state.oPlayerName, xPlayerName: state.xPlayerName)
-    return .none
-
-  case .quitButtonTapped, .logOutButtonTapped:
-    return .none
-  }
-}
-
 extension Three where Element == Three<Player?> {
-  public static let empty = Self(
+  static let empty = Self(
     .init(nil, nil, nil),
     .init(nil, nil, nil),
     .init(nil, nil, nil)
   )
 
-  public var isFilled: Bool {
+  var isFilled: Bool {
     self.allSatisfy { $0.allSatisfy { $0 != nil } }
   }
 

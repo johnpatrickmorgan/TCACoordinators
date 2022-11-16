@@ -26,32 +26,14 @@ struct FormScreenEnvironment {
   )
 }
 
-extension FormScreenEnvironment {
-  var step1: Step1Environment {
-    .init(mainQueue: mainQueue)
-  }
-
-  var step2: Step2Environment {
-    .init(mainQueue: mainQueue)
-  }
-
-  var step3: Step3Environment {
-    .init(mainQueue: mainQueue, getOccupations: getOccupations)
-  }
-
-  var finalScreen: FinalScreenEnvironment {
-    .init(mainQueue: mainQueue, submit: submit)
-  }
-}
-
 struct FormScreen: ReducerProtocol {
   let environment: FormScreenEnvironment
-  
+
   enum State: Equatable, Identifiable {
     case step1(Step1.State)
-    case step2(Step2State)
-    case step3(Step3State)
-    case finalScreen(FinalScreenState)
+    case step2(Step2.State)
+    case step3(Step3.State)
+    case finalScreen(FinalScreen.State)
 
     var id: ID {
       switch self {
@@ -77,27 +59,27 @@ struct FormScreen: ReducerProtocol {
       }
     }
   }
-  
+
   enum Action: Equatable {
     case step1(Step1.Action)
-    case step2(Step2Action)
-    case step3(Step3Action)
-    case finalScreen(FinalScreenAction)
+    case step2(Step2.Action)
+    case step3(Step3.Action)
+    case finalScreen(FinalScreen.Action)
   }
-  
+
   var body: some ReducerProtocol<State, Action> {
     EmptyReducer<State, Action>()
-    .ifCaseLet(/State.step1, action: /Action.step1) {
-      Step1()
-    }
-    .ifCaseLet(/State.step2, action: /Action.step2) {
-      Reduce(Step2Reducer.step2, environment: environment.step2)
-    }
-    .ifCaseLet(/State.step3, action: /Action.step3) {
-      Reduce(Step3Reducer.step3, environment: environment.step3)
-    }
-    .ifCaseLet(/State.finalScreen, action: /Action.finalScreen) {
-      Reduce(FinalScreenReducer.finalScreen, environment: environment.finalScreen)
-    }
+      .ifCaseLet(/State.step1, action: /Action.step1) {
+        Step1()
+      }
+      .ifCaseLet(/State.step2, action: /Action.step2) {
+        Step2()
+      }
+      .ifCaseLet(/State.step3, action: /Action.step3) {
+        Step3(mainQueue: environment.mainQueue, getOccupations: environment.getOccupations)
+      }
+      .ifCaseLet(/State.finalScreen, action: /Action.finalScreen) {
+        FinalScreen(mainQueue: environment.mainQueue, submit: environment.submit)
+      }
   }
 }

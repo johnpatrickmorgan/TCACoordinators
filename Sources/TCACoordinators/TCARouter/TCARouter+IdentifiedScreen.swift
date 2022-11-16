@@ -3,8 +3,8 @@ import FlowStacks
 import Foundation
 import SwiftUI
 
-extension TCARouter
-where
+public extension TCARouter
+  where
   CoordinatorState: IdentifiedRouterState,
   CoordinatorAction: IdentifiedRouterAction,
   CoordinatorState.Screen == Screen,
@@ -12,10 +12,9 @@ where
   CoordinatorAction.ScreenAction == ScreenAction,
   Screen.ID == ID
 {
-
   /// Convenience initializer for managing screens in an `IdentifiedArray`, where State
   /// and Action conform to the `IdentifiedRouter...` protocols.
-  public init(
+  init(
     _ store: Store<CoordinatorState, CoordinatorAction>,
     screenContent: @escaping (Store<Screen, ScreenAction>) -> ScreenContent
   ) {

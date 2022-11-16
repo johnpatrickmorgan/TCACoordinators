@@ -7,13 +7,12 @@ import SwiftUI
   *,
   deprecated,
   message:
-    """
-    'Reducer' has been deprecated in favor of 'ReducerProtocol'.
-    See equivalent extensions on ReducerProtocol.
-    """
+  """
+  'Reducer' has been deprecated in favor of 'ReducerProtocol'.
+  See equivalent extensions on ReducerProtocol.
+  """
 )
 extension Reducer where State: Identifiable {
-  
   /// Lifts a screen reducer to one that operates on an `IdentifiedArray` of `Route<Screen>`s. The resulting reducer will
   /// update the routes whenever the user navigates back, e.g. by swiping.
   ///
@@ -29,10 +28,10 @@ extension Reducer where State: Identifiable {
     file: StaticString = #fileID,
     line: UInt = #line
   ) -> Reducer<CoordinatorState, CoordinatorAction, CoordinatorEnvironment>
-  where
-  CoordinatorAction.ScreenAction == Action,
-  CoordinatorAction.Screen == CoordinatorState.Screen,
-  State == CoordinatorState.Screen
+    where
+    CoordinatorAction.ScreenAction == Action,
+    CoordinatorAction.Screen == CoordinatorState.Screen,
+    State == CoordinatorState.Screen
   {
     self
       .forEachIdentifiedRoute(
@@ -61,8 +60,7 @@ extension Reducer where State: Identifiable {
     environment toLocalEnvironment: @escaping (CoordinatorEnvironment) -> Environment,
     file: StaticString = #fileID,
     line: UInt = #line
-  ) -> Reducer<CoordinatorState, CoordinatorAction, CoordinatorEnvironment>
-  {
+  ) -> Reducer<CoordinatorState, CoordinatorAction, CoordinatorEnvironment> {
     self
       .onRoutes()
       .forEach(
@@ -80,7 +78,6 @@ extension Reducer where State: Identifiable {
 }
 
 extension AnyReducer {
-  
   /// Lifts a Screen reducer to one that acts on Route<Screen>.
   /// - Returns: The new reducer.
   func onRoutes() -> AnyReducer<Route<State>, Action, Environment> {
@@ -95,7 +92,7 @@ extension AnyReducer {
     updateRoutes: CasePath<Action, Routes>,
     state toLocalState: WritableKeyPath<State, Routes>
   ) -> Self {
-    return self.combined(with: AnyReducer { state, action, environment in
+    return self.combined(with: AnyReducer { state, action, _ in
       if let routes = updateRoutes.extract(from: action) {
         state[keyPath: toLocalState] = routes
       }

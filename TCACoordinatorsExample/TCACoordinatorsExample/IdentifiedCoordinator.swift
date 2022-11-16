@@ -1,9 +1,8 @@
-import SwiftUI
 import ComposableArchitecture
+import SwiftUI
 import TCACoordinators
 
 struct IdentifiedCoordinatorView: View {
-  
   let store: Store<IdentifiedCoordinator.State, IdentifiedCoordinator.Action>
   
   var body: some View {
@@ -30,10 +29,9 @@ struct IdentifiedCoordinatorView: View {
 }
 
 struct IdentifiedCoordinator: ReducerProtocol {
-  struct CancellationId {}
+  struct CancellationID {}
   
   struct State: Equatable, IdentifiedRouterState {
-    
     static let initialState = State(
       routes: [.root(.home(.init()), embedInNavigationView: true)]
     )
@@ -42,7 +40,6 @@ struct IdentifiedCoordinator: ReducerProtocol {
   }
 
   enum Action: IdentifiedRouterAction {
-    
     case routeAction(Screen.State.ID, action: Screen.Action)
     case updateRoutes(IdentifiedArrayOf<Route<Screen.State>>)
   }
@@ -51,7 +48,7 @@ struct IdentifiedCoordinator: ReducerProtocol {
     return Reduce<State, Action> { state, action in
       switch action {
       case .routeAction(_, .home(.startTapped)):
-        state.routes.presentSheet(.numbersList(.init(numbers: Array(0..<4))), embedInNavigationView: true)
+        state.routes.presentSheet(.numbersList(.init(numbers: Array(0 ..< 4))), embedInNavigationView: true)
         
       case .routeAction(_, .numbersList(.numberSelected(let number))):
         state.routes.push(.numberDetail(.init(number: number)))
@@ -76,7 +73,7 @@ struct IdentifiedCoordinator: ReducerProtocol {
         break
       }
       return .none
-    }.forEachIdentifiedRoute(coordinatorIdType: CancellationId.self) {
+    }.forEachIdentifiedRoute(coordinatorIdType: CancellationID.self) {
       Screen()
     }
   }

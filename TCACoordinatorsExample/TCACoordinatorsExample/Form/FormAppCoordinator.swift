@@ -4,15 +4,15 @@ import TCACoordinators
 
 struct FormAppCoordinator: ReducerProtocol {
   struct CancellationID {}
-  
+
   struct State: IdentifiedRouterState, Equatable {
     static let initialState = Self(routeIDs: [.root(.step1, embedInNavigationView: true)])
 
     var step1State = Step1.State()
-    var step2State = Step2State()
-    var step3State = Step3State()
+    var step2State = Step2.State()
+    var step3State = Step3.State()
 
-    var finalScreenState: FinalScreenState {
+    var finalScreenState: FinalScreen.State {
       return .init(firstName: step1State.firstName, lastName: step1State.lastName, dateOfBirth: step2State.dateOfBirth, job: step3State.selectedOccupation)
     }
 
@@ -69,46 +69,45 @@ struct FormAppCoordinator: ReducerProtocol {
     case updateRoutes(IdentifiedArrayOf<Route<FormScreen.State>>)
     case routeAction(FormScreen.State.ID, action: FormScreen.Action)
   }
-  
+
   var body: some ReducerProtocol<State, Action> {
     Reduce { state, action in
       switch action {
       case .routeAction(_, action: .step1(.nextButtonTapped)):
         state.routeIDs.push(.step2)
         return .none
-        
+
       case .routeAction(_, action: .step2(.nextButtonTapped)):
         state.routeIDs.push(.step3)
         return .none
-        
+
       case .routeAction(_, action: .step3(.nextButtonTapped)):
         state.routeIDs.push(.finalScreen)
         return .none
-        
+
       case .routeAction(_, action: .finalScreen(.returnToName)):
         state.routeIDs.goBackTo(id: .step1)
         return .none
-        
+
       case .routeAction(_, action: .finalScreen(.returnToDateOfBirth)):
         state.routeIDs.goBackTo(id: .step2)
         return .none
-        
+
       case .routeAction(_, action: .finalScreen(.returnToJob)):
         state.routeIDs.goBackTo(id: .step3)
-        state.clear()
         return .none
-        
+
       case .routeAction(_, action: .finalScreen(.receiveAPIResponse(.success))):
         state.routeIDs.goBackToRoot()
         state.clear()
         return .none
-        
+
       default:
         return .none
       }
     }.forEachIdentifiedRoute(coordinatorIdType: CancellationID.self) {
-        FormScreen(environment: .test)
-      }
+      FormScreen(environment: .test)
+    }
   }
 }
 

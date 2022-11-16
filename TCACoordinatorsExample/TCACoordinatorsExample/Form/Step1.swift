@@ -11,7 +11,7 @@ struct Step1: ReducerProtocol {
     case binding(BindingAction<State>)
     case nextButtonTapped
   }
-  
+
   var body: some ReducerProtocol<State, Action> {
     BindingReducer()
   }
@@ -35,8 +35,4 @@ struct Step1View: View {
       .navigationTitle("Step 1")
     }
   }
-}
-
-struct Step1Environment {
-  let mainQueue: AnySchedulerOf<DispatchQueue>
 }

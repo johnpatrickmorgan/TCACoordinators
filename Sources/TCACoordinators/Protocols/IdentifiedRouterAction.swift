@@ -1,6 +1,6 @@
-import Foundation
 import ComposableArchitecture
 import FlowStacks
+import Foundation
 
 /// A protocol standardizing naming conventions for action types that can manage routes
 /// within an `IdentifiedArray`.

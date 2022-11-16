@@ -1,11 +1,10 @@
-import Foundation
+import Combine
 import ComposableArchitecture
 import FlowStacks
+import Foundation
 import SwiftUI
-import Combine
 
 public extension Effect where Output: IndexedRouterAction, Failure == Never {
-  
   /// Allows arbitrary changes to be made to the routes collection, even if SwiftUI does not support such changes within a single
   /// state update. For example, SwiftUI only supports pushing, presenting or dismissing one screen at a time. Any changes can be
   /// made to the routes passed to the transform closure, and where those changes are not supported within a single update by
@@ -26,7 +25,6 @@ public extension Effect where Output: IndexedRouterAction, Failure == Never {
 }
 
 public extension Effect where Output: IdentifiedRouterAction, Failure == Never {
-  
   /// Allows arbitrary changes to be made to the routes collection, even if SwiftUI does not support such changes within a single
   /// state update. For example, SwiftUI only supports pushing, presenting or dismissing one screen at a time. Any changes can be
   /// made to the routes passed to the transform closure, and where those changes are not supported within a single update by
@@ -51,7 +49,7 @@ func scheduledSteps<Screen>(steps: [[Route<Screen>]]) -> AnyPublisher<[Route<Scr
   guard let head = steps.first else {
     return Empty().eraseToAnyPublisher()
   }
-  
+
   let timer = Just(Date())
     .append(Timer.publish(every: 0.65, on: .main, in: .default).autoconnect())
   let tail = Publishers.Zip(steps.dropFirst().publisher, timer)
