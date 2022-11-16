@@ -11,22 +11,22 @@ struct CancelEffectsOnDismiss<CoordinatorScreensReducer: ReducerProtocol, Coordi
   let coordinatedScreensReducer: CoordinatorScreensReducer
   let routes: (CoordinatorReducer.State) -> C
   let routeAction: CasePath<Action, (RouteID, ScreenAction)>
-  let coordinatorIdForCancellation: CoordinatorID?
+  let cancellationId: CoordinatorID?
   let getIdentifier: (C.Element, C.Index) -> RouteID
   let coordinatorReducer: CoordinatorReducer
 
   var body: some ReducerProtocol<CoordinatorReducer.State, CoordinatorReducer.Action> {
-    if let coordinatorIdForCancellation {
+    if let cancellationId {
       CancelTaggedRouteEffectsOnDismiss(
         coordinatorReducer: CombineReducers {
           TagRouteEffectsForCancellation(
             screenReducer: coordinatedScreensReducer,
-            coordinatorId: coordinatorIdForCancellation,
+            coordinatorId: cancellationId,
             routeAction: routeAction
           )
           coordinatorReducer
         },
-        coordinatorId: coordinatorIdForCancellation,
+        coordinatorId: cancellationId,
         routes: routes,
         getIdentifier: getIdentifier
       )

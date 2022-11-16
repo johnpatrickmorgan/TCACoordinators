@@ -73,7 +73,7 @@ struct IndexedCoordinator: ReducerProtocol {
         break
       }
       return .none
-    }.forEachIndexedRoute(coordinatorIdType: CancellationID.self) {
+    }.forEachRoute(cancellationIdType: CancellationID.self) {
       Screen()
     }
   }

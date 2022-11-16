@@ -61,7 +61,7 @@ struct GameCoordinator: ReducerProtocol {
 
   var body: some ReducerProtocol<State, Action> {
     EmptyReducer()
-      .forEachIndexedRoute(coordinatorIdType: CancellationID.self) {
+      .forEachRoute(cancellationIdType: CancellationID.self) {
         GameScreen()
       }
   }

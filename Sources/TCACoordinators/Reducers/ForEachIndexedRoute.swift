@@ -10,14 +10,13 @@ struct ForEachIndexedRoute<CoordinatorReducer: ReducerProtocol, ScreenReducer: R
   let updateRoutes: CasePath<CoordinatorReducer.Action, [Route<ScreenReducer.State>]>
 
   var reducer: AnyReducer<CoordinatorReducer.State, CoordinatorReducer.Action, Void> {
-    let x: AnyReducer<CoordinatorReducer.State, CoordinatorReducer.Action, Void> = AnyReducer<ScreenReducer.State, ScreenReducer.Action, Void>(screenReducer)
+    AnyReducer<ScreenReducer.State, ScreenReducer.Action, Void>(screenReducer)
       .forEachIndexedRoute(
         state: toLocalState,
         action: toLocalAction,
         updateRoutes: updateRoutes,
         environment: { _ in }
       )
-    return x
       .withRouteReducer(
         routes: { $0[keyPath: toLocalState] },
         routeAction: toLocalAction,
@@ -33,7 +32,7 @@ struct ForEachIndexedRoute<CoordinatorReducer: ReducerProtocol, ScreenReducer: R
 }
 
 public extension ReducerProtocol {
-  func forEachIndexedRoute<ScreenReducer: ReducerProtocol, CoordinatorID: Hashable>(
+  func forEachRoute<ScreenReducer: ReducerProtocol, CoordinatorID: Hashable>(
     coordinatorIdForCancellation: CoordinatorID?,
     toLocalState: WritableKeyPath<Self.State, [Route<ScreenReducer.State>]>,
     toLocalAction: CasePath<Self.Action, (Int, ScreenReducer.Action)>,
@@ -52,7 +51,16 @@ public extension ReducerProtocol {
 }
 
 public extension ReducerProtocol where State: IndexedRouterState, Action: IndexedRouterAction, State.Screen == Action.Screen {
-  func forEachIndexedRoute<ScreenReducer: ReducerProtocol, CoordinatorID: Hashable>(
+  /// Allows a screen reducer to be incorporated into a coordinator reducer, such that each screen in
+  /// the coordinator's routes Array will have its actions and state propagated. When screens are
+  /// dismissed, the routes will be updated. If a cancellation identifier is passed, in-flight effects
+  /// will be cancelled when a screen is dismissed.
+  /// - Parameters:
+  ///   - cancellationId: An ID to use for cancelling in-flight effects when a view is dismissed. It
+  ///   will be combined with the screen's identifier.
+  ///   - screenReducer: The reducer that operates on all of the individual screens.
+  /// - Returns: A new reducer combining the coordinator-level and screen-level reducers.
+  func forEachRoute<ScreenReducer: ReducerProtocol, CoordinatorID: Hashable>(
     coordinatorIdForCancellation: CoordinatorID?,
     @ReducerBuilderOf<ScreenReducer> screenReducer: () -> ScreenReducer
   ) -> some ReducerProtocol<State, Action> where State.Screen == ScreenReducer.State, ScreenReducer.Action == Action.ScreenAction {
@@ -66,14 +74,23 @@ public extension ReducerProtocol where State: IndexedRouterState, Action: Indexe
     )
   }
 
-  func forEachIndexedRoute<ScreenReducer: ReducerProtocol>(
-    coordinatorIdType: Any.Type?,
+  /// Allows a screen reducer to be incorporated into a coordinator reducer, such that each screen in
+  /// the coordinator's routes Array will have its actions and state propagated. When screens are
+  /// dismissed, the routes will be updated. If a cancellation identifier is passed, in-flight effects
+  /// will be cancelled when a screen is dismissed.
+  /// - Parameters:
+  ///   - cancellationIdType: A type to use for cancelling in-flight effects when a view is dismissed. It
+  ///   will be combined with the screen's identifier.   
+  ///   - screenReducer: The reducer that operates on all of the individual screens.
+  /// - Returns: A new reducer combining the coordinator-level and screen-level reducers.
+  func forEachRoute<ScreenReducer: ReducerProtocol>(
+    cancellationIdType: Any.Type?,
     @ReducerBuilderOf<ScreenReducer> screenReducer: () -> ScreenReducer
   ) -> some ReducerProtocol<State, Action> where State.Screen == ScreenReducer.State, ScreenReducer.Action == Action.ScreenAction {
     return ForEachIndexedRoute(
       coordinatorReducer: self,
       screenReducer: screenReducer(),
-      coordinatorIdForCancellation: coordinatorIdType.map(ObjectIdentifier.init),
+      coordinatorIdForCancellation: cancellationIdType.map(ObjectIdentifier.init),
       toLocalState: \.routes,
       toLocalAction: /Action.routeAction,
       updateRoutes: /Action.updateRoutes

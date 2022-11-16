@@ -105,7 +105,7 @@ struct FormAppCoordinator: ReducerProtocol {
       default:
         return .none
       }
-    }.forEachIdentifiedRoute(coordinatorIdType: CancellationID.self) {
+    }.forEachRoute(cancellationIdType: CancellationID.self) {
       FormScreen(environment: .test)
     }
   }

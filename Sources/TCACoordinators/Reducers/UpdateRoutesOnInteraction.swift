@@ -2,10 +2,10 @@ import ComposableArchitecture
 import Foundation
 
 extension ReducerProtocol {
-  func updatingScreensOnInteraction<Routes>(updateRoutes: CasePath<Action, Routes>, toLocalState: WritableKeyPath<State, Routes>) -> some ReducerProtocol<State, Action> {
+  func updatingRoutesOnInteraction<Routes>(updateRoutes: CasePath<Action, Routes>, toLocalState: WritableKeyPath<State, Routes>) -> some ReducerProtocol<State, Action> {
     CombineReducers {
       self
-      UpdateScreensOnInteraction(
+      UpdateRoutesOnInteraction(
         wrapped: self,
         updateRoutes: updateRoutes,
         toLocalState: toLocalState
@@ -14,7 +14,7 @@ extension ReducerProtocol {
   }
 }
 
-struct UpdateScreensOnInteraction<WrappedReducer: ReducerProtocol, Routes>: ReducerProtocol {
+struct UpdateRoutesOnInteraction<WrappedReducer: ReducerProtocol, Routes>: ReducerProtocol {
   typealias State = WrappedReducer.State
   typealias Action = WrappedReducer.Action
 

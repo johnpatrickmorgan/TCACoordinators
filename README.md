@@ -81,7 +81,7 @@ struct IndexedCoordinator: ReducerProtocol {
 }
 ```
 
-The coordinator's reducer defines any logic for presenting and dismissing screens, and uses `forEachIndexedRoute` to further apply the `Screen` reducer to each screen in the `routes` array:
+The coordinator's reducer defines any logic for presenting and dismissing screens, and uses `forEachRoute` to further apply the `Screen` reducer to each screen in the `routes` array:
 
 ```swift
 struct IndexedCoordinator: ReducerProtocol {
@@ -117,7 +117,7 @@ struct IndexedCoordinator: ReducerProtocol {
         break
       }
       return .none
-    }.forEachIndexedRoute(coordinatorIdType: CancellationID.self) {
+    }.forEachRoute(cancellationIdType: CancellationID.self) {
       Screen()
     }
   }
@@ -182,7 +182,7 @@ If the user taps the back button, the routes array will be automatically updated
 
 ## Cancellation of in-flight effects on dismiss
 
-By passing a cancellation ID to `forEachIndexedRoute`, any in-flight effects initiated by a particular screen are cancelled automatically when that screen is popped or dismissed. This would normally require a lot of boilerplate, but can be entirely handled by this library without additional work.
+By passing a cancellation ID to `forEachRoute`, any in-flight effects initiated by a particular screen are cancelled automatically when that screen is popped or dismissed. This would normally require a lot of boilerplate, but can be entirely handled by this library without additional work.
 
 
 ## Making complex navigation updates

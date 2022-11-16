@@ -87,7 +87,7 @@ private struct Parent: ReducerProtocol {
     Reduce<State, Action> { _, _ in
       .none
     }
-    .forEachIdentifiedRoute(coordinatorIdType: CancellationID.self) {
+    .forEachRoute(cancellationIdType: CancellationID.self) {
       Child(scheduler: scheduler)
     }
   }

@@ -78,7 +78,7 @@ struct LogInCoordinator: ReducerProtocol {
         break
       }
       return .none
-    }.forEachIdentifiedRoute(coordinatorIdType: CancellationID.self) {
+    }.forEachRoute(cancellationIdType: CancellationID.self) {
       LogInScreen()
     }
   }
