@@ -2,7 +2,7 @@
 
 _The coordinator pattern in the Composable Architecture_
 
-`TCACoordinators` brings a flexible approach to navigation in SwiftUI using the [Composable Architecture (TCA)](https://github.com/pointfreeco/swift-composable-architecture). It allows you to manage complex navigation and presentation flows with a single piece of state, hoisted into a high-level coordinator. Using this pattern, you can write isolated screen features that have zero knowledge of their context within the navigation flow of an app. It achieves this by combining existing tools in TCA such as `Reducer.forEach`, `Reducer.pullback` and `SwitchStore` with [a novel approach to handling navigation in SwiftUI](https://github.com/johnpatrickmorgan/FlowStacks). 
+`TCACoordinators` brings a flexible approach to navigation in SwiftUI using the [Composable Architecture (TCA)](https://github.com/pointfreeco/swift-composable-architecture). It allows you to manage complex navigation and presentation flows with a single piece of state, hoisted into a high-level coordinator. Using this pattern, you can write isolated screen features that have zero knowledge of their context within the navigation flow of an app. It achieves this by combining existing tools in TCA such as `.forEach`, `ifCaseLet` and `SwitchStore` with [a novel approach to handling navigation in SwiftUI](https://github.com/johnpatrickmorgan/FlowStacks). 
 
 You might like this library if you want to:
 
@@ -11,6 +11,7 @@ You might like this library if you want to:
 ✅ Easily go back to the root screen or a specific screen in the navigation stack.<br/>
 ✅ Keep all navigation logic in a single place.<br/>
 ✅ Break an app's navigation into multiple reusable coordinators and compose them together.<br/>
+✅ Use a single system to unify push navigation and modal presentation.<br/>
 
 
 The library works by translating the array of screens into a hierarchy of nested `NavigationLink`s and presentation calls, so:
@@ -28,16 +29,15 @@ First, identify all possible screens that are part of the particular navigation 
 
 ```swift
 struct Screen: ReducerProtocol {
-  enum Action {
-    case home(Home.Action)
-    case numbersList(NumbersList.Action)
-    case numberDetail(NumberDetail.Action)
-  }
-
   enum State: Equatable {
     case home(Home.State)
     case numbersList(NumbersList.State)
     case numberDetail(NumberDetail.State)
+  }
+  enum Action {
+    case home(Home.Action)
+    case numbersList(NumbersList.Action)
+    case numberDetail(NumberDetail.Action)
   }
   
   var body: some ReducerProtocol<State, Action> {
@@ -60,8 +60,8 @@ struct Screen: ReducerProtocol {
 The coordinator will manage multiple screens in a navigation flow. Its state should include an array of `Route<Screen.State>`s, representing the navigation stack: i.e. appending a new screen state to this array will trigger the corresponding screen to be pushed or presented. `Route` is an enum whose cases capture the screen state and how it should be shown, e.g. `case push(ScreenState)`. 
 
 ```swift
-struct IndexedCoordinator: ReducerProtocol {
-  struct CoordinatorState: Equatable, IndexedRouterState {
+struct Coordinator: ReducerProtocol {
+  struct State: Equatable, IndexedRouterState {
     var routes: [Route<ScreenState>]
   }
   ...
@@ -71,9 +71,9 @@ struct IndexedCoordinator: ReducerProtocol {
 The coordinator's action should include two special cases. The first includes an index to allow screen actions to be dispatched to the correct screen in the routes array. The second allows the routes array to be updated automatically, e.g. when a user taps 'Back':
 
 ```swift
-struct IndexedCoordinator: ReducerProtocol {
+struct Coordinator: ReducerProtocol {
   ...
-  enum CoordinatorAction: IndexedRouterAction {
+  enum Action: IndexedRouterAction {
     case routeAction(Int, action: ScreenAction)
     case updateRoutes([Route<ScreenState>])
   }
@@ -81,13 +81,11 @@ struct IndexedCoordinator: ReducerProtocol {
 }
 ```
 
-The coordinator's reducer defines any logic for presenting and dismissing screens, and uses `forEachRoute` to further apply the `Screen` reducer to each screen in the `routes` array:
+The coordinator reducer defines any logic for presenting and dismissing screens, and uses `forEachRoute` to further apply the `Screen` reducer to each screen in the `routes` array:
 
 ```swift
-struct IndexedCoordinator: ReducerProtocol {
+struct Coordinator: ReducerProtocol {
   ...
-  struct CancellationID {}
-  
   var body: some ReducerProtocol<State, Action> {
     return Reduce<State, Action> { state, action in
       switch action {
