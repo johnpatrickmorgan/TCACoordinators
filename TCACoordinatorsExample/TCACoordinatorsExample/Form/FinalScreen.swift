@@ -2,7 +2,7 @@ import ComposableArchitecture
 import SwiftUI
 
 struct FinalScreenView: View {
-  let store: Store<FinalScreenState, FinalScreenAction>
+  let store: Store<FinalScreen.State, FinalScreen.Action>
 
   var body: some View {
     WithViewStore(store) { viewStore in
@@ -86,40 +86,6 @@ struct LabelledRow<Content: View>: View {
   }
 }
 
-struct FinalScreenView_Previews: PreviewProvider {
-  static var previews: some View {
-    FinalScreenView(
-      store: Store(
-        initialState: FinalScreenState(
-          firstName: "Rhys",
-          lastName: "Morgan",
-          dateOfBirth: .now,
-          job: "iOS Developer"
-        ),
-        reducer: .finalScreen,
-        environment: FinalScreenEnvironment(
-          mainQueue: .main,
-          submit: { _ in
-            Effect(value: true)
-          }
-        )
-      )
-    )
-  }
-}
-
-public struct FinalScreenState: Equatable {
-  let firstName: String
-  let lastName: String
-  let dateOfBirth: Date
-  let job: String?
-
-  var submissionInFlight = false
-  var isIncomplete: Bool {
-    firstName.isEmpty || lastName.isEmpty || job?.isEmpty ?? true
-  }
-}
-
 struct APIModel: Codable, Equatable {
   let firstName: String
   let lastName: String
@@ -127,47 +93,57 @@ struct APIModel: Codable, Equatable {
   let job: String
 }
 
-enum FinalScreenAction: Equatable {
-  case returnToName
-  case returnToDateOfBirth
-  case returnToJob
+struct FinalScreen: ReducerProtocol {
+  struct State: Equatable {
+    let firstName: String
+    let lastName: String
+    let dateOfBirth: Date
+    let job: String?
 
-  case submit
-  case receiveAPIResponse(Result<Bool, Never>)
-}
+    var submissionInFlight = false
+    var isIncomplete: Bool {
+      firstName.isEmpty || lastName.isEmpty || job?.isEmpty ?? true
+    }
+  }
 
-struct FinalScreenEnvironment {
+  enum Action: Equatable {
+    case returnToName
+    case returnToDateOfBirth
+    case returnToJob
+
+    case submit
+    case receiveAPIResponse(Result<Bool, Never>)
+  }
+
   let mainQueue: AnySchedulerOf<DispatchQueue>
   let submit: (APIModel) -> Effect<Bool, Never>
-}
 
-typealias FinalScreenReducer = Reducer<FinalScreenState, FinalScreenAction, FinalScreenEnvironment>
+  var body: some ReducerProtocol<State, Action> {
+    Reduce { state, action in
+      switch action {
+      case .submit:
+        guard let job = state.job else { return .none }
+        state.submissionInFlight = true
 
-extension FinalScreenReducer {
-  static let finalScreen = Reducer { state, action, environment in
-    switch action {
-    case .submit:
-      guard let job = state.job else { return .none }
-      state.submissionInFlight = true
+        let apiModel = APIModel(
+          firstName: state.firstName,
+          lastName: state.lastName,
+          dateOfBirth: state.dateOfBirth,
+          job: job
+        )
 
-      let apiModel = APIModel(
-        firstName: state.firstName,
-        lastName: state.lastName,
-        dateOfBirth: state.dateOfBirth,
-        job: job
-      )
+        return submit(apiModel)
+          .delay(for: .seconds(0.8), scheduler: RunLoop.main)
+          .receive(on: mainQueue)
+          .catchToEffect(Action.receiveAPIResponse)
 
-      return environment.submit(apiModel)
-        .delay(for: .seconds(0.8), scheduler: RunLoop.main)
-        .receive(on: environment.mainQueue)
-        .catchToEffect(Action.receiveAPIResponse)
+      case .receiveAPIResponse:
+        state.submissionInFlight = false
+        return .none
 
-    case .receiveAPIResponse:
-      state.submissionInFlight = false
-      return .none
-
-    case .returnToName, .returnToDateOfBirth, .returnToJob:
-      return .none
+      case .returnToName, .returnToDateOfBirth, .returnToJob:
+        return .none
+      }
     }
   }
 }

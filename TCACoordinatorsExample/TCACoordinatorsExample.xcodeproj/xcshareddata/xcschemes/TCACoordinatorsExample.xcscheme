@@ -48,6 +48,16 @@
                ReferencedContainer = "container:TCACoordinatorsExample.xcodeproj">
             </BuildableReference>
          </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "TCACoordinatorsTests"
+               BuildableName = "TCACoordinatorsTests"
+               BlueprintName = "TCACoordinatorsTests"
+               ReferencedContainer = "container:..">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction

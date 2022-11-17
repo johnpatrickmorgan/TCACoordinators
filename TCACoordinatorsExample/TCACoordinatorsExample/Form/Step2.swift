@@ -2,7 +2,7 @@ import ComposableArchitecture
 import SwiftUI
 
 struct Step2View: View {
-  let store: Store<Step2State, Step2Action>
+  let store: Store<Step2.State, Step2.Action>
 
   var body: some View {
     WithViewStore(store) { viewStore in
@@ -28,35 +28,17 @@ struct Step2View: View {
   }
 }
 
-struct Step2View_Previews: PreviewProvider {
-  static var previews: some View {
-    NavigationView {
-      Step2View(
-        store: Store(
-          initialState: Step2State(),
-          reducer: .step2,
-          environment: Step2Environment(mainQueue: .main)
-        )
-      )
-    }
+struct Step2: ReducerProtocol {
+  public struct State: Equatable {
+    @BindableState var dateOfBirth: Date = .now
   }
-}
 
-public struct Step2State: Equatable {
-  @BindableState var dateOfBirth: Date = .now
-}
+  public enum Action: Equatable, BindableAction {
+    case binding(BindingAction<State>)
+    case nextButtonTapped
+  }
 
-public enum Step2Action: Equatable, BindableAction {
-  case binding(BindingAction<Step2State>)
-  case nextButtonTapped
-}
-
-struct Step2Environment {
-  let mainQueue: AnySchedulerOf<DispatchQueue>
-}
-
-typealias Step2Reducer = Reducer<Step2State, Step2Action, Step2Environment>
-
-extension Step2Reducer {
-  static let step2 = Reducer.empty.binding()
+  var body: some ReducerProtocol<State, Action> {
+    BindingReducer()
+  }
 }

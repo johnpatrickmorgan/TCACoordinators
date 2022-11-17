@@ -5,13 +5,13 @@ import SwiftUI
 struct LogInView: View {
   @State private var name = ""
 
-  let store: Store<LogInState, LogInAction>
+  let store: Store<LogIn.State, LogIn.Action>
 
   var body: some View {
     WithViewStore(store) { viewStore in
       VStack {
         TextField("Enter name", text: $name)
-          .padding()
+          .padding(24)
         Button("Log in", action: {
           viewStore.send(.logInTapped(name: name))
         })
@@ -22,18 +22,16 @@ struct LogInView: View {
   }
 }
 
-enum LogInAction {
-  case logInTapped(name: String)
-}
+struct LogIn: ReducerProtocol {
+  struct State: Equatable {
+    let id = UUID()
+  }
 
-struct LogInState: Equatable {
-  let id = UUID()
-}
+  enum Action {
+    case logInTapped(name: String)
+  }
 
-struct LogInEnvironment {}
-
-let logInReducer = Reducer<
-  LogInState, LogInAction, LogInEnvironment
-> { _, _, _ in
-  .none
+  var body: some ReducerProtocol<State, Action> {
+    EmptyReducer()
+  }
 }

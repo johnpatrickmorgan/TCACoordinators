@@ -1,8 +1,24 @@
 import ComposableArchitecture
 import SwiftUI
 
+struct Step1: ReducerProtocol {
+  public struct State: Equatable {
+    @BindableState var firstName: String = ""
+    @BindableState var lastName: String = ""
+  }
+
+  public enum Action: Equatable, BindableAction {
+    case binding(BindingAction<State>)
+    case nextButtonTapped
+  }
+
+  var body: some ReducerProtocol<State, Action> {
+    BindingReducer()
+  }
+}
+
 struct Step1View: View {
-  let store: Store<Step1State, Step1Action>
+  let store: Store<Step1.State, Step1.Action>
 
   var body: some View {
     WithViewStore(store) { viewStore in
@@ -19,30 +35,4 @@ struct Step1View: View {
       .navigationTitle("Step 1")
     }
   }
-}
-
-struct Step1View_Previews: PreviewProvider {
-  static var previews: some View {
-    Step1View(store: Store(initialState: .init(), reducer: .step1, environment: Step1Environment(mainQueue: .main)))
-  }
-}
-
-public struct Step1State: Equatable {
-  @BindableState var firstName: String = ""
-  @BindableState var lastName: String = ""
-}
-
-public enum Step1Action: Equatable, BindableAction {
-  case binding(BindingAction<Step1State>)
-  case nextButtonTapped
-}
-
-struct Step1Environment {
-  let mainQueue: AnySchedulerOf<DispatchQueue>
-}
-
-typealias Step1Reducer = Reducer<Step1State, Step1Action, Step1Environment>
-
-extension Step1Reducer {
-  static let step1 = empty.binding()
 }

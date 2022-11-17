@@ -2,6 +2,4 @@ import XCTest
 
 @testable import TCACoordinatorsExample
 
-class TCACoordinatorsExampleTests: XCTestCase {
-
-}
+class TCACoordinatorsExampleTests: XCTestCase {}
