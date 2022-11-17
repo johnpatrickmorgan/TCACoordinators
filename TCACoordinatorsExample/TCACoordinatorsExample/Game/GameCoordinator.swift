@@ -43,7 +43,6 @@ struct GameScreen: ReducerProtocol {
 }
 
 struct GameCoordinator: ReducerProtocol {
-  struct CancellationID {}
   struct State: Equatable, IndexedRouterState {
     static func initialState(playerName: String = "") -> Self {
       return .init(
@@ -61,7 +60,7 @@ struct GameCoordinator: ReducerProtocol {
 
   var body: some ReducerProtocol<State, Action> {
     EmptyReducer()
-      .forEachRoute(cancellationIdType: CancellationID.self) {
+      .forEachRoute {
         GameScreen()
       }
   }

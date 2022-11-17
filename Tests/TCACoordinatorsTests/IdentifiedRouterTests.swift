@@ -73,7 +73,6 @@ private struct Child: ReducerProtocol {
 
 private struct Parent: ReducerProtocol {
   let scheduler: TestSchedulerOf<DispatchQueue>
-  struct CancellationID {}
   struct State: Equatable, IdentifiedRouterState {
     var routes: IdentifiedArrayOf<Route<Child.State>>
   }
@@ -84,10 +83,7 @@ private struct Parent: ReducerProtocol {
   }
 
   var body: some ReducerProtocol<State, Action> {
-    Reduce<State, Action> { _, _ in
-      .none
-    }
-    .forEachRoute(cancellationIdType: CancellationID.self) {
+    EmptyReducer().forEachRoute {
       Child(scheduler: scheduler)
     }
   }

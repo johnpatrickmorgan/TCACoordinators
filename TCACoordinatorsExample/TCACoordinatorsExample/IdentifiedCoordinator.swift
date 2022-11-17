@@ -29,8 +29,6 @@ struct IdentifiedCoordinatorView: View {
 }
 
 struct IdentifiedCoordinator: ReducerProtocol {
-  struct CancellationID {}
-  
   struct State: Equatable, IdentifiedRouterState {
     static let initialState = State(
       routes: [.root(.home(.init()), embedInNavigationView: true)]
@@ -73,7 +71,7 @@ struct IdentifiedCoordinator: ReducerProtocol {
         break
       }
       return .none
-    }.forEachRoute(cancellationIdType: CancellationID.self) {
+    }.forEachRoute {
       Screen()
     }
   }

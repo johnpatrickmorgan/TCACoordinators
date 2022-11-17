@@ -55,7 +55,6 @@ struct LogInCoordinatorView: View {
 }
 
 struct LogInCoordinator: ReducerProtocol {
-  struct CancellationID {}
   struct State: Equatable, IdentifiedRouterState {
     static let initialState = LogInCoordinator.State(
       routes: [.root(.welcome(.init()), embedInNavigationView: true)]
@@ -78,7 +77,7 @@ struct LogInCoordinator: ReducerProtocol {
         break
       }
       return .none
-    }.forEachRoute(cancellationIdType: CancellationID.self) {
+    }.forEachRoute {
       LogInScreen()
     }
   }

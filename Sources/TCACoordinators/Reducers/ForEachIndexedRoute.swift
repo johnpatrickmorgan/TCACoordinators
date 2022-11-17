@@ -80,17 +80,17 @@ public extension ReducerProtocol where State: IndexedRouterState, Action: Indexe
   /// will be cancelled when a screen is dismissed.
   /// - Parameters:
   ///   - cancellationIdType: A type to use for cancelling in-flight effects when a view is dismissed. It
-  ///   will be combined with the screen's identifier.   
+  ///   will be combined with the screen's identifier.
   ///   - screenReducer: The reducer that operates on all of the individual screens.
   /// - Returns: A new reducer combining the coordinator-level and screen-level reducers.
   func forEachRoute<ScreenReducer: ReducerProtocol>(
-    cancellationIdType: Any.Type?,
+    cancellationIdType: Any.Type = Self.self,
     @ReducerBuilderOf<ScreenReducer> screenReducer: () -> ScreenReducer
   ) -> some ReducerProtocol<State, Action> where State.Screen == ScreenReducer.State, ScreenReducer.Action == Action.ScreenAction {
     return ForEachIndexedRoute(
       coordinatorReducer: self,
       screenReducer: screenReducer(),
-      coordinatorIdForCancellation: cancellationIdType.map(ObjectIdentifier.init),
+      coordinatorIdForCancellation: ObjectIdentifier(cancellationIdType),
       toLocalState: \.routes,
       toLocalAction: /Action.routeAction,
       updateRoutes: /Action.updateRoutes

@@ -81,13 +81,13 @@ public extension ReducerProtocol where State: IdentifiedRouterState, Action: Ide
   ///   - screenReducer: The reducer that operates on all of the individual screens.
   /// - Returns: A new reducer combining the coordinator-level and screen-level reducers.
   func forEachRoute<ScreenReducer: ReducerProtocol>(
-    cancellationIdType: Any.Type?,
+    cancellationIdType: Any.Type = Self.self,
     @ReducerBuilderOf<ScreenReducer> screenReducer: () -> ScreenReducer
   ) -> some ReducerProtocol<State, Action> where ScreenReducer.State: Identifiable, State.Screen == ScreenReducer.State, ScreenReducer.Action == Action.ScreenAction {
     return ForEachIdentifiedRoute(
       coordinatorReducer: self,
       screenReducer: screenReducer(),
-      cancellationId: cancellationIdType.map(ObjectIdentifier.init),
+      cancellationId: ObjectIdentifier(cancellationIdType),
       toLocalState: \.routes,
       toLocalAction: /Action.routeAction,
       updateRoutes: /Action.updateRoutes

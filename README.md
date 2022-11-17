@@ -117,7 +117,7 @@ struct IndexedCoordinator: ReducerProtocol {
         break
       }
       return .none
-    }.forEachRoute(cancellationIdType: CancellationID.self) {
+    }.forEachRoute {
       Screen()
     }
   }
@@ -182,7 +182,7 @@ If the user taps the back button, the routes array will be automatically updated
 
 ## Cancellation of in-flight effects on dismiss
 
-By passing a cancellation ID to `forEachRoute`, any in-flight effects initiated by a particular screen are cancelled automatically when that screen is popped or dismissed. This would normally require a lot of boilerplate, but can be entirely handled by this library without additional work.
+By default, any in-flight effects initiated by a particular screen are cancelled automatically when that screen is popped or dismissed. This would normally require a lot of boilerplate, but can be entirely handled by this library without additional work. To opt out of automatic cancellation, pass `cancellationId: nil` to `forEachRoute`.
 
 
 ## Making complex navigation updates
