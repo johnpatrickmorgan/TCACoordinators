@@ -15,7 +15,7 @@ struct AppCoordinatorView: View {
             .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading)))
         } else {
           LogInCoordinatorView(store: store.scope(state: \.logIn, action: GameApp.Action.logIn))
-            .transition(.asymmetric(insertion: .move(edge: .leading), removal: .move(edge: .trailing)))
+            .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading)))
         }
       }
       .animation(.default, value: viewStore.isLoggedIn)

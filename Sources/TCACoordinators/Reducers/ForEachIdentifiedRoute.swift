@@ -51,7 +51,7 @@ public extension ReducerProtocol where State: IdentifiedRouterState, Action: Ide
   /// Allows a screen reducer to be incorporated into a coordinator reducer, such that each screen in
   /// the coordinator's routes IdentifiedArray will have its actions and state propagated. When screens are
   /// dismissed, the routes will be updated. If a cancellation identifier is passed, in-flight effects
-  /// will be cancelled when a screen is dismissed.
+  /// will be cancelled when the screen from which they originated is dismissed.
   /// - Parameters:
   ///   - cancellationId: An ID to use for cancelling in-flight effects when a view is dismissed. It
   ///   will be combined with the screen's identifier.
@@ -74,10 +74,10 @@ public extension ReducerProtocol where State: IdentifiedRouterState, Action: Ide
   /// Allows a screen reducer to be incorporated into a coordinator reducer, such that each screen in
   /// the coordinator's routes IdentifiedArray will have its actions and state propagated. When screens are
   /// dismissed, the routes will be updated. If a cancellation identifier is passed, in-flight effects
-  /// will be cancelled when a screen is dismissed.
+  /// will be cancelled when the screen from which they originated is dismissed.
   /// - Parameters:
   ///   - cancellationIdType: A type to use for cancelling in-flight effects when a view is dismissed. It
-  ///   will be combined with the screen's identifier.
+  ///   will be combined with the screen's identifier. Defaults to the type of the parent reducer.
   ///   - screenReducer: The reducer that operates on all of the individual screens.
   /// - Returns: A new reducer combining the coordinator-level and screen-level reducers.
   func forEachRoute<ScreenReducer: ReducerProtocol>(

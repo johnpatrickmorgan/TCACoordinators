@@ -41,6 +41,32 @@ final class IndexedRouterTests: XCTestCase {
       $0.routes = [.root(.init(count: 42))]
     }
   }
+  
+  @available(iOS 16.0, *)
+  func testWithDelaysIfUnsupported() async throws {
+    let initialRoutes: [Route<Child.State>] = [
+      .root(.init(count: 1)),
+      .sheet(.init(count: 2)),
+      .sheet(.init(count: 3))
+    ]
+    let scheduler = DispatchQueue.test
+    let store = TestStore(
+      initialState: Parent.State(routes: initialRoutes
+      ),
+      reducer: Parent(scheduler: scheduler)
+    )
+    await store.send(.goBackToRoot)
+    await store.receive(.updateRoutes(initialRoutes))
+    let firstTwo = Array(initialRoutes.prefix(2))
+    await store.receive(.updateRoutes(firstTwo)) {
+      $0.routes = firstTwo
+    }
+    await scheduler.advance(by: .milliseconds(650))
+    let firstOne = Array(initialRoutes.prefix(1))
+    await store.receive(.updateRoutes(firstOne)) {
+      $0.routes = firstOne
+    }
+  }
 }
 
 private struct Child: ReducerProtocol {
@@ -78,11 +104,21 @@ private struct Parent: ReducerProtocol {
   enum Action: IndexedRouterAction, Equatable {
     case routeAction(Int, action: Child.Action)
     case updateRoutes([Route<Child.State>])
+    case goBackToRoot
   }
   let scheduler: TestSchedulerOf<DispatchQueue>
 
   var body: some ReducerProtocol<State, Action> {
-    EmptyReducer().forEachRoute {
+    Reduce { state, action in
+      switch action {
+      case .goBackToRoot:
+        return .routeWithDelaysIfUnsupported(state.routes, scheduler: scheduler.eraseToAnyScheduler()) {
+          $0.goBackToRoot()
+        }
+      default:
+        return .none
+      }
+    }.forEachRoute {
       Child(scheduler: scheduler)
     }
   }

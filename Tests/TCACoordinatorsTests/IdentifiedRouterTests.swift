@@ -41,6 +41,32 @@ final class IdentifiedRouterTests: XCTestCase {
       $0.routes = [.root(.init(id: "first", count: 42))]
     }
   }
+  
+  @available(iOS 16.0, *)
+  func testWithDelaysIfUnsupported() async throws {
+    let initialRoutes: IdentifiedArrayOf<Route<Child.State>> = [
+      .root(.init(id: "first", count: 1)),
+      .sheet(.init(id: "second", count: 2)),
+      .sheet(.init(id: "third", count: 3))
+    ]
+    let scheduler = DispatchQueue.test
+    let store = TestStore(
+      initialState: Parent.State(routes: initialRoutes
+      ),
+      reducer: Parent(scheduler: scheduler)
+    )
+    await store.send(.goBackToRoot)
+    await store.receive(.updateRoutes(initialRoutes))
+    let firstTwo = IdentifiedArrayOf(initialRoutes.prefix(2))
+    await store.receive(.updateRoutes(firstTwo)) {
+      $0.routes = firstTwo
+    }
+    await scheduler.advance(by: .milliseconds(650))
+    let firstOne = IdentifiedArrayOf(initialRoutes.prefix(1))
+    await store.receive(.updateRoutes(firstOne)) {
+      $0.routes = firstOne
+    }
+  }
 }
 
 private struct Child: ReducerProtocol {
@@ -73,18 +99,26 @@ private struct Child: ReducerProtocol {
 
 private struct Parent: ReducerProtocol {
   let scheduler: TestSchedulerOf<DispatchQueue>
-  struct State: Equatable, IdentifiedRouterState {
+  struct State: IdentifiedRouterState, Equatable {
     var routes: IdentifiedArrayOf<Route<Child.State>>
   }
 
   enum Action: IdentifiedRouterAction, Equatable {
     case routeAction(Child.State.ID, action: Child.Action)
     case updateRoutes(IdentifiedArrayOf<Route<Child.State>>)
+    case goBackToRoot
   }
 
   var body: some ReducerProtocol<State, Action> {
-    EmptyReducer().forEachRoute {
-      Child(scheduler: scheduler)
-    }
+    Reduce { state, action in
+      switch action {
+      case .goBackToRoot:
+        return .routeWithDelaysIfUnsupported(state.routes, scheduler: scheduler.eraseToAnyScheduler()) {
+          $0.goBackToRoot()
+        }
+      default:
+        return .none
+      }
+    }.forEachRoute(screenReducer: { Child(scheduler: scheduler) })
   }
 }

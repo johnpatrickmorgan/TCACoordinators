@@ -2,7 +2,7 @@ import ComposableArchitecture
 import Foundation
 
 /// Identifier for a particular route within a particular coordinator.
-struct CancellationIdentity<CoordinatorID: Hashable, RouteID: Hashable>: Hashable {
+public struct CancellationIdentity<CoordinatorID: Hashable, RouteID: Hashable>: Hashable {
   let coordinatorId: CoordinatorID
   let routeId: RouteID
 }
