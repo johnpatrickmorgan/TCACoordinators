@@ -57,12 +57,12 @@ struct Screen: ReducerProtocol {
 
 ### Step 2 - Create a coordinator reducer
 
-The coordinator will manage multiple screens in a navigation flow. Its state should include an array of `Route<Screen.State>`s, representing the navigation stack: i.e. appending a new screen state to this array will trigger the corresponding screen to be pushed or presented. `Route` is an enum whose cases capture the screen state and how it should be shown, e.g. `case push(ScreenState)`. 
+The coordinator will manage multiple screens in a navigation flow. Its state should include an array of `Route<Screen.State>`s, representing the navigation stack: i.e. appending a new screen state to this array will trigger the corresponding screen to be pushed or presented. `Route` is an enum whose cases capture the screen state and how it should be shown, e.g. `case push(Screen.State)`. 
 
 ```swift
 struct Coordinator: ReducerProtocol {
   struct State: Equatable, IndexedRouterState {
-    var routes: [Route<ScreenState>]
+    var routes: [Route<Screen.State>]
   }
   ...
 }
@@ -74,8 +74,8 @@ The coordinator's action should include two special cases. The first includes an
 struct Coordinator: ReducerProtocol {
   ...
   enum Action: IndexedRouterAction {
-    case routeAction(Int, action: ScreenAction)
-    case updateRoutes([Route<ScreenState>])
+    case routeAction(Int, action: Screen.Action)
+    case updateRoutes([Route<Screen.State>])
   }
   ...
 }
