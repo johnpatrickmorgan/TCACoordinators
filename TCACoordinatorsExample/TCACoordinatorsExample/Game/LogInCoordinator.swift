@@ -23,13 +23,12 @@ struct LogInScreen: ReducerProtocol {
   }
 
   var body: some ReducerProtocol<State, Action> {
-    EmptyReducer()
-      .ifCaseLet(/State.welcome, action: /Action.welcome) {
-        Welcome()
-      }
-      .ifCaseLet(/State.logIn, action: /Action.logIn) {
-        LogIn()
-      }
+    Scope(state: /State.welcome, action: /Action.welcome) {
+      Welcome()
+    }
+    Scope(state: /State.logIn, action: /Action.logIn) {
+      LogIn()
+    }
   }
 }
 

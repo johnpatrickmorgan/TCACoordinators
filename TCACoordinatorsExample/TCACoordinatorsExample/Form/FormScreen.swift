@@ -68,18 +68,17 @@ struct FormScreen: ReducerProtocol {
   }
 
   var body: some ReducerProtocol<State, Action> {
-    EmptyReducer<State, Action>()
-      .ifCaseLet(/State.step1, action: /Action.step1) {
-        Step1()
-      }
-      .ifCaseLet(/State.step2, action: /Action.step2) {
-        Step2()
-      }
-      .ifCaseLet(/State.step3, action: /Action.step3) {
-        Step3(mainQueue: environment.mainQueue, getOccupations: environment.getOccupations)
-      }
-      .ifCaseLet(/State.finalScreen, action: /Action.finalScreen) {
-        FinalScreen(mainQueue: environment.mainQueue, submit: environment.submit)
-      }
+    Scope(state: /State.step1, action: /Action.step1) {
+      Step1()
+    }
+    Scope(state: /State.step2, action: /Action.step2) {
+      Step2()
+    }
+    Scope(state: /State.step3, action: /Action.step3) {
+      Step3(mainQueue: environment.mainQueue, getOccupations: environment.getOccupations)
+    }
+    Scope(state: /State.finalScreen, action: /Action.finalScreen) {
+      FinalScreen(mainQueue: environment.mainQueue, submit: environment.submit)
+    }
   }
 }

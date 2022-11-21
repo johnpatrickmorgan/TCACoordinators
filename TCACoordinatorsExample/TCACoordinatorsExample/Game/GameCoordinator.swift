@@ -35,10 +35,9 @@ struct GameScreen: ReducerProtocol {
   }
 
   var body: some ReducerProtocol<State, Action> {
-    EmptyReducer()
-      .ifCaseLet(/State.game, action: /Action.game) {
-        Game()
-      }
+    Scope(state: /State.game, action: /Action.game) {
+      Game()
+    }
   }
 }
 

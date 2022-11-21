@@ -27,16 +27,15 @@ struct Screen: ReducerProtocol {
   }
   
   var body: some ReducerProtocol<State, Action> {
-    EmptyReducer()
-      .ifCaseLet(/State.home, action: /Action.home) {
-        Home()
-      }
-      .ifCaseLet(/State.numbersList, action: /Action.numbersList) {
-        NumbersList()
-      }
-      .ifCaseLet(/State.numberDetail, action: /Action.numberDetail) {
-        NumberDetail()
-      }
+    Scope(state: /State.home, action: /Action.home) {
+      Home()
+    }
+    Scope(state: /State.numbersList, action: /Action.numbersList) {
+      NumbersList()
+    }
+    Scope(state: /State.numberDetail, action: /Action.numberDetail) {
+      NumberDetail()
+    }
   }
 }
 
