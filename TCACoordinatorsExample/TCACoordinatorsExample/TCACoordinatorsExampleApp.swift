@@ -19,7 +19,7 @@ struct TCACoordinatorsExampleApp: App {
 // MainTabCoordinator
 
 struct MainTabCoordinatorView: View {
-  let store: Store<MainTabCoordinator.State, MainTabCoordinator.Action>
+  let store: StoreOf<MainTabCoordinator>
 
   var body: some View {
     TabView {

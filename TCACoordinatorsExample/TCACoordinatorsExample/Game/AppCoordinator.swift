@@ -5,7 +5,7 @@ import TCACoordinators
 // This coordinator shows one of two child coordinators, depending on if logged in. It
 // animates a transition between the two child coordinators.
 struct AppCoordinatorView: View {
-  let store: Store<GameApp.State, GameApp.Action>
+  let store: StoreOf<GameApp>
 
   var body: some View {
     WithViewStore(store, removeDuplicates: { $0.isLoggedIn == $1.isLoggedIn }) { viewStore in

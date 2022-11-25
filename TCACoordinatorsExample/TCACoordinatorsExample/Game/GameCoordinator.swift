@@ -3,7 +3,7 @@ import SwiftUI
 import TCACoordinators
 
 struct GameCoordinatorView: View {
-  let store: Store<GameCoordinator.State, GameCoordinator.Action>
+  let store: StoreOf<GameCoordinator>
 
   var body: some View {
     TCARouter(store) { screen in

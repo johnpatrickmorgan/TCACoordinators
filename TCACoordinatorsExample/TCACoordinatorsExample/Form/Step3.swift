@@ -2,7 +2,7 @@ import ComposableArchitecture
 import SwiftUI
 
 struct Step3View: View {
-  let store: Store<Step3.State, Step3.Action>
+  let store: StoreOf<Step3>
 
   var body: some View {
     WithViewStore(store) { viewStore in

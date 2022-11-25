@@ -3,7 +3,7 @@ import SwiftUI
 import TCACoordinators
 
 struct IndexedCoordinatorView: View {
-  let store: Store<IndexedCoordinator.State, IndexedCoordinator.Action>
+  let store: StoreOf<IndexedCoordinator>
   
   var body: some View {
     TCARouter(store) { screen in

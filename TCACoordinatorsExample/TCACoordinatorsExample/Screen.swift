@@ -42,7 +42,7 @@ struct Screen: ReducerProtocol {
 // Home
 
 struct HomeView: View {
-  let store: Store<Home.State, Home.Action>
+  let store: StoreOf<Home>
   
   var body: some View {
     WithViewStore(store) { viewStore in
@@ -73,7 +73,7 @@ struct Home: ReducerProtocol {
 // NumbersList
 
 struct NumbersListView: View {
-  let store: Store<NumbersList.State, NumbersList.Action>
+  let store: StoreOf<NumbersList>
   
   var body: some View {
     WithViewStore(store) { viewStore in
@@ -107,7 +107,7 @@ struct NumbersList: ReducerProtocol {
 // NumberDetail
 
 struct NumberDetailView: View {
-  let store: Store<NumberDetail.State, NumberDetail.Action>
+  let store: StoreOf<NumberDetail>
   
   var body: some View {
     WithViewStore(store) { viewStore in

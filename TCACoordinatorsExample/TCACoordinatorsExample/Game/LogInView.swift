@@ -5,7 +5,7 @@ import SwiftUI
 struct LogInView: View {
   @State private var name = ""
 
-  let store: Store<LogIn.State, LogIn.Action>
+  let store: StoreOf<LogIn>
 
   var body: some View {
     WithViewStore(store) { viewStore in

@@ -3,7 +3,7 @@ import Foundation
 import SwiftUI
 
 struct WelcomeView: View {
-  let store: Store<Welcome.State, Welcome.Action>
+  let store: StoreOf<Welcome>
 
   var body: some View {
     WithViewStore(store) { viewStore in

@@ -18,7 +18,7 @@ struct Step1: ReducerProtocol {
 }
 
 struct Step1View: View {
-  let store: Store<Step1.State, Step1.Action>
+  let store: StoreOf<Step1>
 
   var body: some View {
     WithViewStore(store) { viewStore in
