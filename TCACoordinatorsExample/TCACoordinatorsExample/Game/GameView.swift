@@ -6,7 +6,7 @@ import UIKit
 // Adapted from: https://github.com/pointfreeco/swift-composable-architecture/tree/main/Examples/TicTacToe/tic-tac-toe/Sources/GameCore
 
 struct GameView: UIViewControllerRepresentable {
-  let store: Store<Game.State, Game.Action>
+  let store: StoreOf<Game>
 
   typealias UIViewControllerType = GameViewController
 
@@ -18,7 +18,7 @@ struct GameView: UIViewControllerRepresentable {
 }
 
 final class GameViewController: UIViewController {
-  let store: Store<Game.State, Game.Action>
+  let store: StoreOf<Game>
   let viewStore: ViewStore<ViewState, Game.Action>
   let _viewStore: ViewStore<Game.State, Game.Action>
   private var cancellables: Set<AnyCancellable> = []
@@ -42,7 +42,7 @@ final class GameViewController: UIViewController {
     }
   }
 
-  init(store: Store<Game.State, Game.Action>) {
+  init(store: StoreOf<Game>) {
     self.store = store
     self.viewStore = ViewStore(store.scope(state: ViewState.init))
     self._viewStore = ViewStore(store)

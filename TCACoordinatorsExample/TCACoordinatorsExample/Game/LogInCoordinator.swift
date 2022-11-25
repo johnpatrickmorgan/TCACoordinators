@@ -33,7 +33,7 @@ struct LogInScreen: ReducerProtocol {
 }
 
 struct LogInCoordinatorView: View {
-  let store: Store<LogInCoordinator.State, LogInCoordinator.Action>
+  let store: StoreOf<LogInCoordinator>
 
   var body: some View {
     TCARouter(store) { screen in

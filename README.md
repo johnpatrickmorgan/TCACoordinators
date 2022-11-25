@@ -127,7 +127,7 @@ With that in place, a `CoordinatorView` can be created. It will use a `TCARouter
 
 ```swift
 struct CoordinatorView: View {
-  let store: Store<Coordinator.State, Coordinator.Action>
+  let store: StoreOf<Coordinator>
 
   var body: some View {
     TCARouter(store) { screen in

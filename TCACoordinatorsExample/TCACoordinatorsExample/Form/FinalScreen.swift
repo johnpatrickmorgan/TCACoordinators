@@ -2,7 +2,7 @@ import ComposableArchitecture
 import SwiftUI
 
 struct FinalScreenView: View {
-  let store: Store<FinalScreen.State, FinalScreen.Action>
+  let store: StoreOf<FinalScreen>
 
   var body: some View {
     WithViewStore(store) { viewStore in

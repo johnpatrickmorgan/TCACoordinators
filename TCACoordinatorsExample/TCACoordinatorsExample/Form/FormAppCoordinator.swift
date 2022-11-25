@@ -110,7 +110,7 @@ struct FormAppCoordinator: ReducerProtocol {
 }
 
 struct FormAppCoordinatorView: View {
-  let store: Store<FormAppCoordinator.State, FormAppCoordinator.Action>
+  let store: StoreOf<FormAppCoordinator>
 
   var body: some View {
     TCARouter(store) { screen in
