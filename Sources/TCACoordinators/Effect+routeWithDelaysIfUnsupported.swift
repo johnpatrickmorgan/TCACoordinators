@@ -5,7 +5,7 @@ import Foundation
 import SwiftUI
 import CombineSchedulers
 
-public extension Effect where Output: IndexedRouterAction, Failure == Never {
+public extension EffectPublisher where Action: IndexedRouterAction, Failure == Never {
   /// Allows arbitrary changes to be made to the routes collection, even if SwiftUI does not support such changes within a single
   /// state update. For example, SwiftUI only supports pushing, presenting or dismissing one screen at a time. Any changes can be
   /// made to the routes passed to the transform closure, and where those changes are not supported within a single update by
@@ -38,7 +38,7 @@ public extension Effect where Output: IndexedRouterAction, Failure == Never {
   }
 }
 
-public extension Effect where Output: IdentifiedRouterAction, Failure == Never {
+public extension EffectPublisher where Action: IdentifiedRouterAction, Failure == Never {
   /// Allows arbitrary changes to be made to the routes collection, even if SwiftUI does not support such changes within a single
   /// state update. For example, SwiftUI only supports pushing, presenting or dismissing one screen at a time. Any changes can be
   /// made to the routes passed to the transform closure, and where those changes are not supported within a single update by
@@ -70,21 +70,6 @@ public extension Effect where Output: IdentifiedRouterAction, Failure == Never {
     return routeWithDelaysIfUnsupported(routes, scheduler: DispatchQueue.main.eraseToAnyScheduler(), transform)
   }
 }
-
-///// Transforms a series of steps into an AnyPublisher of those steps, each one delayed in time.
-//func scheduledSteps<Screen>(steps: [[Route<Screen>]]) -> AnyPublisher<[Route<Screen>], Never> {
-//  guard let head = steps.first else {
-//    return Empty().eraseToAnyPublisher()
-//  }
-//
-//  let timer = Just(Date())
-//    .append(Timer.publish(every: 0.65, on: .main, in: .default).autoconnect())
-//  let tail = Publishers.Zip(steps.dropFirst().publisher, timer)
-//    .map { $0.0 }
-//  return Just(head)
-//    .append(tail)
-//    .eraseToAnyPublisher()
-//}
 
 /// Transforms a series of steps into an AnyPublisher of those steps, each one delayed in time.
 func scheduledSteps<Screen>(steps: [[Route<Screen>]], scheduler: AnySchedulerOf<DispatchQueue>) -> AnyPublisher<[Route<Screen>], Never> {
