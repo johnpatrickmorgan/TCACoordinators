@@ -24,8 +24,8 @@
         "repositoryURL": "https://github.com/pointfreeco/swift-case-paths",
         "state": {
           "branch": null,
-          "revision": "bb436421f57269fbcfe7360735985321585a86e5",
-          "version": "0.10.1"
+          "revision": "c3a42e8d1a76ff557cf565ed6d8b0aee0e6e75af",
+          "version": "0.11.0"
         }
       },
       {
@@ -42,8 +42,8 @@
         "repositoryURL": "https://github.com/apple/swift-collections",
         "state": {
           "branch": null,
-          "revision": "f504716c27d2e5d4144fa4794b12129301d17729",
-          "version": "1.0.3"
+          "revision": "937e904258d22af6e447a0b72c0bc67583ef64a2",
+          "version": "1.0.4"
         }
       },
       {
@@ -51,8 +51,8 @@
         "repositoryURL": "https://github.com/pointfreeco/swift-composable-architecture",
         "state": {
           "branch": null,
-          "revision": "1fcd53fc875bade47d850749ea53c324f74fd64d",
-          "version": "0.45.0"
+          "revision": "1b998c43b3b3505876db6f66e03243dd2453e93a",
+          "version": "0.50.3"
         }
       },
       {
@@ -60,8 +60,17 @@
         "repositoryURL": "https://github.com/pointfreeco/swift-custom-dump",
         "state": {
           "branch": null,
-          "revision": "ead7d30cc224c3642c150b546f4f1080d1c411a8",
-          "version": "0.6.1"
+          "revision": "dd86159e25c749873f144577e5d18309bf57534f",
+          "version": "0.8.0"
+        }
+      },
+      {
+        "package": "swift-dependencies",
+        "repositoryURL": "https://github.com/pointfreeco/swift-dependencies",
+        "state": {
+          "branch": null,
+          "revision": "8282b0c59662eb38946afe30eb403663fc2ecf76",
+          "version": "0.1.4"
         }
       },
       {
@@ -69,8 +78,17 @@
         "repositoryURL": "https://github.com/pointfreeco/swift-identified-collections",
         "state": {
           "branch": null,
-          "revision": "bfb0d43e75a15b6dfac770bf33479e8393884a36",
-          "version": "0.4.1"
+          "revision": "ad3932d28c2e0a009a0167089619526709ef6497",
+          "version": "0.7.0"
+        }
+      },
+      {
+        "package": "swiftui-navigation",
+        "repositoryURL": "https://github.com/pointfreeco/swiftui-navigation",
+        "state": {
+          "branch": null,
+          "revision": "270a754308f5440be52fc295242eb7031638bd15",
+          "version": "0.6.1"
         }
       },
       {
@@ -78,8 +96,8 @@
         "repositoryURL": "https://github.com/pointfreeco/xctest-dynamic-overlay",
         "state": {
           "branch": null,
-          "revision": "16e6409ee82e1b81390bdffbf217b9c08ab32784",
-          "version": "0.5.0"
+          "revision": "ace21305e0dd3a9e749aef79fef14be79a3b4669",
+          "version": "0.8.2"
         }
       }
     ]
