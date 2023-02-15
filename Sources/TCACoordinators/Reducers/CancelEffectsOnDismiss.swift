@@ -73,7 +73,7 @@ struct CancelTaggedRouteEffectsOnDismiss<CoordinatorReducer: ReducerProtocol, Co
     let effect = coordinatorReducer.reduce(into: &state, action: action)
     let postRoutes = routes(state)
 
-    var effects: [Effect<Action, Never>] = [effect]
+    var effects: [EffectTask<Action>] = [effect]
 
     let preIds = zip(preRoutes, preRoutes.indices).map(getIdentifier)
     let postIds = zip(postRoutes, postRoutes.indices).map(getIdentifier)
@@ -81,9 +81,9 @@ struct CancelTaggedRouteEffectsOnDismiss<CoordinatorReducer: ReducerProtocol, Co
     let dismissedIds = Set(preIds).subtracting(postIds)
     for dismissedId in dismissedIds {
       let identity = CancellationIdentity(coordinatorId: coordinatorId, routeId: dismissedId)
-      effects.append(Effect<Action, Never>.cancel(id: AnyHashable(identity)))
+      effects.append(EffectTask<Action>.cancel(id: AnyHashable(identity)))
     }
 
-    return Effect.merge(effects)
+    return EffectTask.merge(effects)
   }
 }
