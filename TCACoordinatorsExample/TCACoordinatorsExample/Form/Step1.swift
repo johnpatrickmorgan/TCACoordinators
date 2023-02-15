@@ -3,8 +3,8 @@ import SwiftUI
 
 struct Step1: ReducerProtocol {
   public struct State: Equatable {
-    @BindableState var firstName: String = ""
-    @BindableState var lastName: String = ""
+    @BindingState var firstName: String = ""
+    @BindingState var lastName: String = ""
   }
 
   public enum Action: Equatable, BindableAction {

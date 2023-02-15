@@ -30,7 +30,7 @@ struct Step2View: View {
 
 struct Step2: ReducerProtocol {
   public struct State: Equatable {
-    @BindableState var dateOfBirth: Date = .now
+    @BindingState var dateOfBirth: Date = .now
   }
 
   public enum Action: Equatable, BindableAction {

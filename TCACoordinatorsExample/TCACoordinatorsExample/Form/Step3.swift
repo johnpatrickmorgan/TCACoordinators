@@ -59,7 +59,7 @@ struct Step3: ReducerProtocol {
   }
 
   let mainQueue: AnySchedulerOf<DispatchQueue>
-  let getOccupations: () -> Effect<[String], Never>
+  let getOccupations: () -> EffectTask<[String]>
 
   var body: some ReducerProtocol<State, Action> {
     Reduce { state, action in

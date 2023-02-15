@@ -116,7 +116,7 @@ struct FinalScreen: ReducerProtocol {
   }
 
   let mainQueue: AnySchedulerOf<DispatchQueue>
-  let submit: (APIModel) -> Effect<Bool, Never>
+  let submit: (APIModel) -> EffectTask<Bool>
 
   var body: some ReducerProtocol<State, Action> {
     Reduce { state, action in

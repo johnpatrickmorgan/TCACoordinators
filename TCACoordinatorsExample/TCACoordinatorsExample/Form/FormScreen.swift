@@ -3,8 +3,8 @@ import Foundation
 
 struct FormScreenEnvironment {
   let mainQueue: AnySchedulerOf<DispatchQueue>
-  let getOccupations: () -> Effect<[String], Never>
-  let submit: (APIModel) -> Effect<Bool, Never>
+  let getOccupations: () -> EffectTask<[String]>
+  let submit: (APIModel) -> EffectTask<Bool>
 
   static let test = FormScreenEnvironment(
     mainQueue: .main,

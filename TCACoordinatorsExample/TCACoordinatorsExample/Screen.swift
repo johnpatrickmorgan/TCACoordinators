@@ -159,7 +159,7 @@ struct NumberDetail: ReducerProtocol {
         return .none
         
       case .incrementAfterDelayTapped:
-        return Effect(value: NumberDetail.Action.incrementTapped)
+        return EffectTask(value: NumberDetail.Action.incrementTapped)
           .delay(for: 3.0, tolerance: nil, scheduler: DispatchQueue.main, options: nil)
           .eraseToEffect()
         
