@@ -34,7 +34,7 @@ public extension ReducerProtocol {
     toLocalState: WritableKeyPath<Self.State, IdentifiedArrayOf<Route<ScreenReducer.State>>>,
     toLocalAction: CasePath<Self.Action, (ScreenReducer.State.ID, ScreenReducer.Action)>,
     updateRoutes: CasePath<Self.Action, IdentifiedArrayOf<Route<ScreenReducer.State>>>,
-    @ReducerBuilderOf<ScreenReducer> screenReducer: () -> ScreenReducer
+    @ReducerBuilder<ScreenReducer.State, ScreenReducer.Action> screenReducer: () -> ScreenReducer
   ) -> some ReducerProtocol<State, Action> where ScreenReducer.State: Identifiable {
     return ForEachIdentifiedRoute(
       coordinatorReducer: self,
@@ -59,7 +59,7 @@ public extension ReducerProtocol where State: IdentifiedRouterState, Action: Ide
   /// - Returns: A new reducer combining the coordinator-level and screen-level reducers.
   func forEachRoute<ScreenReducer: ReducerProtocol, CoordinatorID: Hashable>(
     cancellationId: CoordinatorID?,
-    @ReducerBuilderOf<ScreenReducer> screenReducer: () -> ScreenReducer
+    @ReducerBuilder<ScreenReducer.State, ScreenReducer.Action> screenReducer: () -> ScreenReducer
   ) -> some ReducerProtocol<State, Action> where ScreenReducer.State: Identifiable, State.Screen == ScreenReducer.State, ScreenReducer.Action == Action.ScreenAction {
     return ForEachIdentifiedRoute(
       coordinatorReducer: self,
@@ -82,7 +82,7 @@ public extension ReducerProtocol where State: IdentifiedRouterState, Action: Ide
   /// - Returns: A new reducer combining the coordinator-level and screen-level reducers.
   func forEachRoute<ScreenReducer: ReducerProtocol>(
     cancellationIdType: Any.Type = Self.self,
-    @ReducerBuilderOf<ScreenReducer> screenReducer: () -> ScreenReducer
+    @ReducerBuilder<ScreenReducer.State, ScreenReducer.Action> screenReducer: () -> ScreenReducer
   ) -> some ReducerProtocol<State, Action> where ScreenReducer.State: Identifiable, State.Screen == ScreenReducer.State, ScreenReducer.Action == Action.ScreenAction {
     return ForEachIdentifiedRoute(
       coordinatorReducer: self,
