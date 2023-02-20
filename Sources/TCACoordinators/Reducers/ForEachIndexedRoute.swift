@@ -4,30 +4,27 @@ import Foundation
 struct ForEachIndexedRoute<CoordinatorReducer: ReducerProtocol, ScreenReducer: ReducerProtocol, CoordinatorID: Hashable>: ReducerProtocol {
   let coordinatorReducer: CoordinatorReducer
   let screenReducer: ScreenReducer
-  let coordinatorIdForCancellation: CoordinatorID?
+  let cancellationId: CoordinatorID?
   let toLocalState: WritableKeyPath<CoordinatorReducer.State, [Route<ScreenReducer.State>]>
   let toLocalAction: CasePath<CoordinatorReducer.Action, (Int, ScreenReducer.Action)>
   let updateRoutes: CasePath<CoordinatorReducer.Action, [Route<ScreenReducer.State>]>
-
-  var reducer: AnyReducer<CoordinatorReducer.State, CoordinatorReducer.Action, Void> {
-    AnyReducer<ScreenReducer.State, ScreenReducer.Action, Void>(screenReducer)
-      .forEachIndexedRoute(
-        state: toLocalState,
-        action: toLocalAction,
-        updateRoutes: updateRoutes,
-        environment: { _ in }
-      )
-      .withRouteReducer(
-        routes: { $0[keyPath: toLocalState] },
-        routeAction: toLocalAction,
-        coordinatorIdForCancellation: coordinatorIdForCancellation,
-        getIdentifier: { _, index in index },
-        routeReducer: AnyReducer(coordinatorReducer)
-      )
-  }
-
+  
   var body: some ReducerProtocol<CoordinatorReducer.State, CoordinatorReducer.Action> {
-    Reduce(reducer, environment: ())
+    CancelEffectsOnDismiss(
+      coordinatedScreensReducer: EmptyReducer()
+        .forEachIndex(toLocalState, action: toLocalAction) {
+          OnRoutes(wrapped: screenReducer)
+        }
+        .updatingRoutesOnInteraction(
+          updateRoutes: updateRoutes,
+          toLocalState: toLocalState
+        ),
+      routes: { $0[keyPath: toLocalState] },
+      routeAction: toLocalAction,
+      cancellationId: cancellationId,
+      getIdentifier: { _, index in index },
+      coordinatorReducer: coordinatorReducer
+    )
   }
 }
 
@@ -42,7 +39,7 @@ public extension ReducerProtocol {
     return ForEachIndexedRoute(
       coordinatorReducer: self,
       screenReducer: screenReducer(),
-      coordinatorIdForCancellation: coordinatorIdForCancellation,
+      cancellationId: coordinatorIdForCancellation,
       toLocalState: toLocalState,
       toLocalAction: toLocalAction,
       updateRoutes: updateRoutes
@@ -69,7 +66,7 @@ public extension ReducerProtocol where State: IndexedRouterState, Action: Indexe
     return ForEachIndexedRoute(
       coordinatorReducer: self,
       screenReducer: screenReducer(),
-      coordinatorIdForCancellation: coordinatorIdForCancellation,
+      cancellationId: coordinatorIdForCancellation,
       toLocalState: \.routes,
       toLocalAction: /Action.routeAction,
       updateRoutes: /Action.updateRoutes
@@ -94,7 +91,7 @@ public extension ReducerProtocol where State: IndexedRouterState, Action: Indexe
     return ForEachIndexedRoute(
       coordinatorReducer: self,
       screenReducer: screenReducer(),
-      coordinatorIdForCancellation: ObjectIdentifier(cancellationIdType),
+      cancellationId: ObjectIdentifier(cancellationIdType),
       toLocalState: \.routes,
       toLocalAction: /Action.routeAction,
       updateRoutes: /Action.updateRoutes
