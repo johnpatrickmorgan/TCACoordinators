@@ -8,55 +8,74 @@ struct AppCoordinatorView: View {
   let store: StoreOf<GameApp>
 
   var body: some View {
-    WithViewStore(store, removeDuplicates: { $0.isLoggedIn == $1.isLoggedIn }) { viewStore in
-      VStack {
-        if viewStore.isLoggedIn {
-          GameCoordinatorView(store: store.scope(state: \.game, action: GameApp.Action.game))
-            .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading)))
-        } else {
-          LogInCoordinatorView(store: store.scope(state: \.logIn, action: GameApp.Action.logIn))
-            .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading)))
-        }
+    TCARouter(store) { screen in
+      SwitchStore(screen) {
+        CaseLet(
+          state: /GameApp.Screen.State.logIn,
+          action: GameApp.Screen.Action.logIn,
+          then: LogInCoordinatorView.init
+        )
+        CaseLet(
+          state: /GameApp.Screen.State.game,
+          action: GameApp.Screen.Action.game,
+          then: GameCoordinatorView.init
+        )
       }
-      .animation(.default, value: viewStore.isLoggedIn)
     }
   }
 }
 
 struct GameApp: ReducerProtocol {
-  struct State: Equatable {
-    static let initialState = State(logIn: .initialState, game: .initialState(), isLoggedIn: false)
+  struct Screen: ReducerProtocol {
+    enum State: Equatable {
+      case logIn(LogInCoordinator.State)
+      case game(GameCoordinator.State)
+    }
 
-    var logIn: LogInCoordinator.State
-    var game: GameCoordinator.State
+    enum Action {
+      case logIn(LogInCoordinator.Action)
+      case game(GameCoordinator.Action)
+    }
 
-    var isLoggedIn: Bool
+    var body: some ReducerProtocol<State, Action> {
+      Scope(state: /State.logIn, action: /Action.logIn) {
+        LogInCoordinator()
+      }
+      Scope(state: /State.game, action: /Action.game) {
+        GameCoordinator()
+      }
+    }
   }
 
-  enum Action {
-    case logIn(LogInCoordinator.Action)
-    case game(GameCoordinator.Action)
+  struct State: Equatable, IndexedRouterState {
+    static let initialState = State(routes: [.root(.logIn(.initialState))])
+
+    var routes: [Route<Screen.State>]
+  }
+
+  enum Action: IndexedRouterAction {
+    case routeAction(_ index: Int, action: Screen.Action)
+    case updateRoutes(_ screens: [Route<Screen.State>])
   }
 
   var body: some ReducerProtocol<State, Action> {
-    Scope(state: \.logIn, action: /Action.logIn) {
-      LogInCoordinator()
-    }
-    Scope(state: \.game, action: /Action.game) {
-      GameCoordinator()
-    }
     Reduce<State, Action> { state, action in
       switch action {
-      case .logIn(.routeAction(_, .logIn(.logInTapped(let name)))):
-        state.game = .initialState(playerName: name)
-        state.isLoggedIn = true
-      case .game(.routeAction(_, .game(.logOutButtonTapped))):
-        state.logIn = .initialState
-        state.isLoggedIn = false
+      case .routeAction(_, let action):
+        switch action {
+        case .logIn(.routeAction(_, .logIn(.logInTapped(let name)))):
+          state.routes = [.root(.game(.initialState(playerName: name)))]
+        case .game(.routeAction(_, .game(.logOutButtonTapped))):
+          state.routes = [.root(.logIn(.initialState))]
+        default:
+          break
+        }
       default:
         break
       }
       return .none
+    }.forEachRoute {
+      Screen()
     }
   }
 }

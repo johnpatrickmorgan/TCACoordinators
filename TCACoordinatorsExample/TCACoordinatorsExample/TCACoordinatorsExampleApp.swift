@@ -22,32 +22,12 @@ struct MainTabCoordinatorView: View {
   let store: StoreOf<MainTabCoordinator>
 
   var body: some View {
-    TabView {
-      IndexedCoordinatorView(
-        store: store.scope(
-          state: \MainTabCoordinator.State.indexed,
-          action: MainTabCoordinator.Action.indexed
-        )
-      ).tabItem { Text("Indexed") }
-      IdentifiedCoordinatorView(
-        store: store.scope(
-          state: \MainTabCoordinator.State.identified,
-          action: MainTabCoordinator.Action.identified
-        )
-      ).tabItem { Text("Identified") }
-      AppCoordinatorView(
-        store: store.scope(
-          state: \MainTabCoordinator.State.app,
-          action: MainTabCoordinator.Action.app
-        )
-      ).tabItem { Text("Game") }
-      FormAppCoordinatorView(
-        store: store.scope(
-          state: \MainTabCoordinator.State.form,
-          action: MainTabCoordinator.Action.form
-        )
-      ).tabItem { Text("Form") }
-    }
+    AppCoordinatorView(
+      store: store.scope(
+        state: \MainTabCoordinator.State.app,
+        action: MainTabCoordinator.Action.app
+      )
+    )
   }
 }
 
