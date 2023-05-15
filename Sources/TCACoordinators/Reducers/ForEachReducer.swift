@@ -100,7 +100,6 @@ public func runtimeWarn(
 ) {
   #if DEBUG
     let message = message()
-    let category = "TCACoordinators"
     if _XCTIsTesting {
       if let file = file, let line = line {
         XCTFail(message, file: file, line: line)
