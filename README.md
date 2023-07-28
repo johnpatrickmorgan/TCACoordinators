@@ -140,7 +140,7 @@ struct CoordinatorView: View {
             then: HomeView.init
           )
 
-				case .numbersList:
+        case .numbersList:
           CaseLet(
             /Screen.State.numbersList,
             action: Screen.Action.numbersList,
