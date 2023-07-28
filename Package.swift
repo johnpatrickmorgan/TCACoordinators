@@ -10,11 +10,12 @@ let package = Package(
   products: [
     .library(
       name: "TCACoordinators",
-      targets: ["TCACoordinators"]),
+      targets: ["TCACoordinators"]
+    ),
   ],
   dependencies: [
     .package(url: "https://github.com/johnpatrickmorgan/FlowStacks", from: "0.3.0"),
-    .package(url: "https://github.com/pointfreeco/swift-composable-architecture", .branch("release/1.0")),
+    .package(url: "https://github.com/pointfreeco/swift-composable-architecture", from: "0.57.0"),
   ],
   targets: [
     .target(
@@ -22,9 +23,11 @@ let package = Package(
       dependencies: [
         .product(name: "FlowStacks", package: "FlowStacks"),
         .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
-      ]),
+      ]
+    ),
     .testTarget(
       name: "TCACoordinatorsTests",
-      dependencies: ["TCACoordinators"]),
+      dependencies: ["TCACoordinators"]
+    ),
   ]
 )
