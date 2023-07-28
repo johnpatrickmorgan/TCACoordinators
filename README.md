@@ -28,7 +28,7 @@ The library works by translating the array of screens into a hierarchy of nested
 First, identify all possible screens that are part of the particular navigation flow you're modelling. The goal will be to combine their reducers into a single reducer - one that can drive the behaviour of any of those screens. Both the state and action types will be the sum of the individual screens' state and action types, and the reducer will combine each individual screens' reducers into one:
 
 ```swift
-struct Screen: ReducerProtocol {
+struct Screen: Reducer {
   enum State: Equatable {
     case home(Home.State)
     case numbersList(NumbersList.State)
@@ -40,7 +40,7 @@ struct Screen: ReducerProtocol {
     case numberDetail(NumberDetail.Action)
   }
   
-  var body: some ReducerProtocol<State, Action> {
+  var body: some ReducerOf<Self> {
     Scope(state: /State.home, action: /Action.home) {
       Home()
     }
@@ -59,7 +59,7 @@ struct Screen: ReducerProtocol {
 The coordinator will manage multiple screens in a navigation flow. Its state should include an array of `Route<Screen.State>`s, representing the navigation stack: i.e. appending a new screen state to this array will trigger the corresponding screen to be pushed or presented. `Route` is an enum whose cases capture the screen state and how it should be shown, e.g. `case push(Screen.State)`. 
 
 ```swift
-struct Coordinator: ReducerProtocol {
+struct Coordinator: Reducer {
   struct State: Equatable, IndexedRouterState {
     var routes: [Route<Screen.State>]
   }
@@ -70,7 +70,7 @@ struct Coordinator: ReducerProtocol {
 The coordinator's action should include two special cases. The first includes an index to allow screen actions to be dispatched to the correct screen in the routes array. The second allows the routes array to be updated automatically, e.g. when a user taps 'Back':
 
 ```swift
-struct Coordinator: ReducerProtocol {
+struct Coordinator: Reducer {
   ...
   enum Action: IndexedRouterAction {
     case routeAction(Int, action: Screen.Action)
@@ -83,10 +83,10 @@ struct Coordinator: ReducerProtocol {
 The coordinator reducer defines any logic for presenting and dismissing screens, and uses `forEachRoute` to further apply the `Screen` reducer to each screen in the `routes` array:
 
 ```swift
-struct Coordinator: ReducerProtocol {
+struct Coordinator: Reducer {
   ...
-  var body: some ReducerProtocol<State, Action> {
-    return Reduce<State, Action> { state, action in
+  var body: some ReducerOf<Self> {
+    Reduce<State, Action> { state, action in
       switch action {
       case .routeAction(_, .home(.startTapped)):
         state.routes.presentSheet(.numbersList(.init(numbers: Array(0 ..< 4))), embedInNavigationView: true)
@@ -131,22 +131,29 @@ struct CoordinatorView: View {
 
   var body: some View {
     TCARouter(store) { screen in
-      SwitchStore(screen) {
-        CaseLet(
-          state: /Screen.State.home,
-          action: Screen.Action.home,
-          then: HomeView.init
-        )
-        CaseLet(
-          state: /Screen.State.numbersList,
-          action: Screen.Action.numbersList,
-          then: NumbersListView.init
-        )
-        CaseLet(
-          state: /Screen.State.numberDetail,
-          action: Screen.Action.numberDetail,
-          then: NumberDetailView.init
-        )
+      SwitchStore(screen) { screen in
+        switch screen {
+        case .home:
+          CaseLet(
+            /Screen.State.home,
+            action: Screen.Action.home,
+            then: HomeView.init
+          )
+
+				case .numbersList:
+          CaseLet(
+            /Screen.State.numbersList,
+            action: Screen.Action.numbersList,
+            then: NumbersListView.init
+          )
+        
+        case .numberDetail:
+          CaseLet(
+            /Screen.State.numberDetail,
+            action: Screen.Action.numberDetail,
+            then: NumberDetailView.init
+          )
+        }
       }
     }
   }
