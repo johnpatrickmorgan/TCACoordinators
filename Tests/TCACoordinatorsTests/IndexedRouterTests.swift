@@ -4,16 +4,22 @@ import XCTest
 
 @MainActor
 final class IndexedRouterTests: XCTestCase {
-  func testActionPropagation() {
-    let scheduler = DispatchQueue.test
-    let store = TestStore(
-      initialState: Parent.State(routes: [.root(.init(count: 42)), .sheet(.init(count: 11))]),
-      reducer: Parent(scheduler: scheduler)
-    )
-    store.send(.routeAction(0, action: .increment)) {
+	func testActionPropagation() async {
+		let scheduler = DispatchQueue.test
+		let store = TestStore(
+			initialState: Parent.State(
+				routes: [
+					.root(.init(count: 42)),
+					.sheet(.init(count: 11))
+				]
+			)
+		) {
+			Parent(scheduler: scheduler)
+		}
+    await store.send(.routeAction(0, action: .increment)) {
       $0.routes[0].screen.count += 1
     }
-    store.send(.routeAction(1, action: .increment)) {
+    await store.send(.routeAction(1, action: .increment)) {
       $0.routes[1].screen.count += 1
     }
   }
@@ -26,9 +32,10 @@ final class IndexedRouterTests: XCTestCase {
           .root(.init(count: 42)),
           .sheet(.init(count: 11))
         ]
-      ),
-      reducer: Parent(scheduler: scheduler)
-    )
+      )
+		) {
+			Parent(scheduler: scheduler)
+		}
     // Expect increment action after 1 second.
     await store.send(.routeAction(1, action: .incrementLaterTapped))
     await scheduler.advance(by: .seconds(1))
@@ -50,11 +57,9 @@ final class IndexedRouterTests: XCTestCase {
       .sheet(.init(count: 3))
     ]
     let scheduler = DispatchQueue.test
-    let store = TestStore(
-      initialState: Parent.State(routes: initialRoutes
-      ),
-      reducer: Parent(scheduler: scheduler)
-    )
+		let store = TestStore(initialState: Parent.State(routes: initialRoutes)) {
+			Parent(scheduler: scheduler)
+		}
     await store.send(.goBackToRoot)
     await store.receive(.updateRoutes(initialRoutes))
     let firstTwo = Array(initialRoutes.prefix(2))
@@ -80,16 +85,16 @@ private struct Child: ReducerProtocol {
     case increment
   }
 
-  var body: some ReducerProtocol<State, Action> {
+  var body: some ReducerProtocolOf<Self> {
     Reduce { state, action in
       switch action {
       case .increment:
         state.count += 1
         return .none
       case .incrementLaterTapped:
-        return .task {
+        return .run { send in
           try await scheduler.sleep(for: .seconds(1))
-          return .increment
+          await send(.increment)
         }
       }
     }
@@ -108,7 +113,7 @@ private struct Parent: ReducerProtocol {
   }
   let scheduler: TestSchedulerOf<DispatchQueue>
 
-  var body: some ReducerProtocol<State, Action> {
+  var body: some ReducerProtocolOf<Self> {
     Reduce { state, action in
       switch action {
       case .goBackToRoot:
