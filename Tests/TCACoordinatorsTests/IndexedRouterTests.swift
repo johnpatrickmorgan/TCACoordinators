@@ -60,7 +60,7 @@ final class IndexedRouterTests: XCTestCase {
 		let store = TestStore(initialState: Parent.State(routes: initialRoutes)) {
 			Parent(scheduler: scheduler)
 		}
-    await store.send(.goBackToRoot)
+    let goBackToRoot = await store.send(.goBackToRoot)
     await store.receive(.updateRoutes(initialRoutes))
     let firstTwo = Array(initialRoutes.prefix(2))
     await store.receive(.updateRoutes(firstTwo)) {
@@ -71,6 +71,7 @@ final class IndexedRouterTests: XCTestCase {
     await store.receive(.updateRoutes(firstOne)) {
       $0.routes = firstOne
     }
+		await goBackToRoot.cancel()
   }
 }
 
