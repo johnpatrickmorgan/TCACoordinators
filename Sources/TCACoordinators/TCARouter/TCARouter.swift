@@ -18,7 +18,7 @@ public struct TCARouter<
   let action: (ID, ScreenAction) -> CoordinatorAction
   let identifier: (Screen, Int) -> ID
 
-	@ObservedObject private var viewStore: ViewStore<CoordinatorState, CoordinatorAction>
+  @ObservedObject private var viewStore: ViewStore<CoordinatorState, CoordinatorAction>
   @ViewBuilder var screenContent: (Store<Screen, ScreenAction>) -> ScreenContent
 
   func scopedStore(index: Int, screen: Screen) -> Store<Screen, ScreenAction> {
@@ -36,30 +36,30 @@ public struct TCARouter<
   }
 
   public var body: some View {
-		Router(
-			viewStore.binding(get: routes, send: updateRoutes),
-			buildView: { screen, index in
-				screenContent(scopedStore(index: index, screen: screen))
-			}
-		)
+    Router(
+      viewStore.binding(get: routes, send: updateRoutes),
+      buildView: { screen, index in
+        screenContent(scopedStore(index: index, screen: screen))
+      }
+    )
   }
 
-	public init(
-		store: Store<CoordinatorState, CoordinatorAction>,
-		routes: @escaping (CoordinatorState) -> [Route<Screen>],
-		updateRoutes: @escaping ([Route<Screen>]) -> CoordinatorAction,
-		action: @escaping (ID, ScreenAction) -> CoordinatorAction,
-		identifier: @escaping (Screen, Int) -> ID,
-		screenContent: @escaping (Store<Screen, ScreenAction>) -> ScreenContent
-	) {
-		self.store = store
-		self.routes = routes
-		self.updateRoutes = updateRoutes
-		self.action = action
-		self.identifier = identifier
-		self.screenContent = screenContent
-		self.viewStore = ViewStore(store, observe: { $0 }, removeDuplicates: { routes($0).map(\.style) == routes($1).map(\.style) })
-	}
+  public init(
+    store: Store<CoordinatorState, CoordinatorAction>,
+    routes: @escaping (CoordinatorState) -> [Route<Screen>],
+    updateRoutes: @escaping ([Route<Screen>]) -> CoordinatorAction,
+    action: @escaping (ID, ScreenAction) -> CoordinatorAction,
+    identifier: @escaping (Screen, Int) -> ID,
+    screenContent: @escaping (Store<Screen, ScreenAction>) -> ScreenContent
+  ) {
+    self.store = store
+    self.routes = routes
+    self.updateRoutes = updateRoutes
+    self.action = action
+    self.identifier = identifier
+    self.screenContent = screenContent
+    self.viewStore = ViewStore(store, observe: { $0 }, removeDuplicates: { routes($0).map(\.style) == routes($1).map(\.style) })
+  }
 }
 
 public extension TCARouter where Screen: Identifiable {

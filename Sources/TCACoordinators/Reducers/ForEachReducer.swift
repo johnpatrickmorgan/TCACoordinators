@@ -6,9 +6,8 @@ import ComposableArchitecture
 /// their Array index in case they move position, but if the only changes made to the Array are
 /// index-stable, e.g. pushes and pops, then that's not a problem.
 /// https://github.com/pointfreeco/swift-composable-architecture/blob/f7c75217a8087167aacbdad3fe4950867f468a52/Sources/ComposableArchitecture/Internal/Deprecations.swift#L704-L765
-extension ReducerProtocol {
-  
-  func forEachIndex<ElementState, ElementAction, Element: ReducerProtocol>(
+extension Reducer {
+  func forEachIndex<ElementState, ElementAction, Element: Reducer>(
     _ toElementsState: WritableKeyPath<State, [ElementState]>,
     action toElementAction: CasePath<Action, (Int, ElementAction)>,
     @ReducerBuilder<ElementState, ElementAction> element: () -> Element,
@@ -30,8 +29,8 @@ extension ReducerProtocol {
 }
 
 struct _ForEachIndexReducer<
-  Parent: ReducerProtocol, Element: ReducerProtocol
->: ReducerProtocol {
+  Parent: Reducer, Element: Reducer
+>: Reducer {
   let parent: Parent
   let toElementsState: WritableKeyPath<Parent.State, [Element.State]>
   let toElementAction: CasePath<Parent.Action, (Int, Element.Action)>
@@ -57,17 +56,17 @@ struct _ForEachIndexReducer<
     self.fileID = fileID
     self.line = line
   }
-  
-  public func reduce(
-    into state: inout Parent.State, action: Parent.Action
-  ) -> EffectTask<Parent.Action> {
-    self.reduceForEach(into: &state, action: action)
-      .merge(with: self.parent.reduce(into: &state, action: action))
+
+  public var body: some ReducerOf<Parent> {
+    Reduce { state, action in
+      reduceForEach(into: &state, action: action)
+        .merge(with: parent.reduce(into: &state, action: action))
+    }
   }
-  
+
   func reduceForEach(
     into state: inout Parent.State, action: Parent.Action
-  ) -> EffectTask<Parent.Action> {
+  ) -> Effect<Parent.Action> {
     guard let (index, elementAction) = self.toElementAction.extract(from: action) else { return .none }
     let array = state[keyPath: self.toElementsState]
     if array[safe: index] == nil {
@@ -98,16 +97,16 @@ public func runtimeWarn(
   file: StaticString? = nil,
   line: UInt? = nil
 ) {
-  #if DEBUG
-    let message = message()
-    if _XCTIsTesting {
-      if let file = file, let line = line {
-        XCTFail(message, file: file, line: line)
-      } else {
-        XCTFail(message)
-      }
+#if DEBUG
+  let message = message()
+  if _XCTIsTesting {
+    if let file, let line {
+      XCTFail(message, file: file, line: line)
     } else {
-      fputs("[TCACoordinators] \(message)\n", stderr)
+      XCTFail(message)
     }
-  #endif
+  } else {
+    fputs("[TCACoordinators] \(message)\n", stderr)
+  }
+#endif
 }

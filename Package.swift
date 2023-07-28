@@ -14,7 +14,7 @@ let package = Package(
   ],
   dependencies: [
     .package(url: "https://github.com/johnpatrickmorgan/FlowStacks", from: "0.3.0"),
-    .package(url: "https://github.com/pointfreeco/swift-composable-architecture", .branch("prerelease/1.0")),
+    .package(url: "https://github.com/pointfreeco/swift-composable-architecture", .branch("release/1.0")),
   ],
   targets: [
     .target(
@@ -26,4 +26,5 @@ let package = Package(
     .testTarget(
       name: "TCACoordinatorsTests",
       dependencies: ["TCACoordinators"]),
-  ])
+  ]
+)
