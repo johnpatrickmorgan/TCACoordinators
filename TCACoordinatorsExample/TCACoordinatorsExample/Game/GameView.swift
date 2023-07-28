@@ -34,18 +34,18 @@ final class GameViewController: UIViewController {
       self.isGameEnabled = !state.board.hasWinner && !state.board.isFilled
       self.isPlayAgainButtonHidden = !state.board.hasWinner && !state.board.isFilled
       self.title =
-        state.board.hasWinner
-          ? "Winner! Congrats \(state.currentPlayerName)!"
-          : state.board.isFilled
-          ? "Tied game!"
-          : "\(state.currentPlayerName), place your \(state.currentPlayer.label)"
+      state.board.hasWinner
+      ? "Winner! Congrats \(state.currentPlayerName)!"
+      : state.board.isFilled
+      ? "Tied game!"
+      : "\(state.currentPlayerName), place your \(state.currentPlayer.label)"
     }
   }
 
   init(store: StoreOf<Game>) {
     self.store = store
-    self.viewStore = ViewStore(store.scope(state: ViewState.init))
-    self._viewStore = ViewStore(store)
+    self.viewStore = ViewStore(store, observe: ViewState.init)
+    self._viewStore = ViewStore(store, observe: { $0 })
     super.init(nibName: nil, bundle: nil)
   }
 
@@ -200,7 +200,7 @@ final class GameViewController: UIViewController {
   }
 }
 
-struct Game: ReducerProtocol {
+struct Game: Reducer {
   struct State: Equatable {
     let id = UUID()
     var board: Three<Three<Player?>> = .empty
@@ -228,7 +228,7 @@ struct Game: ReducerProtocol {
     case quitButtonTapped
   }
 
-  var body: some ReducerProtocol<State, Action> {
+  var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
       case let .cellTapped(row, column):
@@ -350,12 +350,12 @@ extension Three where Element == Three<Player?> {
 
     for condition in winConditions {
       let matches =
-        condition
-          .map { self[$0 % 3][$0 / 3] }
+      condition
+        .map { self[$0 % 3][$0 / 3] }
       let matchCount =
-        matches
-          .filter { $0 == player }
-          .count
+      matches
+        .filter { $0 == player }
+        .count
 
       if matchCount == 3 {
         return true

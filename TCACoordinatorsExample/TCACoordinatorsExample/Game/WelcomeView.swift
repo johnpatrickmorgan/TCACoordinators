@@ -6,19 +6,17 @@ struct WelcomeView: View {
   let store: StoreOf<Welcome>
 
   var body: some View {
-    WithViewStore(store) { viewStore in
-      VStack {
-        Text("Welcome").font(.headline)
-        Button("Log in", action: {
-          viewStore.send(.logInTapped)
-        })
+    VStack {
+      Text("Welcome").font(.headline)
+      Button("Log in") {
+        store.send(.logInTapped)
       }
     }
     .navigationTitle("Welcome")
   }
 }
 
-struct Welcome: ReducerProtocol {
+struct Welcome: Reducer {
   struct State: Equatable {
     let id = UUID()
   }
@@ -27,7 +25,7 @@ struct Welcome: ReducerProtocol {
     case logInTapped
   }
 
-  var body: some ReducerProtocol<State, Action> {
+  var body: some ReducerOf<Self> {
     EmptyReducer()
   }
 }

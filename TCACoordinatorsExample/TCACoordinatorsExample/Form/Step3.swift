@@ -5,7 +5,7 @@ struct Step3View: View {
   let store: StoreOf<Step3>
 
   var body: some View {
-    WithViewStore(store) { viewStore in
+    WithViewStore(store, observe: { $0 }) { viewStore in
       Form {
         Section {
           if !viewStore.occupations.isEmpty {
@@ -45,7 +45,7 @@ struct Step3View: View {
   }
 }
 
-struct Step3: ReducerProtocol {
+struct Step3: Reducer {
   struct State: Equatable {
     var selectedOccupation: String?
     var occupations: [String] = []
@@ -53,23 +53,22 @@ struct Step3: ReducerProtocol {
 
   enum Action: Equatable {
     case getOccupations
-    case receiveOccupations(Result<[String], Never>)
+    case receiveOccupations([String])
     case selectOccupation(String)
     case nextButtonTapped
   }
 
-  let mainQueue: AnySchedulerOf<DispatchQueue>
-  let getOccupations: () -> EffectTask<[String]>
+  let getOccupations: () async -> [String]
 
-  var body: some ReducerProtocol<State, Action> {
+  var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
       case .getOccupations:
-        return getOccupations()
-          .receive(on: mainQueue)
-          .catchToEffect(Action.receiveOccupations)
+        return .run { send in
+          await send(.receiveOccupations(getOccupations()))
+        }
 
-      case .receiveOccupations(.success(let occupations)):
+      case .receiveOccupations(let occupations):
         state.occupations = occupations
         return .none
 

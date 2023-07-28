@@ -2,31 +2,25 @@ import ComposableArchitecture
 import Foundation
 
 struct FormScreenEnvironment {
-  let mainQueue: AnySchedulerOf<DispatchQueue>
-  let getOccupations: () -> EffectTask<[String]>
-  let submit: (APIModel) -> EffectTask<Bool>
+  let getOccupations: () async -> [String]
+  let submit: (APIModel) async -> Bool
 
   static let test = FormScreenEnvironment(
-    mainQueue: .main,
     getOccupations: {
-      .task {
-        [
-          "iOS Developer",
-          "Android Developer",
-          "Web Developer",
-          "Project Manager",
-          "Designer",
-          "The Big Cheese"
-        ]
-      }
+      [
+        "iOS Developer",
+        "Android Developer",
+        "Web Developer",
+        "Project Manager",
+        "Designer",
+        "The Big Cheese"
+      ]
     },
-    submit: { _ in
-      .task { true }
-    }
+    submit: { _ in true }
   )
 }
 
-struct FormScreen: ReducerProtocol {
+struct FormScreen: Reducer {
   let environment: FormScreenEnvironment
 
   enum State: Equatable, Identifiable {
@@ -67,7 +61,7 @@ struct FormScreen: ReducerProtocol {
     case finalScreen(FinalScreen.Action)
   }
 
-  var body: some ReducerProtocol<State, Action> {
+  var body: some ReducerOf<Self> {
     Scope(state: /State.step1, action: /Action.step1) {
       Step1()
     }
@@ -75,10 +69,10 @@ struct FormScreen: ReducerProtocol {
       Step2()
     }
     Scope(state: /State.step3, action: /Action.step3) {
-      Step3(mainQueue: environment.mainQueue, getOccupations: environment.getOccupations)
+      Step3(getOccupations: environment.getOccupations)
     }
     Scope(state: /State.finalScreen, action: /Action.finalScreen) {
-      FinalScreen(mainQueue: environment.mainQueue, submit: environment.submit)
+      FinalScreen(submit: environment.submit)
     }
   }
 }

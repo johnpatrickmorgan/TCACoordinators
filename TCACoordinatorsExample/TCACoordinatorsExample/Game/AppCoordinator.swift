@@ -8,9 +8,9 @@ struct AppCoordinatorView: View {
   let store: StoreOf<GameApp>
 
   var body: some View {
-    WithViewStore(store, removeDuplicates: { $0.isLoggedIn == $1.isLoggedIn }) { viewStore in
+    WithViewStore(store, observe: { $0.isLoggedIn }) { viewStore in
       VStack {
-        if viewStore.isLoggedIn {
+        if viewStore.state {
           GameCoordinatorView(store: store.scope(state: \.game, action: GameApp.Action.game))
             .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading)))
         } else {
@@ -18,12 +18,12 @@ struct AppCoordinatorView: View {
             .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading)))
         }
       }
-      .animation(.default, value: viewStore.isLoggedIn)
+      .animation(.default, value: viewStore.state)
     }
   }
 }
 
-struct GameApp: ReducerProtocol {
+struct GameApp: Reducer {
   struct State: Equatable {
     static let initialState = State(logIn: .initialState, game: .initialState(), isLoggedIn: false)
 
@@ -38,7 +38,7 @@ struct GameApp: ReducerProtocol {
     case game(GameCoordinator.Action)
   }
 
-  var body: some ReducerProtocol<State, Action> {
+  var body: some ReducerOf<Self> {
     Scope(state: \.logIn, action: /Action.logIn) {
       LogInCoordinator()
     }

@@ -5,12 +5,12 @@ struct Step2View: View {
   let store: StoreOf<Step2>
 
   var body: some View {
-    WithViewStore(store) { viewStore in
+    WithViewStore(store, observe: { $0 }) { viewStore in
       Form {
         Section {
           DatePicker(
             "Date of Birth",
-            selection: viewStore.binding(\.$dateOfBirth),
+            selection: viewStore.$dateOfBirth,
             in: ...Date.now,
             displayedComponents: .date
           )
@@ -28,7 +28,7 @@ struct Step2View: View {
   }
 }
 
-struct Step2: ReducerProtocol {
+struct Step2: Reducer {
   public struct State: Equatable {
     @BindingState var dateOfBirth: Date = .now
   }
@@ -38,7 +38,7 @@ struct Step2: ReducerProtocol {
     case nextButtonTapped
   }
 
-  var body: some ReducerProtocol<State, Action> {
+  var body: some ReducerOf<Self> {
     BindingReducer()
   }
 }
