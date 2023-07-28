@@ -3,7 +3,7 @@ import Foundation
 
 extension Reducer {
   @ReducerBuilder<State, Action>
-	func updatingRoutesOnInteraction<Routes>(updateRoutes: CasePath<Action, Routes>, toLocalState: WritableKeyPath<State, Routes>) -> some ReducerOf<Self> {
+  func updatingRoutesOnInteraction<Routes>(updateRoutes: CasePath<Action, Routes>, toLocalState: WritableKeyPath<State, Routes>) -> some ReducerOf<Self> {
     self
     UpdateRoutesOnInteraction(
       wrapped: self,
@@ -18,12 +18,12 @@ struct UpdateRoutesOnInteraction<WrappedReducer: Reducer, Routes>: Reducer {
   let updateRoutes: CasePath<Action, Routes>
   let toLocalState: WritableKeyPath<State, Routes>
 
-	var body: some ReducerOf<WrappedReducer> {
-		Reduce { state, action in
-			if let routes = updateRoutes.extract(from: action) {
-				state[keyPath: toLocalState] = routes
-			}
-			return .none
-		}
-	}
+  var body: some ReducerOf<WrappedReducer> {
+    Reduce { state, action in
+      if let routes = updateRoutes.extract(from: action) {
+        state[keyPath: toLocalState] = routes
+      }
+      return .none
+    }
+  }
 }
