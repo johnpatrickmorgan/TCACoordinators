@@ -12,22 +12,22 @@ struct IndexedCoordinatorView: View {
         case .home:
           CaseLet(
             /Screen.State.home,
-             action: Screen.Action.home,
-             then: HomeView.init
+            action: Screen.Action.home,
+            then: HomeView.init
           )
 
         case .numbersList:
           CaseLet(
             /Screen.State.numbersList,
-             action: Screen.Action.numbersList,
-             then: NumbersListView.init
+            action: Screen.Action.numbersList,
+            then: NumbersListView.init
           )
 
         case .numberDetail:
           CaseLet(
             /Screen.State.numberDetail,
-             action: Screen.Action.numberDetail,
-             then: NumberDetailView.init
+            action: Screen.Action.numberDetail,
+            then: NumberDetailView.init
           )
         }
       }
@@ -59,7 +59,7 @@ struct IndexedCoordinator: Reducer {
         state.routes.push(.numberDetail(.init(number: number)))
 
       case .routeAction(_, .numberDetail(.showDouble(let number))):
-        state.routes.presentSheet(.numberDetail(.init(number: number * 2)))
+        state.routes.presentSheet(.numberDetail(.init(number: number * 2)), embedInNavigationView: true)
 
       case .routeAction(_, .numberDetail(.goBackTapped)):
         state.routes.goBack()

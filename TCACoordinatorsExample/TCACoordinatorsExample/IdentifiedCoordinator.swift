@@ -63,7 +63,7 @@ struct IdentifiedCoordinator: Reducer {
         state.routes.push(.numberDetail(.init(number: number)))
 
       case .routeAction(_, .numberDetail(.showDouble(let number))):
-        state.routes.presentSheet(.numberDetail(.init(number: number * 2)))
+        state.routes.presentSheet(.numberDetail(.init(number: number * 2)), embedInNavigationView: true)
 
       case .routeAction(_, .numberDetail(.goBackTapped)):
         state.routes.goBack()
