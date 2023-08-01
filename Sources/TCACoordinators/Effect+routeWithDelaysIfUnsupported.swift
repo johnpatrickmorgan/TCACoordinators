@@ -76,17 +76,21 @@ public extension Effect where Action: IdentifiedRouterAction, Failure == Never {
 }
 
 func scheduledSteps<Screen>(steps: [[Route<Screen>]], scheduler: AnySchedulerOf<DispatchQueue>) -> AsyncStream<[Route<Screen>]> {
-  guard let head = steps.first else { return .finished }
-  let tail = steps.dropFirst()
+  guard let first = steps.first else { return .finished }
+  let second = steps.dropFirst().first
+  let remainder = steps.dropFirst(2)
 
   return AsyncStream { continuation in
     Task {
       do {
-        continuation.yield(head)
+        continuation.yield(first)
+        if let second {
+          continuation.yield(second)
+        }
 
-        for step in tail {
-          continuation.yield(step)
+        for step in remainder {
           try await scheduler.sleep(for: .milliseconds(650))
+          continuation.yield(step)
         }
 
         continuation.finish()

@@ -20,7 +20,6 @@ struct GameView: UIViewControllerRepresentable {
 final class GameViewController: UIViewController {
   let store: StoreOf<Game>
   let viewStore: ViewStore<ViewState, Game.Action>
-  let _viewStore: ViewStore<Game.State, Game.Action>
   private var cancellables: Set<AnyCancellable> = []
 
   struct ViewState: Equatable {
@@ -45,7 +44,6 @@ final class GameViewController: UIViewController {
   init(store: StoreOf<Game>) {
     self.store = store
     self.viewStore = ViewStore(store, observe: ViewState.init)
-    self._viewStore = ViewStore(store, observe: { $0 })
     super.init(nibName: nil, bundle: nil)
   }
 

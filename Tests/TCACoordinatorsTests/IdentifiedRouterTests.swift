@@ -71,7 +71,7 @@ final class IdentifiedRouterTests: XCTestCase {
     await store.receive(.updateRoutes(firstOne)) {
       $0.routes = firstOne
     }
-    await goBackToRoot.cancel()
+    await goBackToRoot.finish()
   }
 }
 
