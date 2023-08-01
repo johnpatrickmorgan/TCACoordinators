@@ -1,7 +1,7 @@
 import ComposableArchitecture
 import SwiftUI
 
-struct Step1: ReducerProtocol {
+struct Step1: Reducer {
   public struct State: Equatable {
     @BindingState var firstName: String = ""
     @BindingState var lastName: String = ""
@@ -12,7 +12,7 @@ struct Step1: ReducerProtocol {
     case nextButtonTapped
   }
 
-  var body: some ReducerProtocol<State, Action> {
+  var body: some ReducerOf<Self> {
     BindingReducer()
   }
 }
@@ -21,10 +21,10 @@ struct Step1View: View {
   let store: StoreOf<Step1>
 
   var body: some View {
-    WithViewStore(store) { viewStore in
+    WithViewStore(store, observe: { $0 }) { viewStore in
       Form {
-        TextField("First Name", text: viewStore.binding(\.$firstName))
-        TextField("Last Name", text: viewStore.binding(\.$lastName))
+        TextField("First Name", text: viewStore.$firstName)
+        TextField("Last Name", text: viewStore.$lastName)
 
         Section {
           Button("Next") {

@@ -7,10 +7,9 @@ struct TCACoordinatorsExampleApp: App {
   var body: some Scene {
     WindowGroup {
       MainTabCoordinatorView(
-        store: .init(
-          initialState: .initialState,
-          reducer: MainTabCoordinator()
-        )
+        store: Store(initialState: .initialState) {
+          MainTabCoordinator()
+        }
       )
     }
   }
@@ -26,8 +25,8 @@ struct MainTabCoordinatorView: View {
       TabView(selection: viewStore.binding(get: { $0 }, send: MainTabCoordinator.Action.tabSelected)) {
         IndexedCoordinatorView(
           store: store.scope(
-            state: \MainTabCoordinator.State.indexed,
-            action: MainTabCoordinator.Action.indexed
+            state: { $0.indexed },
+            action: { .indexed($0) }
           )
         )
         .tabItem { Text("Indexed") }
@@ -35,8 +34,8 @@ struct MainTabCoordinatorView: View {
 
         IdentifiedCoordinatorView(
           store: store.scope(
-            state: \MainTabCoordinator.State.identified,
-            action: MainTabCoordinator.Action.identified
+            state: { $0.identified },
+            action: { .identified($0) }
           )
         )
         .tabItem { Text("Identified") }
@@ -44,8 +43,8 @@ struct MainTabCoordinatorView: View {
 
         AppCoordinatorView(
           store: store.scope(
-            state: \MainTabCoordinator.State.app,
-            action: MainTabCoordinator.Action.app
+            state: { $0.app },
+            action: { .app($0) }
           )
         )
         .tabItem { Text("Game") }
@@ -53,8 +52,8 @@ struct MainTabCoordinatorView: View {
 
         FormAppCoordinatorView(
           store: store.scope(
-            state: \MainTabCoordinator.State.form,
-            action: MainTabCoordinator.Action.form
+            state: { $0.form },
+            action: { .form($0) }
           )
         )
         .tabItem { Text("Form") }
@@ -69,7 +68,7 @@ struct MainTabCoordinatorView: View {
   }
 }
 
-struct MainTabCoordinator: ReducerProtocol {
+struct MainTabCoordinator: Reducer {
   enum Tab: Hashable {
     case identified, indexed, app, form, deeplinkOpened
   }
@@ -104,7 +103,7 @@ struct MainTabCoordinator: ReducerProtocol {
     var selectedTab: Tab
   }
 
-  var body: some ReducerProtocol<State, Action> {
+  var body: some ReducerOf<Self> {
     Scope(state: \.indexed, action: /Action.indexed) {
       IndexedCoordinator()
     }

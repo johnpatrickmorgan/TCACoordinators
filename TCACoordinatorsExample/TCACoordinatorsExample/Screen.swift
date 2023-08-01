@@ -2,7 +2,7 @@ import ComposableArchitecture
 import Foundation
 import SwiftUI
 
-struct Screen: ReducerProtocol {
+struct Screen: Reducer {
   enum Action {
     case home(Home.Action)
     case numbersList(NumbersList.Action)
@@ -13,7 +13,7 @@ struct Screen: ReducerProtocol {
     case home(Home.State)
     case numbersList(NumbersList.State)
     case numberDetail(NumberDetail.State)
-    
+
     var id: UUID {
       switch self {
       case .home(let state):
@@ -25,8 +25,8 @@ struct Screen: ReducerProtocol {
       }
     }
   }
-  
-  var body: some ReducerProtocol<State, Action> {
+
+  var body: some ReducerOf<Self> {
     Scope(state: /State.home, action: /Action.home) {
       Home()
     }
@@ -43,20 +43,18 @@ struct Screen: ReducerProtocol {
 
 struct HomeView: View {
   let store: StoreOf<Home>
-  
+
   var body: some View {
-    WithViewStore(store) { viewStore in
-      VStack {
-        Button("Start", action: {
-          viewStore.send(.startTapped)
-        })
+    VStack {
+      Button("Start") {
+        store.send(.startTapped)
       }
     }
     .navigationTitle("Home")
   }
 }
 
-struct Home: ReducerProtocol {
+struct Home: Reducer {
   struct State: Equatable {
     let id = UUID()
   }
@@ -64,8 +62,8 @@ struct Home: ReducerProtocol {
   enum Action {
     case startTapped
   }
-  
-  var body: some ReducerProtocol<State, Action> {
+
+  var body: some ReducerOf<Self> {
     EmptyReducer()
   }
 }
@@ -74,10 +72,10 @@ struct Home: ReducerProtocol {
 
 struct NumbersListView: View {
   let store: StoreOf<NumbersList>
-  
+
   var body: some View {
-    WithViewStore(store) { viewStore in
-      List(viewStore.numbers, id: \.self) { number in
+    WithViewStore(store, observe: \.numbers) { viewStore in
+      List(viewStore.state, id: \.self) { number in
         Button(
           "\(number)",
           action: {
@@ -89,7 +87,7 @@ struct NumbersListView: View {
   }
 }
 
-struct NumbersList: ReducerProtocol {
+struct NumbersList: Reducer {
   struct State: Equatable {
     let id = UUID()
     let numbers: [Int]
@@ -98,8 +96,8 @@ struct NumbersList: ReducerProtocol {
   enum Action {
     case numberSelected(Int)
   }
-  
-  var body: some ReducerProtocol<State, Action> {
+
+  var body: some ReducerOf<Self> {
     EmptyReducer()
   }
 }
@@ -108,11 +106,11 @@ struct NumbersList: ReducerProtocol {
 
 struct NumberDetailView: View {
   let store: StoreOf<NumberDetail>
-  
+
   var body: some View {
-    WithViewStore(store) { viewStore in
+    WithViewStore(store, observe: \.number) { viewStore in
       VStack(spacing: 8.0) {
-        Text("Number \(viewStore.number)")
+        Text("Number \(viewStore.state)")
         Button("Increment") {
           viewStore.send(.incrementTapped)
         }
@@ -120,7 +118,7 @@ struct NumberDetailView: View {
           viewStore.send(.incrementAfterDelayTapped)
         }
         Button("Show double") {
-          viewStore.send(.showDouble(viewStore.number))
+          viewStore.send(.showDouble(viewStore.state))
         }
         Button("Go back") {
           viewStore.send(.goBackTapped)
@@ -132,12 +130,12 @@ struct NumberDetailView: View {
           viewStore.send(.goBackToNumbersList)
         }
       }
-      .navigationTitle("Number \(viewStore.number)")
+      .navigationTitle("Number \(viewStore.state)")
     }
   }
 }
 
-struct NumberDetail: ReducerProtocol {
+struct NumberDetail: Reducer {
   struct State: Equatable {
     let id = UUID()
     var number: Int
@@ -152,17 +150,20 @@ struct NumberDetail: ReducerProtocol {
     case showDouble(Int)
   }
 
-  var body: some ReducerProtocol<State, Action> {
+  @Dependency(\.mainQueue) var mainQueue
+
+  var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
       case .goBackToRootTapped, .goBackTapped, .goBackToNumbersList, .showDouble:
         return .none
         
       case .incrementAfterDelayTapped:
-        return EffectTask(value: NumberDetail.Action.incrementTapped)
-          .delay(for: 3.0, tolerance: nil, scheduler: DispatchQueue.main, options: nil)
-          .eraseToEffect()
-        
+        return .run { send in
+          try await mainQueue.sleep(for: .seconds(3))
+          await send(.incrementTapped)
+        }
+
       case .incrementTapped:
         state.number += 1
         return .none

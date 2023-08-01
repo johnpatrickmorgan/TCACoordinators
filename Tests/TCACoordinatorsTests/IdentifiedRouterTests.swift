@@ -4,16 +4,22 @@ import XCTest
 
 @MainActor
 final class IdentifiedRouterTests: XCTestCase {
-  func testActionPropagation() {
+  func testActionPropagation() async {
     let scheduler = DispatchQueue.test
     let store = TestStore(
-      initialState: Parent.State(routes: [.root(.init(id: "first", count: 42)), .sheet(.init(id: "second", count: 11))]),
-      reducer: Parent(scheduler: scheduler)
-    )
-    store.send(.routeAction("first", action: .increment)) {
+      initialState: Parent.State(
+        routes: [
+          .root(.init(id: "first", count: 42)),
+          .sheet(.init(id: "second", count: 11))
+        ]
+      )
+    ) {
+      Parent(scheduler: scheduler)
+    }
+    await store.send(.routeAction("first", action: .increment)) {
       $0.routes[id: "first"]?.screen.count += 1
     }
-    store.send(.routeAction("second", action: .increment)) {
+    await store.send(.routeAction("second", action: .increment)) {
       $0.routes[id: "second"]?.screen.count += 1
     }
   }
@@ -26,9 +32,10 @@ final class IdentifiedRouterTests: XCTestCase {
           .root(.init(id: "first", count: 42)),
           .sheet(.init(id: "second", count: 11))
         ]
-      ),
-      reducer: Parent(scheduler: scheduler)
-    )
+      )
+    ) {
+      Parent(scheduler: scheduler)
+    }
     // Expect increment action after 1 second.
     await store.send(.routeAction("second", action: .incrementLaterTapped))
     await scheduler.advance(by: .seconds(1))
@@ -41,7 +48,7 @@ final class IdentifiedRouterTests: XCTestCase {
       $0.routes = [.root(.init(id: "first", count: 42))]
     }
   }
-  
+
   @available(iOS 16.0, *)
   func testWithDelaysIfUnsupported() async throws {
     let initialRoutes: IdentifiedArrayOf<Route<Child.State>> = [
@@ -50,12 +57,10 @@ final class IdentifiedRouterTests: XCTestCase {
       .sheet(.init(id: "third", count: 3))
     ]
     let scheduler = DispatchQueue.test
-    let store = TestStore(
-      initialState: Parent.State(routes: initialRoutes
-      ),
-      reducer: Parent(scheduler: scheduler)
-    )
-    await store.send(.goBackToRoot)
+    let store = TestStore(initialState: Parent.State(routes: initialRoutes)) {
+      Parent(scheduler: scheduler)
+    }
+    let goBackToRoot = await store.send(.goBackToRoot)
     await store.receive(.updateRoutes(initialRoutes))
     let firstTwo = IdentifiedArrayOf(initialRoutes.prefix(2))
     await store.receive(.updateRoutes(firstTwo)) {
@@ -66,10 +71,11 @@ final class IdentifiedRouterTests: XCTestCase {
     await store.receive(.updateRoutes(firstOne)) {
       $0.routes = firstOne
     }
+    await goBackToRoot.finish()
   }
 }
 
-private struct Child: ReducerProtocol {
+private struct Child: Reducer {
   let scheduler: TestSchedulerOf<DispatchQueue>
   struct State: Equatable, Identifiable {
     var id: String
@@ -81,23 +87,23 @@ private struct Child: ReducerProtocol {
     case increment
   }
 
-  var body: some ReducerProtocol<State, Action> {
+  var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
       case .increment:
         state.count += 1
         return .none
       case .incrementLaterTapped:
-        return .task {
+        return .run { send in
           try await scheduler.sleep(for: .seconds(1))
-          return .increment
+          await send(.increment)
         }
       }
     }
   }
 }
 
-private struct Parent: ReducerProtocol {
+private struct Parent: Reducer {
   let scheduler: TestSchedulerOf<DispatchQueue>
   struct State: IdentifiedRouterState, Equatable {
     var routes: IdentifiedArrayOf<Route<Child.State>>
@@ -109,7 +115,7 @@ private struct Parent: ReducerProtocol {
     case goBackToRoot
   }
 
-  var body: some ReducerProtocol<State, Action> {
+  var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
       case .goBackToRoot:
@@ -119,6 +125,9 @@ private struct Parent: ReducerProtocol {
       default:
         return .none
       }
-    }.forEachRoute(screenReducer: { Child(scheduler: scheduler) })
+    }
+    .forEachRoute {
+      Child(scheduler: scheduler)
+    }
   }
 }

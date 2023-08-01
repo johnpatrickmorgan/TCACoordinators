@@ -7,28 +7,35 @@ struct IdentifiedCoordinatorView: View {
 
   var body: some View {
     TCARouter(store) { screen in
-      SwitchStore(screen) {
-        CaseLet(
-          state: /Screen.State.home,
-          action: Screen.Action.home,
-          then: HomeView.init
-        )
-        CaseLet(
-          state: /Screen.State.numbersList,
-          action: Screen.Action.numbersList,
-          then: NumbersListView.init
-        )
-        CaseLet(
-          state: /Screen.State.numberDetail,
-          action: Screen.Action.numberDetail,
-          then: NumberDetailView.init
-        )
+      SwitchStore(screen) { screen in
+        switch screen {
+        case .home:
+          CaseLet(
+            /Screen.State.home,
+             action: Screen.Action.home,
+             then: HomeView.init
+          )
+
+        case .numbersList:
+          CaseLet(
+            /Screen.State.numbersList,
+             action: Screen.Action.numbersList,
+             then: NumbersListView.init
+          )
+
+        case .numberDetail:
+          CaseLet(
+            /Screen.State.numberDetail,
+             action: Screen.Action.numberDetail,
+             then: NumberDetailView.init
+          )
+        }
       }
     }
   }
 }
 
-struct IdentifiedCoordinator: ReducerProtocol {
+struct IdentifiedCoordinator: Reducer {
   enum Deeplink {
     case showNumber(Int)
   }
@@ -46,8 +53,8 @@ struct IdentifiedCoordinator: ReducerProtocol {
     case updateRoutes(IdentifiedArrayOf<Route<Screen.State>>)
   }
 
-  var body: some ReducerProtocol<State, Action> {
-    return Reduce<State, Action> { state, action in
+  var body: some ReducerOf<Self> {
+    Reduce<State, Action> { state, action in
       switch action {
       case .routeAction(_, .home(.startTapped)):
         state.routes.presentSheet(.numbersList(.init(numbers: Array(0 ..< 4))), embedInNavigationView: true)
@@ -56,7 +63,7 @@ struct IdentifiedCoordinator: ReducerProtocol {
         state.routes.push(.numberDetail(.init(number: number)))
 
       case .routeAction(_, .numberDetail(.showDouble(let number))):
-        state.routes.presentSheet(.numberDetail(.init(number: number * 2)))
+        state.routes.presentSheet(.numberDetail(.init(number: number * 2)), embedInNavigationView: true)
 
       case .routeAction(_, .numberDetail(.goBackTapped)):
         state.routes.goBack()

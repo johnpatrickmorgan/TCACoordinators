@@ -1,7 +1,7 @@
 import ComposableArchitecture
 import Foundation
 
-struct ForEachIdentifiedRoute<CoordinatorReducer: ReducerProtocol, ScreenReducer: ReducerProtocol, CoordinatorID: Hashable>: ReducerProtocol where ScreenReducer.State: Identifiable {
+struct ForEachIdentifiedRoute<CoordinatorReducer: Reducer, ScreenReducer: Reducer, CoordinatorID: Hashable>: Reducer where ScreenReducer.State: Identifiable {
   let coordinatorReducer: CoordinatorReducer
   let screenReducer: ScreenReducer
   let cancellationId: CoordinatorID?
@@ -9,7 +9,7 @@ struct ForEachIdentifiedRoute<CoordinatorReducer: ReducerProtocol, ScreenReducer
   let toLocalAction: CasePath<CoordinatorReducer.Action, (ScreenReducer.State.ID, ScreenReducer.Action)>
   let updateRoutes: CasePath<CoordinatorReducer.Action, IdentifiedArrayOf<Route<ScreenReducer.State>>>
 
-  var body: some ReducerProtocol<CoordinatorReducer.State, CoordinatorReducer.Action> {
+  var body: some ReducerOf<CoordinatorReducer> {
     CancelEffectsOnDismiss(
       coordinatedScreensReducer: EmptyReducer()
         .forEach(toLocalState, action: toLocalAction) {
@@ -28,16 +28,19 @@ struct ForEachIdentifiedRoute<CoordinatorReducer: ReducerProtocol, ScreenReducer
   }
 }
 
-public extension ReducerProtocol {
-  func forEachRoute<ScreenReducer: ReducerProtocol, ScreenState, ScreenAction, CoordinatorID: Hashable>(
+public extension Reducer {
+  func forEachRoute<ScreenReducer: Reducer, ScreenState, ScreenAction, CoordinatorID: Hashable>(
     cancellationId: CoordinatorID?,
     toLocalState: WritableKeyPath<Self.State, IdentifiedArrayOf<Route<ScreenReducer.State>>>,
     toLocalAction: CasePath<Self.Action, (ScreenReducer.State.ID, ScreenReducer.Action)>,
     updateRoutes: CasePath<Self.Action, IdentifiedArrayOf<Route<ScreenReducer.State>>>,
     @ReducerBuilder<ScreenState, ScreenAction> screenReducer: () -> ScreenReducer
-  ) -> some ReducerProtocol<State, Action>
-    where ScreenReducer.State: Identifiable, ScreenState == ScreenReducer.State, ScreenAction == ScreenReducer.Action {
-    return ForEachIdentifiedRoute(
+  ) -> some ReducerOf<Self>
+  where ScreenReducer.State: Identifiable,
+        ScreenState == ScreenReducer.State,
+        ScreenAction == ScreenReducer.Action
+  {
+    ForEachIdentifiedRoute(
       coordinatorReducer: self,
       screenReducer: screenReducer(),
       cancellationId: cancellationId,
@@ -48,7 +51,7 @@ public extension ReducerProtocol {
   }
 }
 
-public extension ReducerProtocol where State: IdentifiedRouterState, Action: IdentifiedRouterAction, State.Screen == Action.Screen {
+public extension Reducer where State: IdentifiedRouterState, Action: IdentifiedRouterAction, State.Screen == Action.Screen {
   /// Allows a screen reducer to be incorporated into a coordinator reducer, such that each screen in
   /// the coordinator's routes IdentifiedArray will have its actions and state propagated. When screens are
   /// dismissed, the routes will be updated. If a cancellation identifier is passed, in-flight effects
@@ -58,13 +61,17 @@ public extension ReducerProtocol where State: IdentifiedRouterState, Action: Ide
   ///   will be combined with the screen's identifier.
   ///   - screenReducer: The reducer that operates on all of the individual screens.
   /// - Returns: A new reducer combining the coordinator-level and screen-level reducers.
-  func forEachRoute<ScreenReducer: ReducerProtocol, ScreenState, ScreenAction, CoordinatorID: Hashable>(
+  func forEachRoute<ScreenReducer: Reducer, ScreenState, ScreenAction, CoordinatorID: Hashable>(
     cancellationId: CoordinatorID?,
     @ReducerBuilder<ScreenState, ScreenAction> screenReducer: () -> ScreenReducer
-  ) -> some ReducerProtocol<State, Action>
-    where ScreenReducer.State: Identifiable, State.Screen == ScreenReducer.State, ScreenReducer.Action == Action.ScreenAction,
-          ScreenState == ScreenReducer.State, ScreenAction == ScreenReducer.Action {
-    return ForEachIdentifiedRoute(
+  ) -> some ReducerOf<Self>
+  where ScreenReducer.State: Identifiable,
+        State.Screen == ScreenReducer.State,
+        ScreenReducer.Action == Action.ScreenAction,
+        ScreenState == ScreenReducer.State,
+        ScreenAction == ScreenReducer.Action
+  {
+    ForEachIdentifiedRoute(
       coordinatorReducer: self,
       screenReducer: screenReducer(),
       cancellationId: cancellationId,
@@ -73,7 +80,7 @@ public extension ReducerProtocol where State: IdentifiedRouterState, Action: Ide
       updateRoutes: /Action.updateRoutes
     )
   }
-  
+
   /// Allows a screen reducer to be incorporated into a coordinator reducer, such that each screen in
   /// the coordinator's routes IdentifiedArray will have its actions and state propagated. When screens are
   /// dismissed, the routes will be updated. If a cancellation identifier is passed, in-flight effects
@@ -83,13 +90,17 @@ public extension ReducerProtocol where State: IdentifiedRouterState, Action: Ide
   ///   will be combined with the screen's identifier. Defaults to the type of the parent reducer.
   ///   - screenReducer: The reducer that operates on all of the individual screens.
   /// - Returns: A new reducer combining the coordinator-level and screen-level reducers.
-    func forEachRoute<ScreenReducer: ReducerProtocol, ScreenState, ScreenAction>(
+  func forEachRoute<ScreenReducer: Reducer, ScreenState, ScreenAction>(
     cancellationIdType: Any.Type = Self.self,
     @ReducerBuilder<ScreenState, ScreenAction> screenReducer: () -> ScreenReducer
-  ) -> some ReducerProtocol<State, Action>
-    where ScreenReducer.State: Identifiable, State.Screen == ScreenReducer.State, ScreenReducer.Action == Action.ScreenAction,
-          ScreenState == ScreenReducer.State, ScreenAction == ScreenReducer.Action {
-    return ForEachIdentifiedRoute(
+  ) -> some ReducerOf<Self>
+  where ScreenReducer.State: Identifiable,
+        State.Screen == ScreenReducer.State,
+        ScreenReducer.Action == Action.ScreenAction,
+        ScreenState == ScreenReducer.State,
+        ScreenAction == ScreenReducer.Action
+  {
+    ForEachIdentifiedRoute(
       coordinatorReducer: self,
       screenReducer: screenReducer(),
       cancellationId: ObjectIdentifier(cancellationIdType),

@@ -7,18 +7,21 @@ struct GameCoordinatorView: View {
 
   var body: some View {
     TCARouter(store) { screen in
-      SwitchStore(screen) {
-        CaseLet(
-          state: /GameScreen.State.game,
-          action: GameScreen.Action.game,
-          then: GameView.init
-        )
+      SwitchStore(screen) { screen in
+        switch screen {
+        case .game:
+          CaseLet(
+            /GameScreen.State.game,
+             action: GameScreen.Action.game,
+             then: GameView.init
+          )
+        }
       }
     }
   }
 }
 
-struct GameScreen: ReducerProtocol {
+struct GameScreen: Reducer {
   enum State: Equatable, Identifiable {
     case game(Game.State)
 
@@ -34,17 +37,17 @@ struct GameScreen: ReducerProtocol {
     case game(Game.Action)
   }
 
-  var body: some ReducerProtocol<State, Action> {
+  var body: some ReducerOf<Self> {
     Scope(state: /State.game, action: /Action.game) {
       Game()
     }
   }
 }
 
-struct GameCoordinator: ReducerProtocol {
+struct GameCoordinator: Reducer {
   struct State: Equatable, IndexedRouterState {
     static func initialState(playerName: String = "") -> Self {
-      return .init(
+      Self(
         routes: [.root(.game(.init(oPlayerName: "Opponent", xPlayerName: playerName.isEmpty ? "Player" : playerName)), embedInNavigationView: true)]
       )
     }
@@ -57,7 +60,7 @@ struct GameCoordinator: ReducerProtocol {
     case updateRoutes([Route<GameScreen.State>])
   }
 
-  var body: some ReducerProtocol<State, Action> {
+  var body: some ReducerOf<Self> {
     EmptyReducer()
       .forEachRoute {
         GameScreen()

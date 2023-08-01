@@ -5,7 +5,7 @@ struct FinalScreenView: View {
   let store: StoreOf<FinalScreen>
 
   var body: some View {
-    WithViewStore(store) { viewStore in
+    WithViewStore(store, observe: { $0 }) { viewStore in
       Form {
         Section {
           Button {
@@ -93,7 +93,7 @@ struct APIModel: Codable, Equatable {
   let job: String
 }
 
-struct FinalScreen: ReducerProtocol {
+struct FinalScreen: Reducer {
   struct State: Equatable {
     let firstName: String
     let lastName: String
@@ -112,13 +112,13 @@ struct FinalScreen: ReducerProtocol {
     case returnToJob
 
     case submit
-    case receiveAPIResponse(Result<Bool, Never>)
+    case receiveAPIResponse(Bool)
   }
 
-  let mainQueue: AnySchedulerOf<DispatchQueue>
-  let submit: (APIModel) -> EffectTask<Bool>
+  @Dependency(\.mainQueue) var mainQueue
+  let submit: (APIModel) async -> Bool
 
-  var body: some ReducerProtocol<State, Action> {
+  var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
       case .submit:
@@ -132,10 +132,10 @@ struct FinalScreen: ReducerProtocol {
           job: job
         )
 
-        return submit(apiModel)
-          .delay(for: .seconds(0.8), scheduler: RunLoop.main)
-          .receive(on: mainQueue)
-          .catchToEffect(Action.receiveAPIResponse)
+        return .run { send in
+          try await mainQueue.sleep(for: .seconds(0.8))
+          await send(.receiveAPIResponse(submit(apiModel)))
+        }
 
       case .receiveAPIResponse:
         state.submissionInFlight = false
