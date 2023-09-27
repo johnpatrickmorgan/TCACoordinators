@@ -17,10 +17,10 @@ public struct TCARouter<
   let updateRoutes: ([Route<Screen>]) -> CoordinatorAction
   let action: (ID, ScreenAction) -> CoordinatorAction
   let identifier: (Screen, Int) -> ID
-  
+
   @ObservedObject private var viewStore: ViewStore<CoordinatorState, CoordinatorAction>
   @ViewBuilder var screenContent: (Store<Screen, ScreenAction>) -> ScreenContent
-  
+
   func scopedStore(index: Int, screen: Screen) -> Store<Screen, ScreenAction> {
     var screen = screen
     return store.scope(
@@ -34,16 +34,16 @@ public struct TCARouter<
       }
     )
   }
-  
+
   public var body: some View {
     Router(
-      viewStore.binding(get: { _ in store.withState(routes) }, send: updateRoutes),
+      ViewStore(store, observe: { $0 }).binding(get: routes, send: updateRoutes),
       buildView: { screen, index in
         screenContent(scopedStore(index: index, screen: screen))
       }
     )
   }
-  
+
   public init(
     store: Store<CoordinatorState, CoordinatorAction>,
     routes: @escaping (CoordinatorState) -> [Route<Screen>],
