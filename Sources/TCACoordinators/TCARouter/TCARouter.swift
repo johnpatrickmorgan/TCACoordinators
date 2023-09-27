@@ -37,7 +37,7 @@ public struct TCARouter<
 
   public var body: some View {
     Router(
-      viewStore.binding(get: routes, send: updateRoutes),
+      ViewStore(store, observe: { $0 }).binding(get: routes, send: updateRoutes),
       buildView: { screen, index in
         screenContent(scopedStore(index: index, screen: screen))
       }
