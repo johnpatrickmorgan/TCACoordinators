@@ -37,7 +37,7 @@ public struct TCARouter<
 
   public var body: some View {
     Router(
-      viewStore.binding(get: routes, send: updateRoutes),
+      ViewStore(store, observe: { $0 }).binding(get: routes, send: updateRoutes),
       buildView: { screen, index in
         screenContent(scopedStore(index: index, screen: screen))
       }
@@ -58,7 +58,7 @@ public struct TCARouter<
     self.action = action
     self.identifier = identifier
     self.screenContent = screenContent
-    viewStore = ViewStore(store, observe: { $0 })
+    self.viewStore = ViewStore(store, observe: { $0 }, removeDuplicates: { routes($0).map(\.style) == routes($1).map(\.style) })
   }
 }
 
