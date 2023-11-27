@@ -6,8 +6,8 @@ struct ForEachIndexedRoute<CoordinatorReducer: Reducer, ScreenReducer: Reducer, 
   let screenReducer: ScreenReducer
   let cancellationId: CoordinatorID?
   let toLocalState: WritableKeyPath<CoordinatorReducer.State, [Route<ScreenReducer.State>]>
-  let toLocalAction: CasePath<CoordinatorReducer.Action, (Int, ScreenReducer.Action)>
-  let updateRoutes: CasePath<CoordinatorReducer.Action, [Route<ScreenReducer.State>]>
+  let toLocalAction: AnyCasePath<CoordinatorReducer.Action, (Int, ScreenReducer.Action)>
+  let updateRoutes: AnyCasePath<CoordinatorReducer.Action, [Route<ScreenReducer.State>]>
 
   var body: some ReducerOf<CoordinatorReducer> {
     CancelEffectsOnDismiss(
@@ -32,8 +32,8 @@ public extension Reducer {
   func forEachRoute<ScreenReducer: Reducer, ScreenState, ScreenAction, CoordinatorID: Hashable>(
     coordinatorIdForCancellation: CoordinatorID?,
     toLocalState: WritableKeyPath<Self.State, [Route<ScreenReducer.State>]>,
-    toLocalAction: CasePath<Self.Action, (Int, ScreenReducer.Action)>,
-    updateRoutes: CasePath<Self.Action, [Route<ScreenReducer.State>]>,
+    toLocalAction: AnyCasePath<Self.Action, (Int, ScreenReducer.Action)>,
+    updateRoutes: AnyCasePath<Self.Action, [Route<ScreenReducer.State>]>,
     @ReducerBuilder<ScreenState, ScreenAction> screenReducer: () -> ScreenReducer
   ) -> some ReducerOf<Self>
   where ScreenState == ScreenReducer.State,

@@ -15,7 +15,7 @@ public extension RoutableCollection where Element: RouteProtocol {
   /// - Parameter condition: The predicate indicating which screen to pop to.
   /// - Returns: A `Bool` indicating whether a screen was found.
   @discardableResult
-  mutating func goBackTo<T>(_ screenCasePath: CasePath<Element.Screen, T>) -> Bool {
+  mutating func goBackTo<T>(_ screenCasePath: AnyCasePath<Element.Screen, T>) -> Bool {
     goBackTo(where: { screenCasePath.extract(from: $0.screen) != nil })
   }
 
@@ -26,7 +26,7 @@ public extension RoutableCollection where Element: RouteProtocol {
   /// - Parameter condition: The predicate indicating which screen to pop to.
   /// - Returns: A `Bool` indicating whether a screen was found.
   @discardableResult
-  mutating func popTo<T>(_ screenCasePath: CasePath<Element.Screen, T>) -> Bool {
+  mutating func popTo<T>(_ screenCasePath: AnyCasePath<Element.Screen, T>) -> Bool {
     popTo(where: { screenCasePath.extract(from: $0.screen) != nil })
   }
 }

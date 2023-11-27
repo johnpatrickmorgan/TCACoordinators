@@ -9,7 +9,7 @@ import ComposableArchitecture
 extension Reducer {
   func forEachIndex<ElementState, ElementAction, Element: Reducer>(
     _ toElementsState: WritableKeyPath<State, [ElementState]>,
-    action toElementAction: CasePath<Action, (Int, ElementAction)>,
+    action toElementAction: AnyCasePath<Action, (Int, ElementAction)>,
     @ReducerBuilder<ElementState, ElementAction> element: () -> Element,
     file: StaticString = #file,
     fileID: StaticString = #fileID,
@@ -33,7 +33,7 @@ struct _ForEachIndexReducer<
 >: Reducer {
   let parent: Parent
   let toElementsState: WritableKeyPath<Parent.State, [Element.State]>
-  let toElementAction: CasePath<Parent.Action, (Int, Element.Action)>
+  let toElementAction: AnyCasePath<Parent.Action, (Int, Element.Action)>
   let element: Element
   let file: StaticString
   let fileID: StaticString
@@ -42,7 +42,7 @@ struct _ForEachIndexReducer<
   init(
     parent: Parent,
     toElementsState: WritableKeyPath<Parent.State, [Element.State]>,
-    toElementAction: CasePath<Parent.Action, (Int, Element.Action)>,
+    toElementAction: AnyCasePath<Parent.Action, (Int, Element.Action)>,
     element: Element,
     file: StaticString,
     fileID: StaticString,
