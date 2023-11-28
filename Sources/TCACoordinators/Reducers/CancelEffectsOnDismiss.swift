@@ -10,7 +10,7 @@ public struct CancellationIdentity<CoordinatorID: Hashable, RouteID: Hashable>: 
 struct CancelEffectsOnDismiss<CoordinatorScreensReducer: Reducer, CoordinatorReducer: Reducer, CoordinatorID: Hashable, ScreenAction, RouteID: Hashable, C: Collection>: Reducer where CoordinatorScreensReducer.State == CoordinatorReducer.State, CoordinatorScreensReducer.Action == CoordinatorReducer.Action {
   let coordinatedScreensReducer: CoordinatorScreensReducer
   let routes: (CoordinatorReducer.State) -> C
-  let routeAction: CasePath<Action, (RouteID, ScreenAction)>
+  let routeAction: AnyCasePath<Action, (RouteID, ScreenAction)>
   let cancellationId: CoordinatorID?
   let getIdentifier: (C.Element, C.Index) -> RouteID
   let coordinatorReducer: CoordinatorReducer
@@ -42,7 +42,7 @@ struct CancelEffectsOnDismiss<CoordinatorScreensReducer: Reducer, CoordinatorRed
 struct TagRouteEffectsForCancellation<ScreenReducer: Reducer, CoordinatorID: Hashable, RouteID: Hashable, RouteAction>: Reducer {
   let screenReducer: ScreenReducer
   let coordinatorId: CoordinatorID
-  let routeAction: CasePath<Action, (RouteID, RouteAction)>
+  let routeAction: AnyCasePath<Action, (RouteID, RouteAction)>
 
   var body: some ReducerOf<ScreenReducer> {
     Reduce { state, action in
