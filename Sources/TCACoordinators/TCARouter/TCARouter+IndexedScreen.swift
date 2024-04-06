@@ -20,7 +20,7 @@ public extension TCARouter
   ) {
     self.init(
       store: store,
-      routes: { $0.routes },
+      routes: \.routes,
       updateRoutes: CoordinatorAction.updateRoutes,
       action: CoordinatorAction.routeAction,
       screenContent: screenContent
