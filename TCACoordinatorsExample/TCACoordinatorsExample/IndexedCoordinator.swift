@@ -65,16 +65,14 @@ struct IndexedCoordinator {
         state.routes.goBack()
 
 			case .router(.routeAction(.element(_, .numberDetail(.goBackToNumbersList)))):
-				return .none
-//        return .routeWithDelaysIfUnsupported(state.routes) {
-//          $0.goBackTo(/Screen.State.numbersList)
-//        }
+				return .routeWithDelaysIfUnsupported(state.routes, action: \.router) {
+          $0.goBackTo(/Screen.State.numbersList)
+        }
 
 			case .router(.routeAction(.element(_, .numberDetail(.goBackToRootTapped)))):
-				return .none
-//        return .routeWithDelaysIfUnsupported(state.routes) {
-//          $0.goBackToRoot()
-//        }
+				return .routeWithDelaysIfUnsupported(state.routes, action: \.router) {
+          $0.goBackToRoot()
+        }
 
       default:
         break
