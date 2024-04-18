@@ -16,18 +16,18 @@ struct LogInScreen {
     var id: UUID {
       switch self {
       case .welcome(let state):
-        return state.id
+        state.id
       case .logIn(let state):
-        return state.id
+        state.id
       }
     }
   }
 
   var body: some ReducerOf<Self> {
-    Scope(state: /State.welcome, action: /Action.welcome) {
+    Scope(state: \.welcome, action: \.welcome) {
       Welcome()
     }
-    Scope(state: /State.logIn, action: /Action.logIn) {
+    Scope(state: \.logIn, action: \.logIn) {
       LogIn()
     }
   }
@@ -42,14 +42,14 @@ struct LogInCoordinatorView: View {
         switch screen {
         case .welcome:
           CaseLet(
-            /LogInScreen.State.welcome,
+            \LogInScreen.State.welcome,
              action: LogInScreen.Action.welcome,
              then: WelcomeView.init
           )
 
         case .logIn:
           CaseLet(
-            /LogInScreen.State.logIn,
+            \LogInScreen.State.logIn,
              action: LogInScreen.Action.logIn,
              then: LogInView.init
           )

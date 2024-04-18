@@ -118,16 +118,16 @@ struct FormAppCoordinatorView: View {
       SwitchStore(screen) { screen in
         switch screen {
         case .step1:
-          CaseLet(/FormScreen.State.step1, action: FormScreen.Action.step1, then: Step1View.init(store:))
-          
+          CaseLet(\FormScreen.State.step1, action: FormScreen.Action.step1, then: Step1View.init(store:))
+
         case .step2:
-          CaseLet(/FormScreen.State.step2, action: FormScreen.Action.step2, then: Step2View.init(store:))
-          
+          CaseLet(\FormScreen.State.step2, action: FormScreen.Action.step2, then: Step2View.init(store:))
+
         case .step3:
-          CaseLet(/FormScreen.State.step3, action: FormScreen.Action.step3, then: Step3View.init(store:))
-          
+          CaseLet(\FormScreen.State.step3, action: FormScreen.Action.step3, then: Step3View.init(store:))
+
         case .finalScreen:
-          CaseLet(/FormScreen.State.finalScreen, action: FormScreen.Action.finalScreen, then: FinalScreenView.init(store:))
+          CaseLet(\FormScreen.State.finalScreen, action: FormScreen.Action.finalScreen, then: FinalScreenView.init(store:))
         }
       }
     }

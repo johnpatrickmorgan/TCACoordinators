@@ -40,7 +40,6 @@ public extension Reducer {
     cancellationId: CoordinatorID?,
     toLocalState: WritableKeyPath<Self.State, IdentifiedArrayOf<Route<ScreenReducer.State>>>,
 		toLocalAction: CaseKeyPath<Self.Action, IdentifiedRouterAction<ScreenReducer.State, ScreenReducer.Action>>,
-    updateRoutes: CaseKeyPath<Self.Action, IdentifiedArrayOf<Route<ScreenReducer.State>>>,
     @ReducerBuilder<ScreenState, ScreenAction> screenReducer: () -> ScreenReducer
   ) -> some ReducerOf<Self>
 	where Action: CasePathable,
@@ -61,7 +60,6 @@ public extension Reducer {
 
 public extension Reducer where State: IdentifiedRouterState {
 	func forEachRoute<ScreenReducer: Reducer, ScreenState: Identifiable, ScreenAction: CasePathable, CoordinatorID: Hashable>(
-		_ state: WritableKeyPath<State, IdentifiedArrayOf<Route<ScreenState>>>,
 		action: CaseKeyPath<Action, IdentifiedRouterAction<ScreenState, ScreenAction>>,
 		cancellationId: CoordinatorID?,
 		@ReducerBuilder<ScreenState, ScreenAction> screenReducer: () -> ScreenReducer
@@ -76,7 +74,7 @@ public extension Reducer where State: IdentifiedRouterState {
 			coordinatorReducer: self,
 			screenReducer: screenReducer(),
 			cancellationId: cancellationId,
-			toLocalState: state,
+			toLocalState: \.routes,
 			toLocalAction: action
 		)
 	}
@@ -111,4 +109,3 @@ public extension Reducer where State: IdentifiedRouterState {
 		)
 	}
 }
-

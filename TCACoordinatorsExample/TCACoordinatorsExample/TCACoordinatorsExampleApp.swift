@@ -23,32 +23,32 @@ struct MainTabCoordinatorView: View {
   var body: some View {
 		WithViewStore(store, observe: ViewState.init) { viewStore in
 			TabView(selection: viewStore.$selectedTab) {
-//        IndexedCoordinatorView(
-//          store: store.scope(
-//            state: { $0.indexed },
-//            action: { .indexed($0) }
-//          )
-//        )
-//        .tabItem { Text("Indexed") }
-//        .tag(MainTabCoordinator.Tab.indexed)
-//
-//        IdentifiedCoordinatorView(
-//          store: store.scope(
-//            state: { $0.identified },
-//            action: { .identified($0) }
-//          )
-//        )
-//        .tabItem { Text("Identified") }
-//        .tag(MainTabCoordinator.Tab.identified)
+        IndexedCoordinatorView(
+          store: store.scope(
+            state: \.indexed,
+            action: \.indexed
+          )
+        )
+        .tabItem { Text("Indexed") }
+        .tag(MainTabCoordinator.Tab.indexed)
 
-//        AppCoordinatorView(
-//          store: store.scope(
-//            state: { $0.app },
-//            action: { .app($0) }
-//          )
-//        )
-//        .tabItem { Text("Game") }
-//        .tag(MainTabCoordinator.Tab.app)
+        IdentifiedCoordinatorView(
+          store: store.scope(
+						state: \.identified,
+						action: \.identified
+          )
+        )
+        .tabItem { Text("Identified") }
+        .tag(MainTabCoordinator.Tab.identified)
+
+        AppCoordinatorView(
+          store: store.scope(
+            state: \.app,
+            action: \.app
+          )
+        )
+        .tabItem { Text("Game") }
+        .tag(MainTabCoordinator.Tab.app)
 
         FormAppCoordinatorView(
           store: store.scope(
@@ -88,8 +88,8 @@ struct MainTabCoordinator: Reducer {
 
 	enum Action: BindableAction {
     case identified(IdentifiedCoordinator.Action)
-//    case indexed(IndexedCoordinator.Action)
-//    case app(GameApp.Action)
+    case indexed(IndexedCoordinator.Action)
+    case app(GameApp.Action)
     case form(FormAppCoordinator.Action)
     case deeplinkOpened(Deeplink)
     case tabSelected(Tab)
@@ -100,15 +100,15 @@ struct MainTabCoordinator: Reducer {
   struct State: Equatable {
     static let initialState = State(
       identified: .initialState,
-//      indexed: .initialState,
-//      app: .initialState,
+      indexed: .initialState,
+      app: .initialState,
       form: .initialState,
       selectedTab: .app
     )
 
     var identified: IdentifiedCoordinator.State
-//    var indexed: IndexedCoordinator.State
-//    var app: GameApp.State
+    var indexed: IndexedCoordinator.State
+    var app: GameApp.State
     var form: FormAppCoordinator.State
 
     @BindingState var selectedTab: Tab
@@ -116,16 +116,16 @@ struct MainTabCoordinator: Reducer {
 
   var body: some ReducerOf<Self> {
 		BindingReducer()
-//    Scope(state: \.indexed, action: /Action.indexed) {
-//      IndexedCoordinator()
-//    }
-    Scope(state: \.identified, action: /Action.identified) {
+    Scope(state: \.indexed, action: \.indexed) {
+      IndexedCoordinator()
+    }
+    Scope(state: \.identified, action: \.identified) {
       IdentifiedCoordinator()
     }
-//    Scope(state: \.app, action: /Action.app) {
-//      GameApp()
-//    }
-    Scope(state: \.form, action: /Action.form) {
+    Scope(state: \.app, action: \.app) {
+      GameApp()
+    }
+    Scope(state: \.form, action: \.form) {
       FormAppCoordinator()
     }
     Reduce { state, action in

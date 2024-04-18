@@ -23,7 +23,7 @@ struct UpdateRoutesOnInteraction<WrappedReducer: Reducer, Routes>: Reducer where
 
   var body: some ReducerOf<WrappedReducer> {
     Reduce { state, action in
-			if let routes = action[case: updateRoutes] {//updateRoutes.extract(from: action) {
+			if let routes = action[case: updateRoutes] {
         state[keyPath: toLocalState] = routes
       }
       return .none

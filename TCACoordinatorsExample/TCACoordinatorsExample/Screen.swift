@@ -28,13 +28,13 @@ struct Screen: Reducer {
   }
 
   var body: some ReducerOf<Self> {
-    Scope(state: /State.home, action: /Action.home) {
+    Scope(state: \.home, action: \.home) {
       Home()
     }
-    Scope(state: /State.numbersList, action: /Action.numbersList) {
+    Scope(state: \.numbersList, action: \.numbersList) {
       NumbersList()
     }
-    Scope(state: /State.numberDetail, action: /Action.numberDetail) {
+    Scope(state: \.numberDetail, action: \.numberDetail) {
       NumberDetail()
     }
   }
@@ -136,7 +136,8 @@ struct NumberDetailView: View {
   }
 }
 
-struct NumberDetail: Reducer {
+@Reducer
+struct NumberDetail {
   struct State: Equatable {
     let id = UUID()
     var number: Int
