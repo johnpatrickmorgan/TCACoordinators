@@ -2,7 +2,8 @@ import ComposableArchitecture
 import SwiftUI
 import TCACoordinators
 
-struct LogInScreen: Reducer {
+@Reducer
+struct LogInScreen {
   enum Action {
     case welcome(Welcome.Action)
     case logIn(LogIn.Action)
@@ -36,7 +37,7 @@ struct LogInCoordinatorView: View {
   let store: StoreOf<LogInCoordinator>
 
   var body: some View {
-    TCARouter(store) { screen in
+		TCARouter(store, action: \.router) { screen in
       SwitchStore(screen) { screen in
         switch screen {
         case .welcome:
@@ -58,6 +59,7 @@ struct LogInCoordinatorView: View {
   }
 }
 
+@Reducer
 struct LogInCoordinator: Reducer {
   struct State: Equatable, IdentifiedRouterState {
     static let initialState = LogInCoordinator.State(
@@ -66,22 +68,22 @@ struct LogInCoordinator: Reducer {
     var routes: IdentifiedArrayOf<Route<LogInScreen.State>>
   }
 
-  enum Action: IdentifiedRouterAction {
-    case routeAction(LogInScreen.State.ID, action: LogInScreen.Action)
-    case updateRoutes(IdentifiedArrayOf<Route<LogInScreen.State>>)
+	enum Action {
+		case router(IdentifiedRouterAction<LogInScreen.State, LogInScreen.Action>)
   }
 
   var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
-      case .routeAction(_, .welcome(.logInTapped)):
+			case .router(.routeAction(.element(_, .welcome(.logInTapped)))):
         state.routes.push(.logIn(.init()))
 
       default:
         break
       }
       return .none
-    }.forEachRoute {
+    }
+		.forEachRoute(action: \.router) {
       LogInScreen()
     }
   }

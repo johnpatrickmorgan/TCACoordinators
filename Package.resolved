@@ -15,8 +15,8 @@
         "repositoryURL": "https://github.com/johnpatrickmorgan/FlowStacks",
         "state": {
           "branch": null,
-          "revision": "14a726e093568c3088ecbd4cd5b578059b029c28",
-          "version": "0.3.6"
+          "revision": "468de8179d68f9e150ffafcb4574dee52dfa3976",
+          "version": "0.4.0"
         }
       },
       {
@@ -33,8 +33,8 @@
         "repositoryURL": "https://github.com/pointfreeco/swift-clocks",
         "state": {
           "branch": null,
-          "revision": "d1fd837326aa719bee979bdde1f53cd5797443eb",
-          "version": "1.0.0"
+          "revision": "a8421d68068d8f45fbceb418fbf22c5dad4afd33",
+          "version": "1.0.2"
         }
       },
       {
@@ -42,8 +42,8 @@
         "repositoryURL": "https://github.com/apple/swift-collections",
         "state": {
           "branch": null,
-          "revision": "937e904258d22af6e447a0b72c0bc67583ef64a2",
-          "version": "1.0.4"
+          "revision": "94cf62b3ba8d4bed62680a282d4c25f9c63c2efb",
+          "version": "1.1.0"
         }
       },
       {
@@ -69,8 +69,8 @@
         "repositoryURL": "https://github.com/pointfreeco/swift-custom-dump",
         "state": {
           "branch": null,
-          "revision": "edd66cace818e1b1c6f1b3349bb1d8e00d6f8b01",
-          "version": "1.0.0"
+          "revision": "f01efb26f3a192a0e88dcdb7c3c391ec2fc25d9c",
+          "version": "1.3.0"
         }
       },
       {
@@ -78,8 +78,8 @@
         "repositoryURL": "https://github.com/pointfreeco/swift-dependencies",
         "state": {
           "branch": null,
-          "revision": "63301f4a181ed9aefb46dccef2dfb66466798341",
-          "version": "1.1.1"
+          "revision": "d3a5af3038a09add4d7682f66555d6212058a3c0",
+          "version": "1.2.2"
         }
       },
       {
@@ -105,8 +105,8 @@
         "repositoryURL": "https://github.com/apple/swift-syntax",
         "state": {
           "branch": null,
-          "revision": "6ad4ea24b01559dde0773e3d091f1b9e36175036",
-          "version": "509.0.2"
+          "revision": "fa8f95c2d536d6620cc2f504ebe8a6167c9fc2dd",
+          "version": "510.0.1"
         }
       },
       {
@@ -114,8 +114,8 @@
         "repositoryURL": "https://github.com/pointfreeco/swiftui-navigation",
         "state": {
           "branch": null,
-          "revision": "78f9d72cf667adb47e2040aa373185c88c63f0dc",
-          "version": "1.2.0"
+          "revision": "2ec6c3a15293efff6083966b38439a4004f25565",
+          "version": "1.3.0"
         }
       },
       {

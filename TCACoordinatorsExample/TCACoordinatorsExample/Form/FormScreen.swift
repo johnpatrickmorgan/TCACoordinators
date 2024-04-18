@@ -20,6 +20,7 @@ struct FormScreenEnvironment {
   )
 }
 
+@Reducer
 struct FormScreen: Reducer {
   let environment: FormScreenEnvironment
 

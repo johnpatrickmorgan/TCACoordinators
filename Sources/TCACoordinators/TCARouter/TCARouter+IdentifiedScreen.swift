@@ -6,23 +6,22 @@ import SwiftUI
 public extension TCARouter
   where
   CoordinatorState: IdentifiedRouterState,
-  CoordinatorAction: IdentifiedRouterAction,
   CoordinatorState.Screen == Screen,
-  CoordinatorAction.Screen == Screen,
-  CoordinatorAction.ScreenAction == ScreenAction,
+	CoordinatorAction: CasePathable,
   Screen.ID == ID
 {
   /// Convenience initializer for managing screens in an `IdentifiedArray`, where State
   /// and Action conform to the `IdentifiedRouter...` protocols.
   init(
     _ store: Store<CoordinatorState, CoordinatorAction>,
+		action: CaseKeyPath<CoordinatorAction, IdentifiedRouterAction<Screen, ScreenAction>>,
     screenContent: @escaping (Store<Screen, ScreenAction>) -> ScreenContent
   ) {
     self.init(
       store: store,
       routes: \.routes,
-      updateRoutes: CoordinatorAction.updateRoutes,
-      action: CoordinatorAction.routeAction,
+			updateRoutes: action.appending(path: \.updateRoutes),
+			action: action.appending(path: \.routeAction),
       screenContent: screenContent
     )
   }

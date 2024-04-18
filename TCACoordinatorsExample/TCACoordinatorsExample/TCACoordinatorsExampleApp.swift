@@ -21,39 +21,39 @@ struct MainTabCoordinatorView: View {
   let store: StoreOf<MainTabCoordinator>
 
   var body: some View {
-    WithViewStore(store, observe: \.selectedTab) { viewStore in
-      TabView(selection: viewStore.binding(get: { $0 }, send: MainTabCoordinator.Action.tabSelected)) {
-        IndexedCoordinatorView(
-          store: store.scope(
-            state: { $0.indexed },
-            action: { .indexed($0) }
-          )
-        )
-        .tabItem { Text("Indexed") }
-        .tag(MainTabCoordinator.Tab.indexed)
+		WithViewStore(store, observe: ViewState.init) { viewStore in
+			TabView(selection: viewStore.$selectedTab) {
+//        IndexedCoordinatorView(
+//          store: store.scope(
+//            state: { $0.indexed },
+//            action: { .indexed($0) }
+//          )
+//        )
+//        .tabItem { Text("Indexed") }
+//        .tag(MainTabCoordinator.Tab.indexed)
+//
+//        IdentifiedCoordinatorView(
+//          store: store.scope(
+//            state: { $0.identified },
+//            action: { .identified($0) }
+//          )
+//        )
+//        .tabItem { Text("Identified") }
+//        .tag(MainTabCoordinator.Tab.identified)
 
-        IdentifiedCoordinatorView(
-          store: store.scope(
-            state: { $0.identified },
-            action: { .identified($0) }
-          )
-        )
-        .tabItem { Text("Identified") }
-        .tag(MainTabCoordinator.Tab.identified)
-
-        AppCoordinatorView(
-          store: store.scope(
-            state: { $0.app },
-            action: { .app($0) }
-          )
-        )
-        .tabItem { Text("Game") }
-        .tag(MainTabCoordinator.Tab.app)
+//        AppCoordinatorView(
+//          store: store.scope(
+//            state: { $0.app },
+//            action: { .app($0) }
+//          )
+//        )
+//        .tabItem { Text("Game") }
+//        .tag(MainTabCoordinator.Tab.app)
 
         FormAppCoordinatorView(
           store: store.scope(
-            state: { $0.form },
-            action: { .form($0) }
+            state: \.form,
+            action: \.form
           )
         )
         .tabItem { Text("Form") }
@@ -66,8 +66,17 @@ struct MainTabCoordinatorView: View {
       }
     }
   }
+
+	struct ViewState: Equatable {
+		@BindingViewState var selectedTab: MainTabCoordinator.Tab
+
+		init(_ store: BindingViewStore<MainTabCoordinator.State>) {
+			self._selectedTab = store.$selectedTab
+		}
+	}
 }
 
+@Reducer
 struct MainTabCoordinator: Reducer {
   enum Tab: Hashable {
     case identified, indexed, app, form, deeplinkOpened
@@ -77,42 +86,45 @@ struct MainTabCoordinator: Reducer {
     case identified(IdentifiedCoordinator.Deeplink)
   }
 
-  enum Action {
+	enum Action: BindableAction {
     case identified(IdentifiedCoordinator.Action)
-    case indexed(IndexedCoordinator.Action)
-    case app(GameApp.Action)
+//    case indexed(IndexedCoordinator.Action)
+//    case app(GameApp.Action)
     case form(FormAppCoordinator.Action)
     case deeplinkOpened(Deeplink)
     case tabSelected(Tab)
+
+		case binding(BindingAction<State>)
   }
 
   struct State: Equatable {
     static let initialState = State(
       identified: .initialState,
-      indexed: .initialState,
-      app: .initialState,
+//      indexed: .initialState,
+//      app: .initialState,
       form: .initialState,
       selectedTab: .app
     )
 
     var identified: IdentifiedCoordinator.State
-    var indexed: IndexedCoordinator.State
-    var app: GameApp.State
+//    var indexed: IndexedCoordinator.State
+//    var app: GameApp.State
     var form: FormAppCoordinator.State
 
-    var selectedTab: Tab
+    @BindingState var selectedTab: Tab
   }
 
   var body: some ReducerOf<Self> {
-    Scope(state: \.indexed, action: /Action.indexed) {
-      IndexedCoordinator()
-    }
+		BindingReducer()
+//    Scope(state: \.indexed, action: /Action.indexed) {
+//      IndexedCoordinator()
+//    }
     Scope(state: \.identified, action: /Action.identified) {
       IdentifiedCoordinator()
     }
-    Scope(state: \.app, action: /Action.app) {
-      GameApp()
-    }
+//    Scope(state: \.app, action: /Action.app) {
+//      GameApp()
+//    }
     Scope(state: \.form, action: /Action.form) {
       FormAppCoordinator()
     }

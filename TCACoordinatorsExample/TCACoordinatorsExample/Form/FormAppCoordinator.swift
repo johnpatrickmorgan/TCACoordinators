@@ -2,7 +2,8 @@ import ComposableArchitecture
 import SwiftUI
 import TCACoordinators
 
-struct FormAppCoordinator: Reducer {
+@Reducer
+struct FormAppCoordinator {
   struct State: IdentifiedRouterState, Equatable {
     static let initialState = Self(routeIDs: [.root(.step1, embedInNavigationView: true)])
     
@@ -11,7 +12,7 @@ struct FormAppCoordinator: Reducer {
     var step3State = Step3.State()
     
     var finalScreenState: FinalScreen.State {
-      return .init(firstName: step1State.firstName, lastName: step1State.lastName, dateOfBirth: step2State.dateOfBirth, job: step3State.selectedOccupation)
+      .init(firstName: step1State.firstName, lastName: step1State.lastName, dateOfBirth: step2State.dateOfBirth, job: step3State.selectedOccupation)
     }
     
     var routeIDs: IdentifiedArrayOf<Route<FormScreen.State.ID>>
@@ -63,39 +64,38 @@ struct FormAppCoordinator: Reducer {
     }
   }
   
-  enum Action: IdentifiedRouterAction {
-    case updateRoutes(IdentifiedArrayOf<Route<FormScreen.State>>)
-    case routeAction(FormScreen.State.ID, action: FormScreen.Action)
+  enum Action {
+		case router(IdentifiedRouterAction<FormScreen.State, FormScreen.Action>)
   }
   
   var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
-      case .routeAction(_, action: .step1(.nextButtonTapped)):
+			case .router(.routeAction(.element(_, action: .step1(.nextButtonTapped)))):
         state.routeIDs.push(.step2)
         return .none
         
-      case .routeAction(_, action: .step2(.nextButtonTapped)):
+			case .router(.routeAction(.element(_, action: .step2(.nextButtonTapped)))):
         state.routeIDs.push(.step3)
         return .none
         
-      case .routeAction(_, action: .step3(.nextButtonTapped)):
+			case .router(.routeAction(.element(_, action: .step3(.nextButtonTapped)))):
         state.routeIDs.push(.finalScreen)
         return .none
         
-      case .routeAction(_, action: .finalScreen(.returnToName)):
+			case .router(.routeAction(.element(_, action: .finalScreen(.returnToName)))):
         state.routeIDs.goBackTo(id: .step1)
         return .none
         
-      case .routeAction(_, action: .finalScreen(.returnToDateOfBirth)):
+			case .router(.routeAction(.element(_, action: .finalScreen(.returnToDateOfBirth)))):
         state.routeIDs.goBackTo(id: .step2)
         return .none
         
-      case .routeAction(_, action: .finalScreen(.returnToJob)):
+			case .router(.routeAction(.element(_, action: .finalScreen(.returnToJob)))):
         state.routeIDs.goBackTo(id: .step3)
         return .none
         
-      case .routeAction(_, action: .finalScreen(.receiveAPIResponse)):
+			case .router(.routeAction(.element(_, action: .finalScreen(.receiveAPIResponse)))):
         state.routeIDs.goBackToRoot()
         state.clear()
         return .none
@@ -103,7 +103,8 @@ struct FormAppCoordinator: Reducer {
       default:
         return .none
       }
-    }.forEachRoute {
+    }
+		.forEachRoute(action: \.router) {
       FormScreen(environment: .test)
     }
   }
@@ -113,7 +114,7 @@ struct FormAppCoordinatorView: View {
   let store: StoreOf<FormAppCoordinator>
   
   var body: some View {
-    TCARouter(store) { screen in
+		TCARouter(store, action: \.router) { screen in
       SwitchStore(screen) { screen in
         switch screen {
         case .step1:

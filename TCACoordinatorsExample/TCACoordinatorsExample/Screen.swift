@@ -2,6 +2,7 @@ import ComposableArchitecture
 import Foundation
 import SwiftUI
 
+@Reducer
 struct Screen: Reducer {
   enum Action {
     case home(Home.Action)
