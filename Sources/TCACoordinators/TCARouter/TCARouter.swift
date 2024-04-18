@@ -94,7 +94,7 @@ public extension TCARouter where Screen: Identifiable {
     self.init(
       store: store,
 			routes: routes.appending(path: \.elements),
-			updateRoutes: updateRoutes.appending(path: \.[id: \.id]),
+			updateRoutes: updateRoutes.appending(path: \.[]),
       action: action,
       identifier: { state, _ in state.id },
       screenContent: screenContent
@@ -156,28 +156,14 @@ extension Case {
 		)
 	}
 
-	public subscript<ID, Element>(id id: KeyPath<Element, ID>) -> Case<[Element]> where Value == IdentifiedArray<ID, Element> {
-		self.bimap(
+	fileprivate subscript<ID, Element>(id id: KeyPath<Element, ID>) -> Case<[Element]> where Value == IdentifiedArray<ID, Element> {
+		bimap(
 			transform: \.elements,
 			revert: { IdentifiedArray(uniqueElements: $0, id: id) }
 		)
 	}
 
-//	func asArray<Element>() -> Case<[Element]> where Value == IdentifiedArrayOf<Element> {
-//		Case<[Element]>(
-//			embed: { value in value },
-//			extract: { value in value }
-//		)
-//	}
-
-//	fileprivate subscript<Element>() -> Case<[Element]>
-//	where Value == IdentifiedArrayOf<Element> {
-//		Case<[Element]>(
-//			embed: { value in
-//				dump(value, name: "Received!")
-//				return IdentifiedArray(uniqueElements: value)
-//			},
-//			extract: { root in root.elements }
-//		)
-//	}
+	fileprivate subscript<Element: Identifiable>() -> Case<[Element]> where Value == IdentifiedArrayOf<Element> {
+		self[id: \.id]
+	}
 }
