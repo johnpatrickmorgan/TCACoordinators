@@ -87,14 +87,14 @@ public extension TCARouter where Screen: Identifiable {
   init(
     store: Store<CoordinatorState, CoordinatorAction>,
 		routes: KeyPath<CoordinatorState, IdentifiedArrayOf<Route<Screen>>>,
-    updateRoutes: CaseKeyPath<CoordinatorAction, IdentifiedArrayOf<Route<Screen>>>,
+    updateRoutes: CaseKeyPath<CoordinatorAction, [Route<Screen>]>,
 		action: CaseKeyPath<CoordinatorAction, IdentifiedAction<ID, ScreenAction>>,
     screenContent: @escaping (Store<Screen, ScreenAction>) -> ScreenContent
   ) where Screen.ID == ID {
     self.init(
       store: store,
 			routes: routes.appending(path: \.elements),
-			updateRoutes: updateRoutes.appending(path: \.[]),
+			updateRoutes: updateRoutes,
       action: action,
       identifier: { state, _ in state.id },
       screenContent: screenContent

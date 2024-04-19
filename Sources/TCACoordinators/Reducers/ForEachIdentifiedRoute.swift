@@ -23,8 +23,8 @@ where ScreenReducer.State: Identifiable,
           OnRoutes(wrapped: screenReducer)
         }
         .updatingRoutesOnInteraction(
-					updateRoutes: toLocalAction.appending(path: \.updateRoutes),
-          toLocalState: toLocalState
+					updateRoutes: toLocalAction.appending(path: \.updateRoutes).appending(path: \.[]),
+					toLocalState: toLocalState
         ),
 			routes: toLocalState,
 			routeAction: toLocalAction.appending(path: \.routeAction),
@@ -106,6 +106,15 @@ public extension Reducer where State: IdentifiedRouterState {
 			cancellationId: ObjectIdentifier(cancellationIdType),
 			toLocalState: \.routes,
 			toLocalAction: action
+		)
+	}
+}
+
+extension Case {
+	subscript<Element: Identifiable>() -> Case<IdentifiedArray<Element.ID, Element>> where Value == [Element] {
+		bimap(
+			transform: { IdentifiedArray(uniqueElements: $0) },
+			revert: \.elements
 		)
 	}
 }

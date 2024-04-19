@@ -55,7 +55,7 @@ public extension Effect where Action: CasePathable {
 
     return .run { send in
       for await step in scheduledSteps(steps: steps, scheduler: scheduler) {
-				await send(action.appending(path: \.updateRoutes)(IdentifiedArray(uncheckedUniqueElements: step)))
+				await send(action.appending(path: \.updateRoutes)(step))
       }
     }
   }

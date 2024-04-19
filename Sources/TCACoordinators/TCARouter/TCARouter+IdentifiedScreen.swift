@@ -19,7 +19,7 @@ public extension TCARouter
   ) {
     self.init(
       store: store,
-      routes: \.routes,
+			routes: \.routes,
 			updateRoutes: action.appending(path: \.updateRoutes),
 			action: action.appending(path: \.routeAction),
       screenContent: screenContent
