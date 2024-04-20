@@ -6,7 +6,10 @@ struct IdentifiedCoordinatorView: View {
   let store: StoreOf<IdentifiedCoordinator>
 
   var body: some View {
-		TCARouter(store, action: \.router) { screen in
+		_TCARouter(
+			store.scope(state: \.routes.elements, action: \.router),
+			identifier: { screen, _ in screen.id }
+		) { screen in
       SwitchStore(screen) { screen in
         switch screen {
         case .home:
