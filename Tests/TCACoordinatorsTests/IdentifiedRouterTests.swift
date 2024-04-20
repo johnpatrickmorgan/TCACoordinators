@@ -62,14 +62,14 @@ final class IdentifiedRouterTests: XCTestCase {
       Parent(scheduler: scheduler)
     }
     let goBackToRoot = await store.send(.goBackToRoot)
-		await store.receive(\.router.updateRoutes, initialRoutes)
+		await store.receive(\.router.updateRoutes, initialRoutes.elements)
     let firstTwo = IdentifiedArrayOf(initialRoutes.prefix(2))
-		await store.receive(\.router.updateRoutes, firstTwo) {
+		await store.receive(\.router.updateRoutes, firstTwo.elements) {
       $0.routes = firstTwo
     }
     await scheduler.advance(by: .milliseconds(650))
     let firstOne = IdentifiedArrayOf(initialRoutes.prefix(1))
-		await store.receive(\.router.updateRoutes, firstOne) {
+		await store.receive(\.router.updateRoutes, firstOne.elements) {
       $0.routes = firstOne
     }
     await goBackToRoot.finish()
