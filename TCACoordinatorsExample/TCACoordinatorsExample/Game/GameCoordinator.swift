@@ -6,7 +6,7 @@ struct GameCoordinatorView: View {
   let store: StoreOf<GameCoordinator>
 
   var body: some View {
-		TCARouter(store, action: \.router) { screen in
+		TCARouter(store.scope(state: \.routes, action: \.router)) { screen in
       SwitchStore(screen) { screen in
         switch screen {
         case .game:

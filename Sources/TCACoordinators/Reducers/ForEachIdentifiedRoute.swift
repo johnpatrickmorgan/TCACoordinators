@@ -111,6 +111,18 @@ public extension Reducer where State: IdentifiedRouterState {
 }
 
 extension Case {
+	func bimap<Output>(
+		transform: @escaping (Value) -> Output,
+		revert: @escaping (Output) -> Value
+	) -> Case<Output> {
+		Case<Output>(
+			embed: { self.embed(revert($0)) },
+			extract: {
+				self.extract(from: $0).flatMap(transform)
+			}
+		)
+	}
+
 	subscript<Element: Identifiable>() -> Case<IdentifiedArray<Element.ID, Element>> where Value == [Element] {
 		bimap(
 			transform: { IdentifiedArray(uniqueElements: $0) },
