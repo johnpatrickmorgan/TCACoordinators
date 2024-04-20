@@ -1,4 +1,4 @@
-import ComposableArchitecture
+@_spi(Internals) import ComposableArchitecture
 import FlowStacks
 import Foundation
 import SwiftUI
@@ -32,11 +32,19 @@ public struct TCARouter<
 		)
 	}
 
-	func scopedStore(index: Int, screen: Screen) -> Store<Screen?, ScreenAction> {
+	func scopedStore(index: Int, screen: Screen) -> Store<Screen, ScreenAction> {
+		var screen = screen
 		let id = identifier(screen, index)
 		return store.scope(
-			state: \.[safe: index]?.screen,
-			action: \.routeAction[id: id]
+			id: store.id(state: \.[index], action: \.routeAction[id: id]),
+			state: ToState {
+				screen = $0[safe: index]?.screen ?? screen
+				return screen
+			},
+			action: {
+				.routeAction(.element(id: id, action: $0))
+			},
+			isInvalid: { !$0.indices.contains(index) }
 		)
 	}
 
@@ -48,9 +56,7 @@ public struct TCARouter<
 					send: RouterAction.updateRoutes
 				),
 			buildView: { screen, index in
-				IfLetStore(scopedStore(index: index, screen: screen)) { store in
-					screenContent(store)
-				}
+				screenContent(scopedStore(index: index, screen: screen))
 			}
 		)
 	}
