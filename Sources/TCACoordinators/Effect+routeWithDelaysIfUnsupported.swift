@@ -30,9 +30,7 @@ public extension Effect {
 			}
 		}
 	}
-}
 
-public extension Effect where Action: CasePathable {
   /// Allows arbitrary changes to be made to the routes collection, even if SwiftUI does not support such changes within a single
   /// state update. For example, SwiftUI only supports pushing, presenting or dismissing one screen at a time. Any changes can be
   /// made to the routes passed to the transform closure, and where those changes are not supported within a single update by
