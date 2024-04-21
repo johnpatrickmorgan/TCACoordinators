@@ -61,7 +61,7 @@ struct LogInCoordinatorView: View {
 
 @Reducer
 struct LogInCoordinator: Reducer {
-  struct State: Equatable, IdentifiedRouterState {
+  struct State: Equatable {
     static let initialState = LogInCoordinator.State(
       routes: [.root(.welcome(.init()), embedInNavigationView: true)]
     )
@@ -83,7 +83,7 @@ struct LogInCoordinator: Reducer {
       }
       return .none
     }
-		.forEachRoute(action: \.router) {
+		.forEachRoute(\.routes, action: \.router) {
       LogInScreen()
     }
   }

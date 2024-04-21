@@ -37,7 +37,7 @@ struct IndexedCoordinatorView: View {
 
 @Reducer
 struct IndexedCoordinator {
-  struct State: Equatable, IndexedRouterState {
+  struct State: Equatable {
     static let initialState = State(
       routes: [.root(.home(.init()), embedInNavigationView: true)]
     )
@@ -79,7 +79,7 @@ struct IndexedCoordinator {
       }
       return .none
 		}
-		.forEachRoute(action: \.router) {
+		.forEachRoute(\.routes, action: \.router) {
       Screen()
     }
   }

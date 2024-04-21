@@ -56,28 +56,6 @@ public extension Reducer {
       toLocalAction: toLocalAction
     )
   }
-}
-
-public extension Reducer where State: IdentifiedRouterState {
-	func forEachRoute<ScreenReducer: Reducer, ScreenState: Identifiable, ScreenAction: CasePathable, CoordinatorID: Hashable>(
-		action: CaseKeyPath<Action, IdentifiedRouterAction<ScreenState, ScreenAction>>,
-		cancellationId: CoordinatorID?,
-		@ReducerBuilder<ScreenState, ScreenAction> screenReducer: () -> ScreenReducer
-	) -> some ReducerOf<Self>
-	where ScreenReducer.State: Identifiable,
-				State.Screen == ScreenReducer.State,
-				Action: CasePathable,
-				ScreenState == ScreenReducer.State,
-				ScreenAction == ScreenReducer.Action
-	{
-		ForEachIdentifiedRoute(
-			coordinatorReducer: self,
-			screenReducer: screenReducer(),
-			cancellationId: cancellationId,
-			toLocalState: \.routes,
-			toLocalAction: action
-		)
-	}
 
 	/// Allows a screen reducer to be incorporated into a coordinator reducer, such that each screen in
 	/// the coordinator's routes IdentifiedArray will have its actions and state propagated. When screens are
@@ -90,11 +68,11 @@ public extension Reducer where State: IdentifiedRouterState {
 	/// - Returns: A new reducer combining the coordinator-level and screen-level reducers.
 	func forEachRoute<ScreenReducer: Reducer, ScreenState, ScreenAction>(
 		cancellationIdType: Any.Type = Self.self,
+		_ routes: WritableKeyPath<State, IdentifiedArrayOf<Route<ScreenState>>>,
 		action: CaseKeyPath<Action, IdentifiedRouterAction<ScreenState, ScreenAction>>,
 		@ReducerBuilder<ScreenState, ScreenAction> screenReducer: () -> ScreenReducer
 	) -> some ReducerOf<Self>
 	where ScreenReducer.State: Identifiable,
-				State.Screen == ScreenReducer.State,
 				Action: CasePathable,
 				ScreenState == ScreenReducer.State,
 				ScreenAction == ScreenReducer.Action,
@@ -104,7 +82,7 @@ public extension Reducer where State: IdentifiedRouterState {
 			coordinatorReducer: self,
 			screenReducer: screenReducer(),
 			cancellationId: ObjectIdentifier(cancellationIdType),
-			toLocalState: \.routes,
+			toLocalState: routes,
 			toLocalAction: action
 		)
 	}

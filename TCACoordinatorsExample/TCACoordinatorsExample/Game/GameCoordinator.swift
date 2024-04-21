@@ -47,7 +47,7 @@ struct GameScreen {
 
 @Reducer
 struct GameCoordinator {
-  struct State: Equatable, IndexedRouterState {
+  struct State: Equatable {
     static func initialState(playerName: String = "") -> Self {
       Self(
         routes: [.root(.game(.init(oPlayerName: "Opponent", xPlayerName: playerName.isEmpty ? "Player" : playerName)), embedInNavigationView: true)]
@@ -63,7 +63,7 @@ struct GameCoordinator {
 
   var body: some ReducerOf<Self> {
     EmptyReducer()
-			.forEachRoute(action: \.router) {
+			.forEachRoute(\.routes, action: \.router) {
         GameScreen()
       }
   }

@@ -129,7 +129,7 @@ private struct Parent: Reducer {
         return .none
       }
     }
-		.forEachRoute(action: \.router) {
+		.forEachRoute(\.routes, action: \.router) {
       Child(scheduler: scheduler)
     }
   }

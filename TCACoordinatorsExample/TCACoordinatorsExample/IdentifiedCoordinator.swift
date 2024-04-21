@@ -41,7 +41,7 @@ struct IdentifiedCoordinator: Reducer {
     case showNumber(Int)
   }
 
-  struct State: Equatable, IdentifiedRouterState {
+  struct State: Equatable {
     static let initialState = State(
       routes: [.root(.home(.init()), embedInNavigationView: true)]
     )
@@ -85,7 +85,7 @@ struct IdentifiedCoordinator: Reducer {
       }
       return .none
 		}
-		.forEachRoute(action: \.router) {
+		.forEachRoute(\.routes, action: \.router) {
       Screen()
     }
   }

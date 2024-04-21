@@ -4,7 +4,7 @@ import TCACoordinators
 
 @Reducer
 struct FormAppCoordinator {
-  struct State: IdentifiedRouterState, Equatable {
+  struct State: Equatable {
     static let initialState = Self(routeIDs: [.root(.step1, embedInNavigationView: true)])
     
     var step1State = Step1.State()
@@ -104,7 +104,7 @@ struct FormAppCoordinator {
         return .none
       }
     }
-		.forEachRoute(action: \.router) {
+		.forEachRoute(\.routes, action: \.router) {
       FormScreen(environment: .test)
     }
   }
