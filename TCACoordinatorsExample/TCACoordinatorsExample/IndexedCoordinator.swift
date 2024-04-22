@@ -66,7 +66,7 @@ struct IndexedCoordinator {
 
 			case .router(.routeAction(_, .numberDetail(.goBackToNumbersList))):
 				return .routeWithDelaysIfUnsupported(state.routes, action: \.router) {
-          $0.goBackTo(/Screen.State.numbersList)
+          $0.goBackTo(\.numbersList)
         }
 
 			case .router(.routeAction(_, .numberDetail(.goBackToRootTapped))):
