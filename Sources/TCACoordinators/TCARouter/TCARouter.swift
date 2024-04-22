@@ -13,7 +13,6 @@ public struct TCARouter<
 	let store: Store<[Route<Screen>], RouterAction<Screen, ID, ScreenAction>>
 	let identifier: (Screen, Int) -> ID
 	let screenContent: (Store<Screen, ScreenAction>) -> ScreenContent
-	@ObservedObject private var viewStore: ViewStore<[Route<Screen>], RouterAction<Screen, ID, ScreenAction>>
 
 	public init(
 		store: Store<[Route<Screen>], RouterAction<Screen, ID, ScreenAction>>,
@@ -23,13 +22,6 @@ public struct TCARouter<
 		self.store = store
 		self.identifier = identifier
 		self.screenContent = screenContent
-		self.viewStore = ViewStore(
-			store,
-			observe: { $0 },
-			removeDuplicates: {
-				$0.map(\.style) == $1.map(\.style)
-			}
-		)
 	}
 
 	func scopedStore(index: Int, screen: Screen) -> Store<Screen, ScreenAction> {
@@ -49,16 +41,18 @@ public struct TCARouter<
 	}
 
 	public var body: some View {
-		Router(
-			ViewStore(store, observe: { $0 })
-				.binding(
-					get: { $0 },
-					send: RouterAction.updateRoutes
-				),
-			buildView: { screen, index in
-				screenContent(scopedStore(index: index, screen: screen))
-			}
-		)
+		WithViewStore(store, observe: { $0 }) { viewStore in
+			Router(
+				viewStore
+					.binding(
+						get: { $0 },
+						send: RouterAction.updateRoutes
+					),
+				buildView: { screen, index in
+					screenContent(scopedStore(index: index, screen: screen))
+				}
+			)
+		}
 	}
 }
 
