@@ -3,47 +3,36 @@ import SwiftUI
 import TCACoordinators
 
 struct IndexedCoordinatorView: View {
-  let store: StoreOf<IndexedCoordinator>
+	@State var store: StoreOf<IndexedCoordinator>
 
-  var body: some View {
-    TCARouter(store.scope(state: \.routes, action: \.router)) { screen in
-      SwitchStore(screen) { screen in
-        switch screen {
-        case .home:
-          CaseLet(
-            \Screen.State.home,
-            action: Screen.Action.home,
-            then: HomeView.init
-          )
+	var body: some View {
+		WithPerceptionTracking {
+			ObservedTCARouter(store.scope(state: \.routes, action: \.router)) { screen in
+				switch screen.case {
+				case let .home(store):
+					HomeView(store: store)
 
-        case .numbersList:
-          CaseLet(
-            \Screen.State.numbersList,
-            action: Screen.Action.numbersList,
-            then: NumbersListView.init
-          )
+				case let .numbersList(store):
+					NumbersListView(store: store)
 
-        case .numberDetail:
-          CaseLet(
-            \Screen.State.numberDetail,
-            action: Screen.Action.numberDetail,
-            then: NumberDetailView.init
-          )
-        }
-      }
-    }
-  }
+				case let .numberDetail(store):
+					NumberDetailView(store: store)
+				}
+			}
+		}
+	}
 }
 
 @Reducer
 struct IndexedCoordinator {
-  struct State: Equatable {
-    static let initialState = State(
-      routes: [.root(.home(.init()), embedInNavigationView: true)]
-    )
+	@ObservableState
+	struct State: Equatable {
+		static let initialState = State(
+			routes: [.root(.home(.init()), embedInNavigationView: true)]
+		)
 
-    var routes: [Route<Screen.State>]
-  }
+		var routes: [Route<Screen.State>]
+	}
 
   enum Action {
     case router(IndexedRouterActionOf<Screen>)
@@ -69,18 +58,18 @@ struct IndexedCoordinator {
           $0.goBackTo(\.numbersList)
         }
 
-      case .router(.routeAction(_, .numberDetail(.goBackToRootTapped))):
-        return .routeWithDelaysIfUnsupported(state.routes, action: \.router) {
-          $0.goBackToRoot()
-        }
+			case .router(.routeAction(_, .numberDetail(.goBackToRootTapped))):
+				return .routeWithDelaysIfUnsupported(state.routes, action: \.router) {
+					$0.goBackToRoot()
+				}
 
-      default:
-        break
-      }
-      return .none
-    }
-    .forEachRoute(\.routes, action: \.router) {
-      Screen()
-    }
-  }
+			default:
+				break
+			}
+			return .none
+		}
+		.forEachRoute(\.routes, action: \.router) {
+			Screen.body
+		}
+	}
 }
