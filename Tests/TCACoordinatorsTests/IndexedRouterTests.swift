@@ -17,10 +17,10 @@ final class IndexedRouterTests: XCTestCase {
       Parent(scheduler: scheduler)
     }
 
-		await store.send(\.router.routeAction[id: 0].increment) {
+		await store.send(\.router[id: 0].increment) {
       $0.routes[0].screen.count += 1
     }
-		await store.send(\.router.routeAction[id: 1].increment) {
+		await store.send(\.router[id: 1].increment) {
       $0.routes[1].screen.count += 1
     }
   }
@@ -38,14 +38,14 @@ final class IndexedRouterTests: XCTestCase {
       Parent(scheduler: scheduler)
     }
     // Expect increment action after 1 second.
-		await store.send(\.router.routeAction[id: 1].incrementLaterTapped)
+		await store.send(\.router[id: 1].incrementLaterTapped)
     await scheduler.advance(by: .seconds(1))
 
-		await store.receive(\.router.routeAction[id: 1].increment) {
+		await store.receive(\.router[id: 1].increment) {
       $0.routes[1].screen.count += 1
     }
     // Expect increment action to be cancelled if screen is removed.
-		await store.send(\.router.routeAction[id: 1].incrementLaterTapped)
+		await store.send(\.router[id: 1].incrementLaterTapped)
 		await store.send(\.router.updateRoutes, [.root(.init(count: 42))]) {
       $0.routes = [.root(.init(count: 42))]
     }

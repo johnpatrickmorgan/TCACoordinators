@@ -19,7 +19,7 @@ where ScreenReducer.State: Identifiable,
   var body: some ReducerOf<CoordinatorReducer> {
     CancelEffectsOnDismiss(
       coordinatedScreensReducer: EmptyReducer()
-				.forEach(toLocalState, action: toLocalAction.appending(path: \.routeAction)) {
+				.forEach(toLocalState, action: toLocalAction.appending(path: \.routeAction).appending(path: \.[])) {
           OnRoutes(wrapped: screenReducer)
         }
         .updatingRoutesOnInteraction(
@@ -94,6 +94,22 @@ extension Case {
 			embed: { self.embed($0.elements) },
 			extract: {
 				self.extract(from: $0).flatMap { IdentifiedArrayOf(uniqueElements: $0) }
+			}
+		)
+	}
+
+	fileprivate subscript<ID: Hashable, Action>() -> Case<IdentifiedAction<ID, Action>> where Value == (id: ID, action: Action) {
+		Case<IdentifiedAction<ID, Action>>(
+			embed: { action in
+				switch action {
+				case let .element(id, action):
+					self.embed((id, action))
+				}
+			},
+			extract: {
+				self.extract(from: $0).flatMap {
+					.element(id: $0, action: $1)
+				}
 			}
 		)
 	}

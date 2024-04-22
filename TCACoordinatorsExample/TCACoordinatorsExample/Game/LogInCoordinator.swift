@@ -75,7 +75,7 @@ struct LogInCoordinator: Reducer {
   var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
-			case .router(.routeAction(.element(_, .welcome(.logInTapped)))):
+			case .router(.routeAction(_, .welcome(.logInTapped))):
         state.routes.push(.logIn(.init()))
 
       default:

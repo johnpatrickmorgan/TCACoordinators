@@ -71,31 +71,31 @@ struct FormAppCoordinator {
   var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
-			case .router(.routeAction(.element(_, action: .step1(.nextButtonTapped)))):
+			case .router(.routeAction(_, action: .step1(.nextButtonTapped))):
         state.routeIDs.push(.step2)
         return .none
         
-			case .router(.routeAction(.element(_, action: .step2(.nextButtonTapped)))):
+			case .router(.routeAction(_, action: .step2(.nextButtonTapped))):
         state.routeIDs.push(.step3)
         return .none
         
-			case .router(.routeAction(.element(_, action: .step3(.nextButtonTapped)))):
+			case .router(.routeAction(_, action: .step3(.nextButtonTapped))):
         state.routeIDs.push(.finalScreen)
         return .none
         
-			case .router(.routeAction(.element(_, action: .finalScreen(.returnToName)))):
+			case .router(.routeAction(_, action: .finalScreen(.returnToName))):
         state.routeIDs.goBackTo(id: .step1)
         return .none
         
-			case .router(.routeAction(.element(_, action: .finalScreen(.returnToDateOfBirth)))):
+			case .router(.routeAction(_, action: .finalScreen(.returnToDateOfBirth))):
         state.routeIDs.goBackTo(id: .step2)
         return .none
         
-			case .router(.routeAction(.element(_, action: .finalScreen(.returnToJob)))):
+			case .router(.routeAction(_, action: .finalScreen(.returnToJob))):
         state.routeIDs.goBackTo(id: .step3)
         return .none
         
-			case .router(.routeAction(.element(_, action: .finalScreen(.receiveAPIResponse)))):
+			case .router(.routeAction(_, action: .finalScreen(.receiveAPIResponse))):
         state.routeIDs.goBackToRoot()
         state.clear()
         return .none

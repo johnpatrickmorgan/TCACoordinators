@@ -9,7 +9,7 @@ import ComposableArchitecture
 extension Reducer {
   func forEachIndex<ElementState, ElementAction, Element: Reducer>(
     _ toElementsState: WritableKeyPath<State, [ElementState]>,
-    action toElementAction: CaseKeyPath<Action, IdentifiedAction<Int, ElementAction>>,
+	action toElementAction: CaseKeyPath<Action, (id: Int, action: ElementAction)>,
     @ReducerBuilder<ElementState, ElementAction> element: () -> Element,
     file: StaticString = #file,
     fileID: StaticString = #fileID,
@@ -33,7 +33,7 @@ struct _ForEachIndexReducer<
 >: Reducer where Parent.Action: CasePathable {
   let parent: Parent
   let toElementsState: WritableKeyPath<Parent.State, [Element.State]>
-  let toElementAction: CaseKeyPath<Parent.Action, IdentifiedAction<Int, Element.Action>>
+	let toElementAction: CaseKeyPath<Parent.Action, (id: Int, action: Element.Action)>
   let element: Element
   let file: StaticString
   let fileID: StaticString
@@ -42,7 +42,7 @@ struct _ForEachIndexReducer<
   init(
     parent: Parent,
     toElementsState: WritableKeyPath<Parent.State, [Element.State]>,
-    toElementAction: CaseKeyPath<Parent.Action, IdentifiedAction<Int, Element.Action>>,
+		toElementAction: CaseKeyPath<Parent.Action, (id: Int, action: Element.Action)>,
     element: Element,
     file: StaticString,
     fileID: StaticString,
@@ -67,7 +67,7 @@ struct _ForEachIndexReducer<
   func reduceForEach(
     into state: inout Parent.State, action: Parent.Action
   ) -> Effect<Parent.Action> {
-		guard case let .element(index, elementAction) = action[case: toElementAction] else { return .none }
+		guard let (index, elementAction) = action[case: toElementAction] else { return .none }
     let array = state[keyPath: self.toElementsState]
     if array[safe: index] == nil {
       runtimeWarn(
@@ -88,7 +88,7 @@ struct _ForEachIndexReducer<
     }
     return self.element
       .reduce(into: &state[keyPath: self.toElementsState][index], action: elementAction)
-			.map { self.toElementAction(.element(id: index, action: $0)) }
+			.map { self.toElementAction((id: index, action: $0)) }
   }
 }
 
