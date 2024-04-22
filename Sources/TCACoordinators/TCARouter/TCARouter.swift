@@ -68,13 +68,3 @@ extension Collection {
     indices.contains(index) ? self[index] : nil
   }
 }
-
-extension Case {
-	fileprivate subscript<ID: Hashable, Action>(id id: ID) -> Case<Action>
-	where Value == (ID, action: Action) {
-		Case<Action>(
-			embed: { (id: id, action: $0) },
-			extract: { $0.0 == id ? $0.1 : nil }
-		)
-	}
-}
