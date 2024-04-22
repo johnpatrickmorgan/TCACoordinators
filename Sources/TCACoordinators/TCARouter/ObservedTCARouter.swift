@@ -26,13 +26,13 @@ public struct ObservedTCARouter<
 		var screen = screen
 		let id = identifier(screen, index)
 		return store.scope(
-			id: store.id(state: \.[index], action: \.routeAction[id: id]),
+			id: store.id(state: \.[index], action: \.[id: id]),
 			state: ToState {
 				screen = $0[safe: index]?.screen ?? screen
 				return screen
 			},
 			action: {
-				.routeAction(.element(id: id, action: $0))
+				.routeAction(id: id, action: $0)
 			},
 			isInvalid: { !$0.indices.contains(index) }
 		)
