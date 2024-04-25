@@ -8,12 +8,12 @@ public struct ObservedTCARouter<
   ID: Hashable,
   ScreenContent: View
 >: View {
-  @Perception.Bindable private var store: Store<[Route<Screen>], RouterAction<Screen, ID, ScreenAction>>
+  @Perception.Bindable private var store: Store<[Route<Screen>], RouterAction<ID, Screen, ScreenAction>>
   let identifier: (Screen, Int) -> ID
   let screenContent: (Store<Screen, ScreenAction>) -> ScreenContent
 
   public init(
-    store: Store<[Route<Screen>], RouterAction<Screen, ID, ScreenAction>>,
+    store: Store<[Route<Screen>], RouterAction<ID, Screen, ScreenAction>>,
     identifier: @escaping (Screen, Int) -> ID,
     @ViewBuilder screenContent: @escaping (Store<Screen, ScreenAction>) -> ScreenContent
   ) {
@@ -53,8 +53,8 @@ public struct ObservedTCARouter<
 }
 
 private extension Store {
-  subscript<Screen, ID: Hashable, ScreenAction>() -> [Route<Screen>]
-    where State == [Route<Screen>], Action == RouterAction<Screen, ID, ScreenAction>
+  subscript<ID: Hashable, Screen, ScreenAction>() -> [Route<Screen>]
+    where State == [Route<Screen>], Action == RouterAction<ID, Screen, ScreenAction>
   {
     get { self.currentState }
     set {
