@@ -3,36 +3,36 @@ import SwiftUI
 import TCACoordinators
 
 struct IndexedCoordinatorView: View {
-	@State var store: StoreOf<IndexedCoordinator>
+  @State var store: StoreOf<IndexedCoordinator>
 
-	var body: some View {
-		WithPerceptionTracking {
-			ObservedTCARouter(store.scope(state: \.routes, action: \.router)) { screen in
-				switch screen.case {
-				case let .home(store):
-					HomeView(store: store)
+  var body: some View {
+    WithPerceptionTracking {
+      ObservedTCARouter(store.scope(state: \.routes, action: \.router)) { screen in
+        switch screen.case {
+        case let .home(store):
+          HomeView(store: store)
 
-				case let .numbersList(store):
-					NumbersListView(store: store)
+        case let .numbersList(store):
+          NumbersListView(store: store)
 
-				case let .numberDetail(store):
-					NumberDetailView(store: store)
-				}
-			}
-		}
-	}
+        case let .numberDetail(store):
+          NumberDetailView(store: store)
+        }
+      }
+    }
+  }
 }
 
 @Reducer
 struct IndexedCoordinator {
-	@ObservableState
-	struct State: Equatable {
-		static let initialState = State(
-			routes: [.root(.home(.init()), embedInNavigationView: true)]
-		)
+  @ObservableState
+  struct State: Equatable {
+    static let initialState = State(
+      routes: [.root(.home(.init()), embedInNavigationView: true)]
+    )
 
-		var routes: [Route<Screen.State>]
-	}
+    var routes: [Route<Screen.State>]
+  }
 
   enum Action {
     case router(IndexedRouterActionOf<Screen>)
@@ -58,18 +58,18 @@ struct IndexedCoordinator {
           $0.goBackTo(\.numbersList)
         }
 
-			case .router(.routeAction(_, .numberDetail(.goBackToRootTapped))):
-				return .routeWithDelaysIfUnsupported(state.routes, action: \.router) {
-					$0.goBackToRoot()
-				}
+      case .router(.routeAction(_, .numberDetail(.goBackToRootTapped))):
+        return .routeWithDelaysIfUnsupported(state.routes, action: \.router) {
+          $0.goBackToRoot()
+        }
 
-			default:
-				break
-			}
-			return .none
-		}
-		.forEachRoute(\.routes, action: \.router) {
-			Screen.body
-		}
-	}
+      default:
+        break
+      }
+      return .none
+    }
+    .forEachRoute(\.routes, action: \.router) {
+      Screen.body
+    }
+  }
 }

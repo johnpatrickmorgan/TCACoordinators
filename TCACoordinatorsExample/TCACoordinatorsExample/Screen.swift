@@ -4,13 +4,13 @@ import SwiftUI
 
 @Reducer(state: .equatable)
 enum Screen {
-	case home(Home)
-	case numbersList(NumbersList)
-	case numberDetail(NumberDetail)
+  case home(Home)
+  case numbersList(NumbersList)
+  case numberDetail(NumberDetail)
 }
 
-//@Reducer
-//struct Screen: Reducer {
+// @Reducer
+// struct Screen: Reducer {
 //  enum Action {
 //    case home(Home.Action)
 //    case numbersList(NumbersList.Action)
@@ -45,7 +45,7 @@ enum Screen {
 //      NumberDetail()
 //    }
 //  }
-//}
+// }
 
 // Home
 
