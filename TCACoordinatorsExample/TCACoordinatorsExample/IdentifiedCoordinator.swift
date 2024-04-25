@@ -85,8 +85,6 @@ struct IdentifiedCoordinator: Reducer {
       }
       return .none
     }
-    .forEachRoute(\.routes, action: \.router) {
-      Screen.body
-    }
+    .forEachRoute(\.routes, action: \.router)
   }
 }

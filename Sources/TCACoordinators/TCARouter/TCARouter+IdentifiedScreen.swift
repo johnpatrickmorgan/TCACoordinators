@@ -31,7 +31,6 @@ public extension ObservedTCARouter where Screen: Identifiable {
   }
 }
 
-
 extension Route: Identifiable where Screen: Identifiable {
   public var id: Screen.ID { screen.id }
 }

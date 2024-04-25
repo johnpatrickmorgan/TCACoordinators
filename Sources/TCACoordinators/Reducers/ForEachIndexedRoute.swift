@@ -55,6 +55,25 @@ public extension Reducer {
     )
   }
 
+  func forEachRoute<ScreenState, ScreenAction>(
+    coordinatorIdForCancellation: (some Hashable)?,
+    toLocalState: WritableKeyPath<Self.State, [Route<ScreenState>]>,
+    toLocalAction: CaseKeyPath<Self.Action, IndexedRouterAction<ScreenState, ScreenAction>>
+  ) -> some ReducerOf<Self>
+    where Action: CasePathable,
+    ScreenState: CaseReducerState,
+    ScreenState.StateReducer.Action == ScreenAction,
+    ScreenAction: CasePathable
+  {
+    self.forEachRoute(
+      coordinatorIdForCancellation: coordinatorIdForCancellation,
+      toLocalState: toLocalState,
+      toLocalAction: toLocalAction
+    ) {
+      ScreenState.StateReducer.body
+    }
+  }
+
   /// Allows a screen reducer to be incorporated into a coordinator reducer, such that each screen in
   /// the coordinator's routes Array will have its actions and state propagated. When screens are
   /// dismissed, the routes will be updated. If a cancellation identifier is passed, in-flight effects
@@ -82,5 +101,21 @@ public extension Reducer {
       toLocalState: routes,
       toLocalAction: action
     )
+  }
+
+  /// A special overload of ``Reducer.forEachRoute(_:action:cancellationIdType:screenReducer:)`` for enum reducers
+  func forEachRoute<ScreenState, ScreenAction>(
+    _ routes: WritableKeyPath<State, [Route<ScreenState>]>,
+    action: CaseKeyPath<Action, IndexedRouterAction<ScreenState, ScreenAction>>,
+    cancellationIdType: Any.Type = Self.self
+  ) -> some ReducerOf<Self>
+    where Action: CasePathable,
+    ScreenState: CaseReducerState,
+    ScreenState.StateReducer.Action == ScreenAction,
+    ScreenAction: CasePathable
+  {
+    self.forEachRoute(routes, action: action, cancellationIdType: cancellationIdType) {
+      ScreenState.StateReducer.body
+    }
   }
 }
