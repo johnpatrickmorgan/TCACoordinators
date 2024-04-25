@@ -107,7 +107,7 @@ private struct Child: Reducer {
 
 @Reducer
 private struct Parent: Reducer {
-  struct State: Equatable, IndexedRouterState {
+  struct State: Equatable {
     var routes: [Route<Child.State>]
   }
 

@@ -108,7 +108,7 @@ private struct Child: Reducer {
 @Reducer
 private struct Parent: Reducer {
   let scheduler: TestSchedulerOf<DispatchQueue>
-  struct State: IdentifiedRouterState, Equatable {
+  struct State: Equatable {
     var routes: IdentifiedArrayOf<Route<Child.State>>
   }
 
