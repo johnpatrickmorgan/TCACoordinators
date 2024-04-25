@@ -21,8 +21,8 @@ struct MainTabCoordinatorView: View {
   let store: StoreOf<MainTabCoordinator>
 
   var body: some View {
-    WithViewStore(store, observe: ViewState.init) { viewStore in
-      TabView(selection: viewStore.$selectedTab) {
+    WithViewStore(store, observe: \.selectedTab) { viewStore in
+      TabView(selection: viewStore.binding(get: { $0 }, send: MainTabCoordinator.Action.tabSelected)) {
         IndexedCoordinatorView(
           store: store.scope(
             state: \.indexed,
@@ -66,14 +66,6 @@ struct MainTabCoordinatorView: View {
       }
     }
   }
-
-  struct ViewState: Equatable {
-    @BindingViewState var selectedTab: MainTabCoordinator.Tab
-
-    init(_ store: BindingViewStore<MainTabCoordinator.State>) {
-      self._selectedTab = store.$selectedTab
-    }
-  }
 }
 
 @Reducer
@@ -86,15 +78,13 @@ struct MainTabCoordinator: Reducer {
     case identified(IdentifiedCoordinator.Deeplink)
   }
 
-  enum Action: BindableAction {
+  enum Action {
     case identified(IdentifiedCoordinator.Action)
     case indexed(IndexedCoordinator.Action)
     case app(GameApp.Action)
     case form(FormAppCoordinator.Action)
     case deeplinkOpened(Deeplink)
     case tabSelected(Tab)
-
-    case binding(BindingAction<State>)
   }
 
   struct State: Equatable {
@@ -111,11 +101,10 @@ struct MainTabCoordinator: Reducer {
     var app: GameApp.State
     var form: FormAppCoordinator.State
 
-    @BindingState var selectedTab: Tab
+    var selectedTab: Tab
   }
 
   var body: some ReducerOf<Self> {
-    BindingReducer()
     Scope(state: \.indexed, action: \.indexed) {
       IndexedCoordinator()
     }
