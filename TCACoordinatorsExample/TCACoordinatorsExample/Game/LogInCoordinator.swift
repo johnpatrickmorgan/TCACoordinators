@@ -69,7 +69,7 @@ struct LogInCoordinator: Reducer {
   }
 
   enum Action {
-    case router(IdentifiedRouterAction<LogInScreen.State, LogInScreen.Action>)
+    case router(IdentifiedRouterActionOf<LogInScreen>)
   }
 
   var body: some ReducerOf<Self> {

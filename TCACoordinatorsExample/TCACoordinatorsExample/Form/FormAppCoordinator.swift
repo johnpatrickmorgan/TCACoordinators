@@ -65,7 +65,7 @@ struct FormAppCoordinator {
   }
 
   enum Action {
-    case router(IdentifiedRouterAction<FormScreen.State, FormScreen.Action>)
+    case router(IdentifiedRouterActionOf<FormScreen>)
   }
 
   var body: some ReducerOf<Self> {

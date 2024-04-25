@@ -10,12 +10,12 @@ public struct TCARouter<
   ID: Hashable,
   ScreenContent: View
 >: View {
-  let store: Store<[Route<Screen>], RouterAction<Screen, ID, ScreenAction>>
+  let store: Store<[Route<Screen>], RouterAction<ID, Screen, ScreenAction>>
   let identifier: (Screen, Int) -> ID
   let screenContent: (Store<Screen, ScreenAction>) -> ScreenContent
 
   public init(
-    store: Store<[Route<Screen>], RouterAction<Screen, ID, ScreenAction>>,
+    store: Store<[Route<Screen>], RouterAction<ID, Screen, ScreenAction>>,
     identifier: @escaping (Screen, Int) -> ID,
     @ViewBuilder screenContent: @escaping (Store<Screen, ScreenAction>) -> ScreenContent
   ) {

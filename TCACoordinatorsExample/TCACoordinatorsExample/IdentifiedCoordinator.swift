@@ -50,7 +50,7 @@ struct IdentifiedCoordinator: Reducer {
   }
 
   enum Action {
-    case router(IdentifiedRouterAction<Screen.State, Screen.Action>)
+    case router(IdentifiedRouterActionOf<Screen>)
   }
 
   var body: some ReducerOf<Self> {

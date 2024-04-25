@@ -14,7 +14,7 @@ struct ForEachIdentifiedRoute<
   let screenReducer: ScreenReducer
   let cancellationId: CoordinatorID?
   let toLocalState: WritableKeyPath<CoordinatorReducer.State, IdentifiedArrayOf<Route<ScreenReducer.State>>>
-  let toLocalAction: CaseKeyPath<CoordinatorReducer.Action, IdentifiedRouterAction<ScreenReducer.State, ScreenReducer.Action>>
+  let toLocalAction: CaseKeyPath<CoordinatorReducer.Action, IdentifiedRouterActionOf<ScreenReducer>>
 
   var body: some ReducerOf<CoordinatorReducer> {
     CancelEffectsOnDismiss(

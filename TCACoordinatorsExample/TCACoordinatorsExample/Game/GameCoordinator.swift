@@ -58,7 +58,7 @@ struct GameCoordinator {
   }
 
   enum Action {
-    case router(IndexedRouterAction<GameScreen.State, GameScreen.Action>)
+    case router(IndexedRouterActionOf<GameScreen>)
   }
 
   var body: some ReducerOf<Self> {

@@ -112,7 +112,7 @@ private struct Parent: Reducer {
   }
 
   enum Action {
-    case router(IndexedRouterAction<Child.State, Child.Action>)
+    case router(IndexedRouterActionOf<Child>)
     case goBackToRoot
   }
 

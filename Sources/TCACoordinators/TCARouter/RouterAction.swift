@@ -1,7 +1,7 @@
 import ComposableArchitecture
 import FlowStacks
 
-public enum RouterAction<Screen, ID: Hashable, ScreenAction>: CasePathable {
+public enum RouterAction<ID: Hashable, Screen, ScreenAction>: CasePathable {
   case updateRoutes(_ routes: [Route<Screen>])
   case routeAction(id: ID, action: ScreenAction)
 

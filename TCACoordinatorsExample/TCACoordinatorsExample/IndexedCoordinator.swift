@@ -46,7 +46,7 @@ struct IndexedCoordinator {
   }
 
   enum Action {
-    case router(IndexedRouterAction<Screen.State, Screen.Action>)
+    case router(IndexedRouterActionOf<Screen>)
   }
 
   var body: some ReducerOf<Self> {
