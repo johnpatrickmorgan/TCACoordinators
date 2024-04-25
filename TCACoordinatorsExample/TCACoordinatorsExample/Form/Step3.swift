@@ -68,11 +68,11 @@ struct Step3: Reducer {
           await send(.receiveOccupations(getOccupations()))
         }
 
-      case .receiveOccupations(let occupations):
+      case let .receiveOccupations(occupations):
         state.occupations = occupations
         return .none
 
-      case .selectOccupation(let occupation):
+      case let .selectOccupation(occupation):
         if state.occupations.contains(occupation) {
           state.selectedOccupation = state.selectedOccupation == occupation ? nil : occupation
         }

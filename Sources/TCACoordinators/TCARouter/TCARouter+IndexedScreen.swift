@@ -4,15 +4,15 @@ import Foundation
 import SwiftUI
 
 public extension TCARouter where ID == Int {
-	/// Convenience initializer for managing screens in an `Array`, identified by index.
-	init(
-		_ store: Store<[Route<Screen>], IndexedRouterAction<Screen, ScreenAction>>,
-		screenContent: @escaping (Store<Screen, ScreenAction>) -> ScreenContent
-	) {
-		self.init(
-			store: store,
-			identifier: { $1 },
-			screenContent: screenContent
-		)
-	}
+  /// Convenience initializer for managing screens in an `Array`, identified by index.
+  init(
+    _ store: Store<[Route<Screen>], IndexedRouterAction<Screen, ScreenAction>>,
+    screenContent: @escaping (Store<Screen, ScreenAction>) -> ScreenContent
+  ) {
+    self.init(
+      store: store,
+      identifier: { $1 },
+      screenContent: screenContent
+    )
+  }
 }

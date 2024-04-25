@@ -48,10 +48,10 @@ struct GameApp: Reducer {
     }
     Reduce<State, Action> { state, action in
       switch action {
-			case .logIn(.router(.routeAction(_, .logIn(.logInTapped(let name))))):
+      case let .logIn(.router(.routeAction(_, .logIn(.logInTapped(name))))):
         state.game = .initialState(playerName: name)
         state.isLoggedIn = true
-			case .game(.router(.routeAction(_, .game(.logOutButtonTapped)))):
+      case .game(.router(.routeAction(_, .game(.logOutButtonTapped)))):
         state.logIn = .initialState
         state.isLoggedIn = false
       default:

@@ -15,9 +15,9 @@ struct LogInScreen {
 
     var id: UUID {
       switch self {
-      case .welcome(let state):
+      case let .welcome(state):
         state.id
-      case .logIn(let state):
+      case let .logIn(state):
         state.id
       }
     }
@@ -37,21 +37,21 @@ struct LogInCoordinatorView: View {
   let store: StoreOf<LogInCoordinator>
 
   var body: some View {
-		TCARouter(store.scope(state: \.routes, action: \.router)) { screen in
+    TCARouter(store.scope(state: \.routes, action: \.router)) { screen in
       SwitchStore(screen) { screen in
         switch screen {
         case .welcome:
           CaseLet(
             \LogInScreen.State.welcome,
-             action: LogInScreen.Action.welcome,
-             then: WelcomeView.init
+            action: LogInScreen.Action.welcome,
+            then: WelcomeView.init
           )
 
         case .logIn:
           CaseLet(
             \LogInScreen.State.logIn,
-             action: LogInScreen.Action.logIn,
-             then: LogInView.init
+            action: LogInScreen.Action.logIn,
+            then: LogInView.init
           )
         }
       }
@@ -68,14 +68,14 @@ struct LogInCoordinator: Reducer {
     var routes: IdentifiedArrayOf<Route<LogInScreen.State>>
   }
 
-	enum Action {
-		case router(IdentifiedRouterAction<LogInScreen.State, LogInScreen.Action>)
+  enum Action {
+    case router(IdentifiedRouterAction<LogInScreen.State, LogInScreen.Action>)
   }
 
   var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
-			case .router(.routeAction(_, .welcome(.logInTapped))):
+      case .router(.routeAction(_, .welcome(.logInTapped))):
         state.routes.push(.logIn(.init()))
 
       default:
@@ -83,7 +83,7 @@ struct LogInCoordinator: Reducer {
       }
       return .none
     }
-		.forEachRoute(\.routes, action: \.router) {
+    .forEachRoute(\.routes, action: \.router) {
       LogInScreen()
     }
   }

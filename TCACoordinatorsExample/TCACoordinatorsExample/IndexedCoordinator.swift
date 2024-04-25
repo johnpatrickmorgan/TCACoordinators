@@ -6,7 +6,7 @@ struct IndexedCoordinatorView: View {
   let store: StoreOf<IndexedCoordinator>
 
   var body: some View {
-		TCARouter(store.scope(state: \.routes, action: \.router)) { screen in
+    TCARouter(store.scope(state: \.routes, action: \.router)) { screen in
       SwitchStore(screen) { screen in
         switch screen {
         case .home:
@@ -46,31 +46,31 @@ struct IndexedCoordinator {
   }
 
   enum Action {
-		case router(IndexedRouterAction<Screen.State, Screen.Action>)
+    case router(IndexedRouterAction<Screen.State, Screen.Action>)
   }
 
   var body: some ReducerOf<Self> {
     Reduce<State, Action> { state, action in
       switch action {
-			case .router(.routeAction(_, .home(.startTapped))):
+      case .router(.routeAction(_, .home(.startTapped))):
         state.routes.presentSheet(.numbersList(.init(numbers: Array(0 ..< 4))), embedInNavigationView: true)
 
-			case .router(.routeAction(_, .numbersList(.numberSelected(let number)))):
+      case let .router(.routeAction(_, .numbersList(.numberSelected(number)))):
         state.routes.push(.numberDetail(.init(number: number)))
 
-			case .router(.routeAction(_, .numberDetail(.showDouble(let number)))):
+      case let .router(.routeAction(_, .numberDetail(.showDouble(number)))):
         state.routes.presentSheet(.numberDetail(.init(number: number * 2)), embedInNavigationView: true)
 
-			case .router(.routeAction(_, .numberDetail(.goBackTapped))):
+      case .router(.routeAction(_, .numberDetail(.goBackTapped))):
         state.routes.goBack()
 
-			case .router(.routeAction(_, .numberDetail(.goBackToNumbersList))):
-				return .routeWithDelaysIfUnsupported(state.routes, action: \.router) {
+      case .router(.routeAction(_, .numberDetail(.goBackToNumbersList))):
+        return .routeWithDelaysIfUnsupported(state.routes, action: \.router) {
           $0.goBackTo(\.numbersList)
         }
 
-			case .router(.routeAction(_, .numberDetail(.goBackToRootTapped))):
-				return .routeWithDelaysIfUnsupported(state.routes, action: \.router) {
+      case .router(.routeAction(_, .numberDetail(.goBackToRootTapped))):
+        return .routeWithDelaysIfUnsupported(state.routes, action: \.router) {
           $0.goBackToRoot()
         }
 
@@ -78,8 +78,8 @@ struct IndexedCoordinator {
         break
       }
       return .none
-		}
-		.forEachRoute(\.routes, action: \.router) {
+    }
+    .forEachRoute(\.routes, action: \.router) {
       Screen()
     }
   }

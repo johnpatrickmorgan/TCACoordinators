@@ -6,14 +6,14 @@ struct GameCoordinatorView: View {
   let store: StoreOf<GameCoordinator>
 
   var body: some View {
-		TCARouter(store.scope(state: \.routes, action: \.router)) { screen in
+    TCARouter(store.scope(state: \.routes, action: \.router)) { screen in
       SwitchStore(screen) { screen in
         switch screen {
         case .game:
           CaseLet(
             \GameScreen.State.game,
-             action: GameScreen.Action.game,
-             then: GameView.init
+            action: GameScreen.Action.game,
+            then: GameView.init
           )
         }
       }
@@ -28,7 +28,7 @@ struct GameScreen {
 
     var id: UUID {
       switch self {
-      case .game(let state):
+      case let .game(state):
         return state.id
       }
     }
@@ -58,12 +58,12 @@ struct GameCoordinator {
   }
 
   enum Action {
-		case router(IndexedRouterAction<GameScreen.State, GameScreen.Action>)
+    case router(IndexedRouterAction<GameScreen.State, GameScreen.Action>)
   }
 
   var body: some ReducerOf<Self> {
     EmptyReducer()
-			.forEachRoute(\.routes, action: \.router) {
+      .forEachRoute(\.routes, action: \.router) {
         GameScreen()
       }
   }

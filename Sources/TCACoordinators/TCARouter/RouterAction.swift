@@ -2,42 +2,42 @@ import ComposableArchitecture
 import FlowStacks
 
 public enum RouterAction<Screen, ID: Hashable, ScreenAction>: CasePathable {
-	case updateRoutes(_ routes: [Route<Screen>])
-	case routeAction(id: ID, action: ScreenAction)
+  case updateRoutes(_ routes: [Route<Screen>])
+  case routeAction(id: ID, action: ScreenAction)
 
-	public static var allCasePaths: AllCasePaths {
-		AllCasePaths()
-	}
+  public static var allCasePaths: AllCasePaths {
+    AllCasePaths()
+  }
 
-	public struct AllCasePaths {
-		public var updateRoutes: AnyCasePath<RouterAction, [Route<Screen>]> {
-			AnyCasePath(
-				embed: RouterAction.updateRoutes,
-				extract: {
-					guard case let .updateRoutes(routes) = $0 else { return nil }
-					return routes
-				}
-			)
-		}
+  public struct AllCasePaths {
+    public var updateRoutes: AnyCasePath<RouterAction, [Route<Screen>]> {
+      AnyCasePath(
+        embed: RouterAction.updateRoutes,
+        extract: {
+          guard case let .updateRoutes(routes) = $0 else { return nil }
+          return routes
+        }
+      )
+    }
 
-		public var routeAction: AnyCasePath<RouterAction, (id: ID, action: ScreenAction)> {
-			AnyCasePath(
-				embed: RouterAction.routeAction,
-				extract: {
-					guard case let .routeAction(id, action) = $0 else { return nil }
-					return (id, action)
-				}
-			)
-		}
+    public var routeAction: AnyCasePath<RouterAction, (id: ID, action: ScreenAction)> {
+      AnyCasePath(
+        embed: RouterAction.routeAction,
+        extract: {
+          guard case let .routeAction(id, action) = $0 else { return nil }
+          return (id, action)
+        }
+      )
+    }
 
-		public subscript(id id: ID) -> AnyCasePath<RouterAction, ScreenAction> {
-			AnyCasePath(
-				embed: { .routeAction(id: id, action: $0) },
-				extract: {
-					guard case .routeAction(id, let action) = $0 else { return nil }
-					return action
-				}
-			)
-		}
-	}
+    public subscript(id id: ID) -> AnyCasePath<RouterAction, ScreenAction> {
+      AnyCasePath(
+        embed: { .routeAction(id: id, action: $0) },
+        extract: {
+          guard case .routeAction(id, let action) = $0 else { return nil }
+          return action
+        }
+      )
+    }
+  }
 }

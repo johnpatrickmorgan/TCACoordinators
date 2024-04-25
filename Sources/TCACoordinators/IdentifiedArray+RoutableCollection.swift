@@ -19,11 +19,12 @@ public extension RoutableCollection where Element: RouteProtocol {
     goBackTo(where: { screenCasePath.extract(from: $0.screen) != nil })
   }
 
-	@discardableResult
-	mutating func goBackTo<T>(_ screenCasePath: CaseKeyPath<Element.Screen, T>) -> Bool
-	where Element.Screen: CasePathable {
-		goBackTo(where: { $0.screen[case: screenCasePath] != nil })
-	}
+  @discardableResult
+  mutating func goBackTo<T>(_ screenCasePath: CaseKeyPath<Element.Screen, T>) -> Bool
+    where Element.Screen: CasePathable
+  {
+    goBackTo(where: { $0.screen[case: screenCasePath] != nil })
+  }
 
   /// Pops to the topmost (most recently shown) screen in the stack
   /// that matches the given case path. If no screens satisfy the condition,
@@ -36,9 +37,10 @@ public extension RoutableCollection where Element: RouteProtocol {
     popTo(where: { screenCasePath.extract(from: $0.screen) != nil })
   }
 
-	@discardableResult
-	mutating func popTo<T>(_ screenCasePath: CaseKeyPath<Element.Screen, T>) -> Bool
-	where Element.Screen: CasePathable {
-		popTo(where: { $0.screen[case: screenCasePath] != nil })
-	}
+  @discardableResult
+  mutating func popTo<T>(_ screenCasePath: CaseKeyPath<Element.Screen, T>) -> Bool
+    where Element.Screen: CasePathable
+  {
+    popTo(where: { $0.screen[case: screenCasePath] != nil })
+  }
 }

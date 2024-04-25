@@ -21,8 +21,8 @@ struct MainTabCoordinatorView: View {
   let store: StoreOf<MainTabCoordinator>
 
   var body: some View {
-		WithViewStore(store, observe: ViewState.init) { viewStore in
-			TabView(selection: viewStore.$selectedTab) {
+    WithViewStore(store, observe: ViewState.init) { viewStore in
+      TabView(selection: viewStore.$selectedTab) {
         IndexedCoordinatorView(
           store: store.scope(
             state: \.indexed,
@@ -34,8 +34,8 @@ struct MainTabCoordinatorView: View {
 
         IdentifiedCoordinatorView(
           store: store.scope(
-						state: \.identified,
-						action: \.identified
+            state: \.identified,
+            action: \.identified
           )
         )
         .tabItem { Text("Identified") }
@@ -67,13 +67,13 @@ struct MainTabCoordinatorView: View {
     }
   }
 
-	struct ViewState: Equatable {
-		@BindingViewState var selectedTab: MainTabCoordinator.Tab
+  struct ViewState: Equatable {
+    @BindingViewState var selectedTab: MainTabCoordinator.Tab
 
-		init(_ store: BindingViewStore<MainTabCoordinator.State>) {
-			self._selectedTab = store.$selectedTab
-		}
-	}
+    init(_ store: BindingViewStore<MainTabCoordinator.State>) {
+      self._selectedTab = store.$selectedTab
+    }
+  }
 }
 
 @Reducer
@@ -86,7 +86,7 @@ struct MainTabCoordinator: Reducer {
     case identified(IdentifiedCoordinator.Deeplink)
   }
 
-	enum Action: BindableAction {
+  enum Action: BindableAction {
     case identified(IdentifiedCoordinator.Action)
     case indexed(IndexedCoordinator.Action)
     case app(GameApp.Action)
@@ -94,7 +94,7 @@ struct MainTabCoordinator: Reducer {
     case deeplinkOpened(Deeplink)
     case tabSelected(Tab)
 
-		case binding(BindingAction<State>)
+    case binding(BindingAction<State>)
   }
 
   struct State: Equatable {
@@ -115,7 +115,7 @@ struct MainTabCoordinator: Reducer {
   }
 
   var body: some ReducerOf<Self> {
-		BindingReducer()
+    BindingReducer()
     Scope(state: \.indexed, action: \.indexed) {
       IndexedCoordinator()
     }
@@ -130,14 +130,14 @@ struct MainTabCoordinator: Reducer {
     }
     Reduce { state, action in
       switch action {
-      case .deeplinkOpened(.identified(.showNumber(let number))):
+      case let .deeplinkOpened(.identified(.showNumber(number))):
         state.selectedTab = .identified
         if state.identified.routes.canPush == true {
           state.identified.routes.push(.numberDetail(.init(number: number)))
         } else {
           state.identified.routes.presentSheet(.numberDetail(.init(number: number)), embedInNavigationView: true)
         }
-      case .tabSelected(let tab):
+      case let .tabSelected(tab):
         state.selectedTab = tab
       default:
         break

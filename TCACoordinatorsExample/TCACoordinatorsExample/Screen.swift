@@ -17,11 +17,11 @@ struct Screen: Reducer {
 
     var id: UUID {
       switch self {
-      case .home(let state):
+      case let .home(state):
         return state.id
-      case .numbersList(let state):
+      case let .numbersList(state):
         return state.id
-      case .numberDetail(let state):
+      case let .numberDetail(state):
         return state.id
       }
     }
@@ -81,7 +81,8 @@ struct NumbersListView: View {
           "\(number)",
           action: {
             viewStore.send(.numberSelected(number))
-          })
+          }
+        )
       }
     }
     .navigationTitle("Numbers")
@@ -159,7 +160,7 @@ struct NumberDetail {
       switch action {
       case .goBackToRootTapped, .goBackTapped, .goBackToNumbersList, .showDouble:
         return .none
-        
+
       case .incrementAfterDelayTapped:
         return .run { send in
           try await mainQueue.sleep(for: .seconds(3))
