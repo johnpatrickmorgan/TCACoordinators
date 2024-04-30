@@ -28,7 +28,8 @@ The library works by translating the array of screens into a hierarchy of nested
 First, identify all possible screens that are part of the particular navigation flow you're modelling. The goal will be to combine their reducers into a single reducer - one that can drive the behaviour of any of those screens. Both the state and action types will be the sum of the individual screens' state and action types, and the reducer will combine each individual screens' reducers into one:
 
 ```swift
-struct Screen: Reducer {
+@Reducer
+struct Screen {
   enum State: Equatable {
     case home(Home.State)
     case numbersList(NumbersList.State)
@@ -59,31 +60,34 @@ struct Screen: Reducer {
 The coordinator will manage multiple screens in a navigation flow. Its state should include an array of `Route<Screen.State>`s, representing the navigation stack: i.e. appending a new screen state to this array will trigger the corresponding screen to be pushed or presented. `Route` is an enum whose cases capture the screen state and how it should be shown, e.g. `case push(Screen.State)`. 
 
 ```swift
-struct Coordinator: Reducer {
-  struct State: Equatable, IndexedRouterState {
+@Reducer
+struct Coordinator {
+  struct State: Equatable {
     var routes: [Route<Screen.State>]
   }
   ...
 }
 ```
 
-The coordinator's action should include two special cases. The first includes an index to allow screen actions to be dispatched to the correct screen in the routes array. The second allows the routes array to be updated automatically, e.g. when a user taps 'Back':
+The coordinator's action should include a special case, which will allow screen actions to be dispatched to the correct screen in the routes array, and allow the routes array to be updated automatically, e.g. when a user taps 'Back':
 
 ```swift
-struct Coordinator: Reducer {
+@Reducer
+struct Coordinator {
   ...
-  enum Action: IndexedRouterAction {
-    case routeAction(Int, action: Screen.Action)
-    case updateRoutes([Route<Screen.State>])
+
+  enum Action {
+    case router(IndexedRouterActionOf<Screen>)
   }
   ...
 }
 ```
 
-The coordinator reducer defines any logic for presenting and dismissing screens, and uses `forEachRoute` to further apply the `Screen` reducer to each screen in the `routes` array:
+The coordinator reducer defines any logic for presenting and dismissing screens, and uses `forEachRoute` to further apply the `Screen` reducer to each screen in the `routes` array. `forEachRoute` takes two arguments: a keypath for the routes array and a case path for the router action case:
 
 ```swift
-struct Coordinator: Reducer {
+@Reducer
+struct Coordinator {
   ...
   var body: some ReducerOf<Self> {
     Reduce<State, Action> { state, action in
@@ -100,21 +104,11 @@ struct Coordinator: Reducer {
       case .routeAction(_, .numberDetail(.goBackTapped)):
         state.routes.goBack()
         
-      case .routeAction(_, .numberDetail(.goBackToNumbersList)):
-        return .routeWithDelaysIfUnsupported(state.routes) {
-          $0.goBackTo(/Screen.State.numbersList)
-        }
-        
-      case .routeAction(_, .numberDetail(.goBackToRootTapped)):
-        return .routeWithDelaysIfUnsupported(state.routes) {
-          $0.goBackToRoot()
-        }
-        
       default:
         break
       }
       return .none
-    }.forEachRoute {
+    }.forEachRoute(\.routes, action: \.router) {
       Screen()
     }
   }
@@ -194,13 +188,13 @@ By default, any in-flight effects initiated by a particular screen are cancelled
 SwiftUI does not allow more than one screen to be pushed, presented or dismissed within a single update. This makes it tricky to make large updates to the navigation state, e.g. when deeplinking straight to a view several layers deep in the navigation hierarchy, when going back multiple presentation layers to the root, or when restoring arbitrary navigation state. This library provides a workaround: it can break down large unsupported updates into a series of smaller updates that SwiftUI does support, interspersed with the necessary delays, and make that available as an Effect to be returned from a coordinator reducer. You just need to wrap route mutations in a call to `Effect.routeWithDelaysIfUnsupported`, e.g.:
 
 ```swift
-return Effect.routeWithDelaysIfUnsupported(state.routes) {
+return Effect.routeWithDelaysIfUnsupported(state.routes, action: \.router) {
   $0.goBackToRoot()
 }
 ```
 
 ```swift
-return Effect.routeWithDelaysIfUnsupported(state.routes) {
+return Effect.routeWithDelaysIfUnsupported(state.routes, action: \.router) {
   $0.push(...)
   $0.push(...)
   $0.presentSheet(...)
@@ -215,7 +209,7 @@ The coordinator is just like any other UI unit in the Composable Architecture - 
 
 ## Identifying screens
 
-In the example given, the coordinator's state conformed to `IndexedRouterState` and action to `IndexedRouterAction`. That means that screens were identified by their index in the routes array. This is safe because the index is stable for standard navigation updates - e.g. pushing and popping do not affect the indexes of existing screens. However, if you prefer to use `Identifiable` screens, you can manage the screens as an `IdentifiedArray` instead. You can then conform the state to `IdentifiedRouterState` and action to `IdentifiedRouterAction`, and benefit from the same terse API as the example above. There are also explicit versions of the APIs available, if you prefer not to conform to any protocols, e.g. if you wish to name properties and cases differently.
+In the example given, the `Coordinator.Action`'s router case included an associated value of `IndexedRouterActionOf<Screen>`. That means that screens were identified by their index in the routes array. This is safe because the index is stable for standard navigation updates - e.g. pushing and popping do not affect the indexes of existing screens. However, if you prefer to use `Identifiable` screens, you can manage the screens as an `IdentifiedArray` instead. The `Coordinator.Action`'s router case will then have an associated value of `IdentifiedRouterActionOf<Screen>` instead, and benefit from the same terse API as the example above.
 
 
 ## Flexible and reusable
