@@ -1,6 +1,8 @@
 import ComposableArchitecture
 import FlowStacks
 
+/// A special action type used in coordinators, which ensures screen-level actions are dispatched to the correct screen reducer,
+/// and allows routes to be updated when a user navigates back.
 public enum RouterAction<ID: Hashable, Screen, ScreenAction>: CasePathable {
   case updateRoutes(_ routes: [Route<Screen>])
   case routeAction(id: ID, action: ScreenAction)

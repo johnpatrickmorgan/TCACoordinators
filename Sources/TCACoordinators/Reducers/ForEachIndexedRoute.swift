@@ -35,10 +35,21 @@ struct ForEachIndexedRoute<
 }
 
 public extension Reducer {
+  /// Allows a screen reducer to be incorporated into a coordinator reducer, such that each screen in
+  /// the coordinator's routes array will have its actions and state propagated. When screens are
+  /// dismissed, the routes will be updated. If a cancellation identifier is passed, in-flight effects
+  /// will be cancelled when the screen from which they originated is dismissed.
+  /// - Parameters:
+  ///   - routes: A writable keypath for the routes array.
+  ///   - action: A casepath for the router action from this reducer's Action type.
+  ///   - cancellationId: An identifier to use for cancelling in-flight effects when a view is dismissed. It
+  ///   will be combined with the screen's identifier. If `nil`, there will be no automatic cancellation.
+  ///   - screenReducer: The reducer that operates on all of the individual screens.
+  /// - Returns: A new reducer combining the coordinator-level and screen-level reducers.
   func forEachRoute<ScreenReducer: Reducer, ScreenState, ScreenAction>(
-    coordinatorIdForCancellation: (some Hashable)?,
-    toLocalState: WritableKeyPath<Self.State, [Route<ScreenState>]>,
-    toLocalAction: CaseKeyPath<Self.Action, IndexedRouterAction<ScreenState, ScreenAction>>,
+    _ routes: WritableKeyPath<State, [Route<ScreenState>]>,
+    action: CaseKeyPath<Action, IndexedRouterAction<ScreenState, ScreenAction>>,
+    cancellationId: (some Hashable)?,
     @ReducerBuilder<ScreenState, ScreenAction> screenReducer: () -> ScreenReducer
   ) -> some ReducerOf<Self>
     where Action: CasePathable,
@@ -49,17 +60,19 @@ public extension Reducer {
     ForEachIndexedRoute(
       coordinatorReducer: self,
       screenReducer: screenReducer(),
-      cancellationId: coordinatorIdForCancellation,
-      toLocalState: toLocalState,
-      toLocalAction: toLocalAction
+      cancellationId: cancellationId,
+      toLocalState: routes,
+      toLocalAction: action
     )
   }
 
   /// Allows a screen reducer to be incorporated into a coordinator reducer, such that each screen in
   /// the coordinator's routes Array will have its actions and state propagated. When screens are
-  /// dismissed, the routes will be updated. If a cancellation identifier is passed, in-flight effects
+  /// dismissed, the routes will be updated. In-flight effects
   /// will be cancelled when the screen from which they originated is dismissed.
   /// - Parameters:
+  ///   - routes: A writable keypath for the routes array.
+  ///   - action: A casepath for the router action from this reducer's Action type.
   ///   - cancellationIdType: A type to use for cancelling in-flight effects when a view is dismissed. It
   ///   will be combined with the screen's identifier. Defaults to the type of the parent reducer.
   ///   - screenReducer: The reducer that operates on all of the individual screens.
