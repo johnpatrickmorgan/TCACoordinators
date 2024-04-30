@@ -92,16 +92,16 @@ struct Coordinator {
   var body: some ReducerOf<Self> {
     Reduce<State, Action> { state, action in
       switch action {
-      case .routeAction(_, .home(.startTapped)):
+      case .router(.routeAction(_, .home(.startTapped))):
         state.routes.presentSheet(.numbersList(.init(numbers: Array(0 ..< 4))), embedInNavigationView: true)
         
-      case .routeAction(_, .numbersList(.numberSelected(let number))):
+      case .router(.routeAction(_, .numbersList(.numberSelected(let number)))):
         state.routes.push(.numberDetail(.init(number: number)))
         
-      case .routeAction(_, .numberDetail(.showDouble(let number))):
+      case .router(.routeAction(_, .numberDetail(.showDouble(let number)))):
         state.routes.presentSheet(.numberDetail(.init(number: number * 2)))
         
-      case .routeAction(_, .numberDetail(.goBackTapped)):
+      case .router(.routeAction(_, .numberDetail(.goBackTapped))):
         state.routes.goBack()
         
       default:
@@ -220,3 +220,7 @@ If the flow of screens needs to change, the change can be made easily in one pla
 ## How does it work?
 
 This library uses [FlowStacks](https://github.com/johnpatrickmorgan/FlowStacks) for hoisting navigation state out of individual screens. This [blog post](https://johnpatrickmorgan.github.io/2021/07/03/NStack/) explains how that is achieved. FlowStacks can also be used in SwiftUI projects that do not use the Composable Architecture.   
+
+## Migrating from v0.8 and lower
+
+There has been an API change from v0.8 to v0.9, to bring the library's APIs more in-line with the Composable Architecture, including the use of case paths. If you're migrating to these new APIs please see the [migration docs](Docs/Migration/Migrating%20from%200.8.md).
