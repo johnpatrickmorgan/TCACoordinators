@@ -117,14 +117,14 @@ struct Coordinator {
 
 ### Step 3 - Create a coordinator view
 
-With that in place, a `CoordinatorView` can be created. It will use a `TCARouter`, which translates the array of routes into a nested list of screen views with invisible `NavigationLinks` and presentation calls, all configured with bindings that react appropriately to changes to the routes array. The `TCARouter` takes a closure that can create the view for any screen in the navigation flow. A `SwitchStore` is the natural way to achieve that, with a `CaseLet` for each of the possible screens:
+With that in place, a `CoordinatorView` can be created. It will use a `TCARouter`, which translates the array of routes into a nested list of screen views with invisible `NavigationLinks` and presentation calls, all configured with bindings that react appropriately to changes to the routes array. As well as a scoped store, the `TCARouter` takes a closure that can create the view for any screen in the navigation flow. A `SwitchStore` is the natural way to achieve that, with a `CaseLet` for each of the possible screens:
 
 ```swift
 struct CoordinatorView: View {
   let store: StoreOf<Coordinator>
 
   var body: some View {
-    TCARouter(store) { screen in
+    TCARouter(store.scope(state: \.routes, action: \.router)) { screen in
       SwitchStore(screen) { screen in
         switch screen {
         case .home:
