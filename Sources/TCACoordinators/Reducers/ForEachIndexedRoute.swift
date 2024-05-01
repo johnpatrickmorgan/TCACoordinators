@@ -67,9 +67,9 @@ public extension Reducer {
   }
 
   func forEachRoute<ScreenState, ScreenAction>(
-    coordinatorIdForCancellation: (some Hashable)?,
-    toLocalState: WritableKeyPath<Self.State, [Route<ScreenState>]>,
-    toLocalAction: CaseKeyPath<Self.Action, IndexedRouterAction<ScreenState, ScreenAction>>
+    _ routes: WritableKeyPath<Self.State, [Route<ScreenState>]>,
+    action: CaseKeyPath<Self.Action, IndexedRouterAction<ScreenState, ScreenAction>>,
+    coordinatorId: (some Hashable)?
   ) -> some ReducerOf<Self>
     where Action: CasePathable,
     ScreenState: CaseReducerState,
@@ -77,9 +77,9 @@ public extension Reducer {
     ScreenAction: CasePathable
   {
     self.forEachRoute(
-      coordinatorIdForCancellation: coordinatorIdForCancellation,
-      toLocalState: toLocalState,
-      toLocalAction: toLocalAction
+      routes,
+      action: action,
+      cancellationId: coordinatorId
     ) {
       ScreenState.StateReducer.body
     }
