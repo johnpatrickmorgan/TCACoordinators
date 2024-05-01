@@ -33,11 +33,11 @@ final class GameViewController: UIViewController {
       self.isGameEnabled = !state.board.hasWinner && !state.board.isFilled
       self.isPlayAgainButtonHidden = !state.board.hasWinner && !state.board.isFilled
       self.title =
-      state.board.hasWinner
-      ? "Winner! Congrats \(state.currentPlayerName)!"
-      : state.board.isFilled
-      ? "Tied game!"
-      : "\(state.currentPlayerName), place your \(state.currentPlayer.label)"
+        state.board.hasWinner
+          ? "Winner! Congrats \(state.currentPlayerName)!"
+          : state.board.isFilled
+          ? "Tied game!"
+          : "\(state.currentPlayerName), place your \(state.currentPlayer.label)"
     }
   }
 
@@ -164,8 +164,8 @@ final class GameViewController: UIViewController {
       .map(\.board, \.isGameEnabled)
       .removeDuplicates(by: ==)
       .sink { board, isGameEnabled in
-        board.enumerated().forEach { rowIdx, row in
-          row.enumerated().forEach { colIdx, label in
+        for (rowIdx, row) in board.enumerated() {
+          for (colIdx, label) in row.enumerated() {
             let button = cells[rowIdx][colIdx]
             button.setTitle(label, for: .normal)
             button.isEnabled = isGameEnabled
@@ -271,7 +271,7 @@ struct Three<Element>: CustomStringConvertible {
   }
 
   var description: String {
-    return "[\(self.first),\(self.second),\(self.third)]"
+    "[\(self.first),\(self.second),\(self.third)]"
   }
 }
 
@@ -348,12 +348,12 @@ extension Three where Element == Three<Player?> {
 
     for condition in winConditions {
       let matches =
-      condition
-        .map { self[$0 % 3][$0 / 3] }
+        condition
+          .map { self[$0 % 3][$0 / 3] }
       let matchCount =
-      matches
-        .filter { $0 == player }
-        .count
+        matches
+          .filter { $0 == player }
+          .count
 
       if matchCount == 3 {
         return true

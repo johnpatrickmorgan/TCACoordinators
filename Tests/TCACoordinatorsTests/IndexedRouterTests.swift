@@ -16,10 +16,11 @@ final class IndexedRouterTests: XCTestCase {
     ) {
       Parent(scheduler: scheduler)
     }
-    await store.send(.routeAction(0, action: .increment)) {
+
+    await store.send(\.router[id: 0].increment) {
       $0.routes[0].screen.count += 1
     }
-    await store.send(.routeAction(1, action: .increment)) {
+    await store.send(\.router[id: 1].increment) {
       $0.routes[1].screen.count += 1
     }
   }
@@ -37,14 +38,15 @@ final class IndexedRouterTests: XCTestCase {
       Parent(scheduler: scheduler)
     }
     // Expect increment action after 1 second.
-    await store.send(.routeAction(1, action: .incrementLaterTapped))
+    await store.send(\.router[id: 1].incrementLaterTapped)
     await scheduler.advance(by: .seconds(1))
-    await store.receive(.routeAction(1, action: .increment)) {
+
+    await store.receive(\.router[id: 1].increment) {
       $0.routes[1].screen.count += 1
     }
     // Expect increment action to be cancelled if screen is removed.
-    await store.send(.routeAction(1, action: .incrementLaterTapped))
-    await store.send(.updateRoutes([.root(.init(count: 42))])) {
+    await store.send(\.router[id: 1].incrementLaterTapped)
+    await store.send(\.router.updateRoutes, [.root(.init(count: 42))]) {
       $0.routes = [.root(.init(count: 42))]
     }
   }
@@ -61,20 +63,21 @@ final class IndexedRouterTests: XCTestCase {
       Parent(scheduler: scheduler)
     }
     let goBackToRoot = await store.send(.goBackToRoot)
-    await store.receive(.updateRoutes(initialRoutes))
+    await store.receive(\.router.updateRoutes, initialRoutes)
     let firstTwo = Array(initialRoutes.prefix(2))
-    await store.receive(.updateRoutes(firstTwo)) {
+    await store.receive(\.router.updateRoutes, firstTwo) {
       $0.routes = firstTwo
     }
     await scheduler.advance(by: .milliseconds(650))
     let firstOne = Array(initialRoutes.prefix(1))
-    await store.receive(.updateRoutes(firstOne)) {
+    await store.receive(\.router.updateRoutes, firstOne) {
       $0.routes = firstOne
     }
     await goBackToRoot.finish()
   }
 }
 
+@Reducer
 private struct Child: Reducer {
   let scheduler: TestSchedulerOf<DispatchQueue>
   struct State: Equatable {
@@ -102,30 +105,31 @@ private struct Child: Reducer {
   }
 }
 
+@Reducer
 private struct Parent: Reducer {
-  struct State: Equatable, IndexedRouterState {
+  struct State: Equatable {
     var routes: [Route<Child.State>]
   }
 
-  enum Action: IndexedRouterAction, Equatable {
-    case routeAction(Int, action: Child.Action)
-    case updateRoutes([Route<Child.State>])
+  enum Action {
+    case router(IndexedRouterActionOf<Child>)
     case goBackToRoot
   }
+
   let scheduler: TestSchedulerOf<DispatchQueue>
 
   var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
       case .goBackToRoot:
-        return .routeWithDelaysIfUnsupported(state.routes, scheduler: scheduler.eraseToAnyScheduler()) {
+        return .routeWithDelaysIfUnsupported(state.routes, action: \.router, scheduler: scheduler.eraseToAnyScheduler()) {
           $0.goBackToRoot()
         }
       default:
         return .none
       }
     }
-    .forEachRoute {
+    .forEachRoute(\.routes, action: \.router) {
       Child(scheduler: scheduler)
     }
   }

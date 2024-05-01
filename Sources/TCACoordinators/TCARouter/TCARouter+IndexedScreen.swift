@@ -3,26 +3,15 @@ import FlowStacks
 import Foundation
 import SwiftUI
 
-public extension TCARouter
-  where
-  ID == Int,
-  CoordinatorAction: IndexedRouterAction,
-  CoordinatorAction.Screen == Screen,
-  CoordinatorAction.ScreenAction == ScreenAction,
-  CoordinatorState: IndexedRouterState,
-  CoordinatorState.Screen == Screen
-{
-  /// Convenience initializer for managing screens in an `Array` identified by index, where
-  /// State and Action conform to the `IdentifiedRouter...` protocols.
+public extension TCARouter where ID == Int {
+  /// Convenience initializer for managing screens in an `Array`, identified by index.
   init(
-    _ store: Store<CoordinatorState, CoordinatorAction>,
+    _ store: Store<[Route<Screen>], IndexedRouterAction<Screen, ScreenAction>>,
     screenContent: @escaping (Store<Screen, ScreenAction>) -> ScreenContent
   ) {
     self.init(
       store: store,
-      routes: { $0.routes },
-      updateRoutes: CoordinatorAction.updateRoutes,
-      action: CoordinatorAction.routeAction,
+      identifier: { $1 },
       screenContent: screenContent
     )
   }

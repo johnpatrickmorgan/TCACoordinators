@@ -3,6 +3,7 @@ import Foundation
 
 /// A protocol standardizing naming conventions for state types that contain routes
 /// within an `IdentifiedArray`.
+@available(*, deprecated, message: "Obsoleted, can be removed from your State type")
 public protocol IndexedRouterState {
   associatedtype Screen
 

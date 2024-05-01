@@ -1,10 +1,10 @@
+import CombineSchedulers
 import ComposableArchitecture
 import FlowStacks
 import Foundation
 import SwiftUI
-import CombineSchedulers
 
-public extension Effect where Action: IndexedRouterAction {
+public extension Effect {
   /// Allows arbitrary changes to be made to the routes collection, even if SwiftUI does not support such changes within a single
   /// state update. For example, SwiftUI only supports pushing, presenting or dismissing one screen at a time. Any changes can be
   /// made to the routes passed to the transform closure, and where those changes are not supported within a single update by
@@ -15,31 +15,22 @@ public extension Effect where Action: IndexedRouterAction {
   /// - Parameter transform: A closure transforming the routes into their new state.
   /// - Returns: An Effect stream of actions with incremental updates to routes over time. If the proposed change is supported
   ///   within a single update, the Effect stream will include only one element.
-  static func routeWithDelaysIfUnsupported(_ routes: [Route<Action.Screen>], scheduler: AnySchedulerOf<DispatchQueue>, _ transform: (inout [Route<Action.Screen>]) -> Void) -> Self {
+  static func routeWithDelaysIfUnsupported<ScreenState, ScreenAction>(
+    _ routes: [Route<ScreenState>],
+    action: CaseKeyPath<Action, IndexedRouterAction<ScreenState, ScreenAction>>,
+    scheduler: AnySchedulerOf<DispatchQueue> = .main,
+    _ transform: (inout [Route<ScreenState>]) -> Void
+  ) -> Self {
     var transformedRoutes = routes
     transform(&transformedRoutes)
     let steps = RouteSteps.calculateSteps(from: routes, to: transformedRoutes)
     return .run { send in
       for await step in scheduledSteps(steps: steps, scheduler: scheduler) {
-        await send(.updateRoutes(step))
+        await send(action.appending(path: \.updateRoutes)(step))
       }
     }
   }
-  /// Allows arbitrary changes to be made to the routes collection, even if SwiftUI does not support such changes within a single
-  /// state update. For example, SwiftUI only supports pushing, presenting or dismissing one screen at a time. Any changes can be
-  /// made to the routes passed to the transform closure, and where those changes are not supported within a single update by
-  /// SwiftUI, an Effect stream of smaller permissible updates will be returned, interspersed with sufficient delays.
-  ///
-  /// - Parameter routes: The routes in their current state.
-  /// - Parameter transform: A closure transforming the routes into their new state.
-  /// - Returns: An Effect stream of actions with incremental updates to routes over time. If the proposed change is supported
-  ///   within a single update, the Effect stream will include only one element.
-  static func routeWithDelaysIfUnsupported(_ routes: [Route<Action.Screen>], _ transform: (inout [Route<Action.Screen>]) -> Void) -> Self {
-    routeWithDelaysIfUnsupported(routes, scheduler: .main, transform)
-  }
-}
 
-public extension Effect where Action: IdentifiedRouterAction {
   /// Allows arbitrary changes to be made to the routes collection, even if SwiftUI does not support such changes within a single
   /// state update. For example, SwiftUI only supports pushing, presenting or dismissing one screen at a time. Any changes can be
   /// made to the routes passed to the transform closure, and where those changes are not supported within a single update by
@@ -50,28 +41,21 @@ public extension Effect where Action: IdentifiedRouterAction {
   /// - Parameter transform: A closure transforming the routes into their new state.
   /// - Returns: An Effect stream of actions with incremental updates to routes over time. If the proposed change is supported
   ///   within a single update, the Effect stream will include only one element.
-  static func routeWithDelaysIfUnsupported(_ routes: IdentifiedArrayOf<Route<Action.Screen>>, scheduler: AnySchedulerOf<DispatchQueue>, _ transform: (inout IdentifiedArrayOf<Route<Action.Screen>>) -> Void) -> Self {
+  static func routeWithDelaysIfUnsupported<ScreenState: Identifiable, ScreenAction>(
+    _ routes: IdentifiedArrayOf<Route<ScreenState>>,
+    action: CaseKeyPath<Action, IdentifiedRouterAction<ScreenState, ScreenAction>>,
+    scheduler: AnySchedulerOf<DispatchQueue> = .main,
+    _ transform: (inout IdentifiedArrayOf<Route<ScreenState>>) -> Void
+  ) -> Self {
     var transformedRoutes = routes
     transform(&transformedRoutes)
     let steps = RouteSteps.calculateSteps(from: Array(routes), to: Array(transformedRoutes))
 
     return .run { send in
       for await step in scheduledSteps(steps: steps, scheduler: scheduler) {
-        await send(.updateRoutes(IdentifiedArray(uncheckedUniqueElements: step)))
+        await send(action.appending(path: \.updateRoutes)(step))
       }
     }
-  }
-  /// Allows arbitrary changes to be made to the routes collection, even if SwiftUI does not support such changes within a single
-  /// state update. For example, SwiftUI only supports pushing, presenting or dismissing one screen at a time. Any changes can be
-  /// made to the routes passed to the transform closure, and where those changes are not supported within a single update by
-  /// SwiftUI, an Effect stream of smaller permissible updates will be returned, interspersed with sufficient delays.
-  ///
-  /// - Parameter routes: The routes in their current state.
-  /// - Parameter transform: A closure transforming the routes into their new state.
-  /// - Returns: An Effect stream of actions with incremental updates to routes over time. If the proposed change is supported
-  ///   within a single update, the Effect stream will include only one element.
-  static func routeWithDelaysIfUnsupported(_ routes: IdentifiedArrayOf<Route<Action.Screen>>, _ transform: (inout IdentifiedArrayOf<Route<Action.Screen>>) -> Void) -> Self {
-    routeWithDelaysIfUnsupported(routes, scheduler: .main, transform)
   }
 }
 

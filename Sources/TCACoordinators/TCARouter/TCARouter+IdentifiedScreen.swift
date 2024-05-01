@@ -3,27 +3,20 @@ import FlowStacks
 import Foundation
 import SwiftUI
 
-public extension TCARouter
-  where
-  CoordinatorState: IdentifiedRouterState,
-  CoordinatorAction: IdentifiedRouterAction,
-  CoordinatorState.Screen == Screen,
-  CoordinatorAction.Screen == Screen,
-  CoordinatorAction.ScreenAction == ScreenAction,
-  Screen.ID == ID
-{
-  /// Convenience initializer for managing screens in an `IdentifiedArray`, where State
-  /// and Action conform to the `IdentifiedRouter...` protocols.
+public extension TCARouter where Screen: Identifiable {
+  /// Convenience initializer for managing screens in an `IdentifiedArray`.
   init(
-    _ store: Store<CoordinatorState, CoordinatorAction>,
+    _ store: Store<IdentifiedArrayOf<Route<Screen>>, IdentifiedRouterAction<Screen, ScreenAction>>,
     screenContent: @escaping (Store<Screen, ScreenAction>) -> ScreenContent
-  ) {
+  ) where Screen.ID == ID {
     self.init(
-      store: store,
-      routes: { $0.routes },
-      updateRoutes: CoordinatorAction.updateRoutes,
-      action: CoordinatorAction.routeAction,
+      store: store.scope(state: \.elements, action: \.self),
+      identifier: { state, _ in state.id },
       screenContent: screenContent
     )
   }
+}
+
+extension Route: Identifiable where Screen: Identifiable {
+  public var id: Screen.ID { screen.id }
 }

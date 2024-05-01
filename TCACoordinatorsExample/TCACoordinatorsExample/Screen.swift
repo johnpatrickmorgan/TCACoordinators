@@ -2,6 +2,7 @@ import ComposableArchitecture
 import Foundation
 import SwiftUI
 
+@Reducer
 struct Screen: Reducer {
   enum Action {
     case home(Home.Action)
@@ -16,24 +17,24 @@ struct Screen: Reducer {
 
     var id: UUID {
       switch self {
-      case .home(let state):
+      case let .home(state):
         return state.id
-      case .numbersList(let state):
+      case let .numbersList(state):
         return state.id
-      case .numberDetail(let state):
+      case let .numberDetail(state):
         return state.id
       }
     }
   }
 
   var body: some ReducerOf<Self> {
-    Scope(state: /State.home, action: /Action.home) {
+    Scope(state: \.home, action: \.home) {
       Home()
     }
-    Scope(state: /State.numbersList, action: /Action.numbersList) {
+    Scope(state: \.numbersList, action: \.numbersList) {
       NumbersList()
     }
-    Scope(state: /State.numberDetail, action: /Action.numberDetail) {
+    Scope(state: \.numberDetail, action: \.numberDetail) {
       NumberDetail()
     }
   }
@@ -80,7 +81,8 @@ struct NumbersListView: View {
           "\(number)",
           action: {
             viewStore.send(.numberSelected(number))
-          })
+          }
+        )
       }
     }
     .navigationTitle("Numbers")
@@ -135,7 +137,8 @@ struct NumberDetailView: View {
   }
 }
 
-struct NumberDetail: Reducer {
+@Reducer
+struct NumberDetail {
   struct State: Equatable {
     let id = UUID()
     var number: Int
@@ -157,7 +160,7 @@ struct NumberDetail: Reducer {
       switch action {
       case .goBackToRootTapped, .goBackTapped, .goBackToNumbersList, .showDouble:
         return .none
-        
+
       case .incrementAfterDelayTapped:
         return .run { send in
           try await mainQueue.sleep(for: .seconds(3))

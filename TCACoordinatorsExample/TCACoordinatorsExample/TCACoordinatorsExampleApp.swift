@@ -25,8 +25,8 @@ struct MainTabCoordinatorView: View {
       TabView(selection: viewStore.binding(get: { $0 }, send: MainTabCoordinator.Action.tabSelected)) {
         IndexedCoordinatorView(
           store: store.scope(
-            state: { $0.indexed },
-            action: { .indexed($0) }
+            state: \.indexed,
+            action: \.indexed
           )
         )
         .tabItem { Text("Indexed") }
@@ -34,8 +34,8 @@ struct MainTabCoordinatorView: View {
 
         IdentifiedCoordinatorView(
           store: store.scope(
-            state: { $0.identified },
-            action: { .identified($0) }
+            state: \.identified,
+            action: \.identified
           )
         )
         .tabItem { Text("Identified") }
@@ -43,8 +43,8 @@ struct MainTabCoordinatorView: View {
 
         AppCoordinatorView(
           store: store.scope(
-            state: { $0.app },
-            action: { .app($0) }
+            state: \.app,
+            action: \.app
           )
         )
         .tabItem { Text("Game") }
@@ -52,8 +52,8 @@ struct MainTabCoordinatorView: View {
 
         FormAppCoordinatorView(
           store: store.scope(
-            state: { $0.form },
-            action: { .form($0) }
+            state: \.form,
+            action: \.form
           )
         )
         .tabItem { Text("Form") }
@@ -68,6 +68,7 @@ struct MainTabCoordinatorView: View {
   }
 }
 
+@Reducer
 struct MainTabCoordinator: Reducer {
   enum Tab: Hashable {
     case identified, indexed, app, form, deeplinkOpened
@@ -104,28 +105,28 @@ struct MainTabCoordinator: Reducer {
   }
 
   var body: some ReducerOf<Self> {
-    Scope(state: \.indexed, action: /Action.indexed) {
+    Scope(state: \.indexed, action: \.indexed) {
       IndexedCoordinator()
     }
-    Scope(state: \.identified, action: /Action.identified) {
+    Scope(state: \.identified, action: \.identified) {
       IdentifiedCoordinator()
     }
-    Scope(state: \.app, action: /Action.app) {
+    Scope(state: \.app, action: \.app) {
       GameApp()
     }
-    Scope(state: \.form, action: /Action.form) {
+    Scope(state: \.form, action: \.form) {
       FormAppCoordinator()
     }
     Reduce { state, action in
       switch action {
-      case .deeplinkOpened(.identified(.showNumber(let number))):
+      case let .deeplinkOpened(.identified(.showNumber(number))):
         state.selectedTab = .identified
         if state.identified.routes.canPush == true {
           state.identified.routes.push(.numberDetail(.init(number: number)))
         } else {
           state.identified.routes.presentSheet(.numberDetail(.init(number: number)), embedInNavigationView: true)
         }
-      case .tabSelected(let tab):
+      case let .tabSelected(tab):
         state.selectedTab = tab
       default:
         break

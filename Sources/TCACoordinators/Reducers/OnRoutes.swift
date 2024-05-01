@@ -8,7 +8,7 @@ struct OnRoutes<WrappedReducer: Reducer>: Reducer {
   let wrapped: WrappedReducer
 
   var body: some ReducerOf<Self> {
-    Scope(state: \.screen, action: /.self) {
+    Scope(state: \.screen, action: \.self) {
       wrapped
     }
   }

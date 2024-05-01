@@ -6,14 +6,14 @@ struct GameCoordinatorView: View {
   let store: StoreOf<GameCoordinator>
 
   var body: some View {
-    TCARouter(store) { screen in
+    TCARouter(store.scope(state: \.routes, action: \.router)) { screen in
       SwitchStore(screen) { screen in
         switch screen {
         case .game:
           CaseLet(
-            /GameScreen.State.game,
-             action: GameScreen.Action.game,
-             then: GameView.init
+            \GameScreen.State.game,
+            action: GameScreen.Action.game,
+            then: GameView.init
           )
         }
       }
@@ -21,13 +21,14 @@ struct GameCoordinatorView: View {
   }
 }
 
-struct GameScreen: Reducer {
+@Reducer
+struct GameScreen {
   enum State: Equatable, Identifiable {
     case game(Game.State)
 
     var id: UUID {
       switch self {
-      case .game(let state):
+      case let .game(state):
         return state.id
       }
     }
@@ -38,14 +39,15 @@ struct GameScreen: Reducer {
   }
 
   var body: some ReducerOf<Self> {
-    Scope(state: /State.game, action: /Action.game) {
+    Scope(state: \.game, action: \.game) {
       Game()
     }
   }
 }
 
-struct GameCoordinator: Reducer {
-  struct State: Equatable, IndexedRouterState {
+@Reducer
+struct GameCoordinator {
+  struct State: Equatable {
     static func initialState(playerName: String = "") -> Self {
       Self(
         routes: [.root(.game(.init(oPlayerName: "Opponent", xPlayerName: playerName.isEmpty ? "Player" : playerName)), embedInNavigationView: true)]
@@ -55,14 +57,13 @@ struct GameCoordinator: Reducer {
     var routes: [Route<GameScreen.State>]
   }
 
-  enum Action: IndexedRouterAction {
-    case routeAction(Int, action: GameScreen.Action)
-    case updateRoutes([Route<GameScreen.State>])
+  enum Action {
+    case router(IndexedRouterActionOf<GameScreen>)
   }
 
   var body: some ReducerOf<Self> {
     EmptyReducer()
-      .forEachRoute {
+      .forEachRoute(\.routes, action: \.router) {
         GameScreen()
       }
   }

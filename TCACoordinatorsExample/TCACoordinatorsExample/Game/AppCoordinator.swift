@@ -8,13 +8,13 @@ struct AppCoordinatorView: View {
   let store: StoreOf<GameApp>
 
   var body: some View {
-    WithViewStore(store, observe: { $0.isLoggedIn }) { viewStore in
+    WithViewStore(store, observe: \.isLoggedIn) { viewStore in
       VStack {
         if viewStore.state {
-          GameCoordinatorView(store: store.scope(state: \.game, action: GameApp.Action.game))
+          GameCoordinatorView(store: store.scope(state: \.game, action: \.game))
             .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading)))
         } else {
-          LogInCoordinatorView(store: store.scope(state: \.logIn, action: GameApp.Action.logIn))
+          LogInCoordinatorView(store: store.scope(state: \.logIn, action: \.logIn))
             .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading)))
         }
       }
@@ -23,6 +23,7 @@ struct AppCoordinatorView: View {
   }
 }
 
+@Reducer
 struct GameApp: Reducer {
   struct State: Equatable {
     static let initialState = State(logIn: .initialState, game: .initialState(), isLoggedIn: false)
@@ -39,18 +40,18 @@ struct GameApp: Reducer {
   }
 
   var body: some ReducerOf<Self> {
-    Scope(state: \.logIn, action: /Action.logIn) {
+    Scope(state: \.logIn, action: \.logIn) {
       LogInCoordinator()
     }
-    Scope(state: \.game, action: /Action.game) {
+    Scope(state: \.game, action: \.game) {
       GameCoordinator()
     }
     Reduce<State, Action> { state, action in
       switch action {
-      case .logIn(.routeAction(_, .logIn(.logInTapped(let name)))):
+      case let .logIn(.router(.routeAction(_, .logIn(.logInTapped(name))))):
         state.game = .initialState(playerName: name)
         state.isLoggedIn = true
-      case .game(.routeAction(_, .game(.logOutButtonTapped))):
+      case .game(.router(.routeAction(_, .game(.logOutButtonTapped)))):
         state.logIn = .initialState
         state.isLoggedIn = false
       default:
