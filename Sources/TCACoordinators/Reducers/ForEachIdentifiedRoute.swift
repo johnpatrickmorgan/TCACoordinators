@@ -69,9 +69,9 @@ public extension Reducer {
   }
 
   func forEachRoute<ScreenState, ScreenAction>(
-    cancellationId: (some Hashable)?,
     _ routes: WritableKeyPath<Self.State, IdentifiedArrayOf<Route<ScreenState>>>,
-    action: CaseKeyPath<Self.Action, IdentifiedRouterAction<ScreenState, ScreenAction>>
+    action: CaseKeyPath<Self.Action, IdentifiedRouterAction<ScreenState, ScreenAction>>,
+    cancellationId: (some Hashable)?
   ) -> some ReducerOf<Self>
     where Action: CasePathable,
     ScreenState: CaseReducerState,
