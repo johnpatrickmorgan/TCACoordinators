@@ -6,18 +6,16 @@ struct IdentifiedCoordinatorView: View {
   @State var store: StoreOf<IdentifiedCoordinator>
 
   var body: some View {
-    WithPerceptionTracking {
-      ObservedTCARouter(store.scope(state: \.routes, action: \.router)) { screen in
-        switch screen.case {
-        case let .home(store):
-          HomeView(store: store)
+    ObservedTCARouter(store.scope(state: \.routes, action: \.router)) { screen in
+      switch screen.case {
+      case let .home(store):
+        HomeView(store: store)
 
-        case let .numbersList(store):
-          NumbersListView(store: store)
+      case let .numbersList(store):
+        NumbersListView(store: store)
 
-        case let .numberDetail(store):
-          NumberDetailView(store: store)
-        }
+      case let .numberDetail(store):
+        NumberDetailView(store: store)
       }
     }
   }
