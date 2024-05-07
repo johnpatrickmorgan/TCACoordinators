@@ -6,7 +6,7 @@ struct IndexedCoordinatorView: View {
   @State var store: StoreOf<IndexedCoordinator>
 
   var body: some View {
-    ObservedTCARouter(store.scope(state: \.routes, action: \.router)) { screen in
+    TCARouter(store.scope(state: \.routes, action: \.router)) { screen in
       switch screen.case {
       case let .home(store):
         HomeView(store: store)
