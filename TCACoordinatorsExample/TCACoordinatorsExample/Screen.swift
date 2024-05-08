@@ -24,17 +24,14 @@ struct HomeView: View {
   }
 }
 
-struct Home: Reducer {
+@Reducer
+struct Home {
   struct State: Equatable {
     let id = UUID()
   }
 
   enum Action {
     case startTapped
-  }
-
-  var body: some ReducerOf<Self> {
-    EmptyReducer()
   }
 }
 
@@ -44,12 +41,12 @@ struct NumbersListView: View {
   let store: StoreOf<NumbersList>
 
   var body: some View {
-    WithViewStore(store, observe: \.numbers) { viewStore in
-      List(viewStore.state, id: \.self) { number in
+    WithPerceptionTracking {
+      List(store.numbers, id: \.self) { number in
         Button(
           "\(number)",
           action: {
-            viewStore.send(.numberSelected(number))
+            store.send(.numberSelected(number))
           }
         )
       }
@@ -58,7 +55,9 @@ struct NumbersListView: View {
   }
 }
 
-struct NumbersList: Reducer {
+@Reducer
+struct NumbersList {
+  @ObservableState
   struct State: Equatable {
     let id = UUID()
     let numbers: [Int]
@@ -66,10 +65,6 @@ struct NumbersList: Reducer {
 
   enum Action {
     case numberSelected(Int)
-  }
-
-  var body: some ReducerOf<Self> {
-    EmptyReducer()
   }
 }
 
@@ -79,35 +74,36 @@ struct NumberDetailView: View {
   let store: StoreOf<NumberDetail>
 
   var body: some View {
-    WithViewStore(store, observe: \.number) { viewStore in
+    WithPerceptionTracking {
       VStack(spacing: 8.0) {
-        Text("Number \(viewStore.state)")
+        Text("Number \(store.number)")
         Button("Increment") {
-          viewStore.send(.incrementTapped)
+          store.send(.incrementTapped)
         }
         Button("Increment after delay") {
-          viewStore.send(.incrementAfterDelayTapped)
+          store.send(.incrementAfterDelayTapped)
         }
         Button("Show double") {
-          viewStore.send(.showDouble(viewStore.state))
+          store.send(.showDouble(store.number))
         }
         Button("Go back") {
-          viewStore.send(.goBackTapped)
+          store.send(.goBackTapped)
         }
         Button("Go back to root") {
-          viewStore.send(.goBackToRootTapped)
+          store.send(.goBackToRootTapped)
         }
         Button("Go back to numbers list") {
-          viewStore.send(.goBackToNumbersList)
+          store.send(.goBackToNumbersList)
         }
       }
-      .navigationTitle("Number \(viewStore.state)")
+      .navigationTitle("Number \(store.number)")
     }
   }
 }
 
 @Reducer
 struct NumberDetail {
+  @ObservableState
   struct State: Equatable {
     let id = UUID()
     var number: Int
