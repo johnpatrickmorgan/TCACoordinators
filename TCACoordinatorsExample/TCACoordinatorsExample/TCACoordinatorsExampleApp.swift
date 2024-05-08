@@ -18,11 +18,11 @@ struct TCACoordinatorsExampleApp: App {
 // MainTabCoordinator
 
 struct MainTabCoordinatorView: View {
-  let store: StoreOf<MainTabCoordinator>
+  @Perception.Bindable var store: StoreOf<MainTabCoordinator>
 
   var body: some View {
-    WithViewStore(store, observe: \.selectedTab) { viewStore in
-      TabView(selection: viewStore.binding(get: { $0 }, send: MainTabCoordinator.Action.tabSelected)) {
+    WithPerceptionTracking {
+      TabView(selection: $store.selectedTab.sending(\.tabSelected)) {
         IndexedCoordinatorView(
           store: store.scope(
             state: \.indexed,
@@ -62,7 +62,7 @@ struct MainTabCoordinatorView: View {
       }.onOpenURL { _ in
         // In reality, the URL would be parsed into a Deeplink.
         let deeplink = MainTabCoordinator.Deeplink.identified(.showNumber(42))
-        viewStore.send(.deeplinkOpened(deeplink))
+        store.send(.deeplinkOpened(deeplink))
       }
     }
   }
@@ -87,6 +87,7 @@ struct MainTabCoordinator: Reducer {
     case tabSelected(Tab)
   }
 
+  @ObservableState
   struct State: Equatable {
     static let initialState = State(
       identified: .initialState,
