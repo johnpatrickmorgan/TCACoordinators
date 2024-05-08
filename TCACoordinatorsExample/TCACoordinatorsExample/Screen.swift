@@ -9,44 +9,6 @@ enum Screen {
   case numberDetail(NumberDetail)
 }
 
-// @Reducer
-// struct Screen: Reducer {
-//  enum Action {
-//    case home(Home.Action)
-//    case numbersList(NumbersList.Action)
-//    case numberDetail(NumberDetail.Action)
-//  }
-//
-//  enum State: Equatable, Identifiable {
-//    case home(Home.State)
-//    case numbersList(NumbersList.State)
-//    case numberDetail(NumberDetail.State)
-//
-//    var id: UUID {
-//      switch self {
-//      case .home(let state):
-//        return state.id
-//      case .numbersList(let state):
-//        return state.id
-//      case .numberDetail(let state):
-//        return state.id
-//      }
-//    }
-//  }
-//
-//  var body: some ReducerOf<Self> {
-//    Scope(state: \.home, action: \.home) {
-//      Home()
-//    }
-//    Scope(state: \.numbersList, action: \.numbersList) {
-//      NumbersList()
-//    }
-//    Scope(state: \.numberDetail, action: \.numberDetail) {
-//      NumberDetail()
-//    }
-//  }
-// }
-
 // Home
 
 struct HomeView: View {
