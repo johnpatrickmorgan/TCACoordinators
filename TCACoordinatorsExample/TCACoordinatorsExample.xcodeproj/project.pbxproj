@@ -40,6 +40,7 @@
 		529822D9283D77060011112B /* LogInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 529822D8283D77060011112B /* LogInView.swift */; };
 		912FC7232BEBAB7A0036B444 /* LogInScreen+StateIdentifiable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 912FC7222BEBAB7A0036B444 /* LogInScreen+StateIdentifiable.swift */; };
 		912FC7252BEBAFAA0036B444 /* FormScreen+Identifiable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 912FC7242BEBAFAA0036B444 /* FormScreen+Identifiable.swift */; };
+		912FC7272BEBB9080036B444 /* GameViewState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 912FC7262BEBB9080036B444 /* GameViewState.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -88,6 +89,7 @@
 		529822D8283D77060011112B /* LogInView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogInView.swift; sourceTree = "<group>"; };
 		912FC7222BEBAB7A0036B444 /* LogInScreen+StateIdentifiable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LogInScreen+StateIdentifiable.swift"; sourceTree = "<group>"; };
 		912FC7242BEBAFAA0036B444 /* FormScreen+Identifiable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FormScreen+Identifiable.swift"; sourceTree = "<group>"; };
+		912FC7262BEBB9080036B444 /* GameViewState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewState.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -212,6 +214,7 @@
 			isa = PBXGroup;
 			children = (
 				529822CE283D76AD0011112B /* GameView.swift */,
+				912FC7262BEBB9080036B444 /* GameViewState.swift */,
 				529822CF283D76AD0011112B /* AppCoordinator.swift */,
 				529822D0283D76AD0011112B /* LogInCoordinator.swift */,
 				912FC7222BEBAB7A0036B444 /* LogInScreen+StateIdentifiable.swift */,
@@ -373,6 +376,7 @@
 				528FEDF62880BD95007765AD /* FormAppCoordinator.swift in Sources */,
 				529822D2283D76AD0011112B /* GameView.swift in Sources */,
 				528FEDF32880BD95007765AD /* Step1.swift in Sources */,
+				912FC7272BEBB9080036B444 /* GameViewState.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

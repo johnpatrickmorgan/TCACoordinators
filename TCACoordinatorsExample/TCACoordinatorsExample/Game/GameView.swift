@@ -19,31 +19,10 @@ struct GameView: UIViewControllerRepresentable {
 
 final class GameViewController: UIViewController {
   let store: StoreOf<Game>
-  let viewStore: ViewStore<ViewState, Game.Action>
-  private var cancellables: Set<AnyCancellable> = []
-
-  struct ViewState: Equatable {
-    let board: Three<Three<String>>
-    let isGameEnabled: Bool
-    let isPlayAgainButtonHidden: Bool
-    let title: String?
-
-    init(state: Game.State) {
-      self.board = state.board.map { $0.map { $0?.label ?? "" } }
-      self.isGameEnabled = !state.board.hasWinner && !state.board.isFilled
-      self.isPlayAgainButtonHidden = !state.board.hasWinner && !state.board.isFilled
-      self.title =
-        state.board.hasWinner
-          ? "Winner! Congrats \(state.currentPlayerName)!"
-          : state.board.isFilled
-          ? "Tied game!"
-          : "\(state.currentPlayerName), place your \(state.currentPlayer.label)"
-    }
-  }
+  private var observationToken: ObservationToken?
 
   init(store: StoreOf<Game>) {
     self.store = store
-    self.viewStore = ViewStore(store, observe: ViewState.init)
     super.init(nibName: nil, bundle: nil)
   }
 
@@ -148,57 +127,49 @@ final class GameViewController: UIViewController {
         ])
       }
 
-    self.viewStore.publisher.title
-      .assign(to: \.text, on: titleLabel)
-      .store(in: &self.cancellables)
+    self.observationToken = observe { [weak self] in
+      guard let self else { return }
 
-    self.viewStore.publisher.isPlayAgainButtonHidden
-      .assign(to: \.isHidden, on: playAgainButton)
-      .store(in: &self.cancellables)
-
-    self.viewStore.publisher.isPlayAgainButtonHidden
-      .assign(to: \.isHidden, on: logOutButton)
-      .store(in: &self.cancellables)
-
-    self.viewStore.publisher
-      .map(\.board, \.isGameEnabled)
-      .removeDuplicates(by: ==)
-      .sink { board, isGameEnabled in
-        for (rowIdx, row) in board.enumerated() {
-          for (colIdx, label) in row.enumerated() {
-            let button = cells[rowIdx][colIdx]
-            button.setTitle(label, for: .normal)
-            button.isEnabled = isGameEnabled
-          }
+      titleLabel.text = store.title
+      playAgainButton.isHidden = store.isPlayAgainButtonHidden
+      logOutButton.isHidden = store.isPlayAgainButtonHidden
+      
+      for (rowIdx, row) in store.gameBoard.enumerated() {
+        for (colIdx, label) in row.enumerated() {
+          let button = cells[rowIdx][colIdx]
+          button.setTitle(label, for: .normal)
+          button.isEnabled = store.isGameEnabled
         }
       }
-      .store(in: &self.cancellables)
+    }
   }
 
-  @objc private func gridCell11Tapped() { self.viewStore.send(.cellTapped(row: 0, column: 0)) }
-  @objc private func gridCell12Tapped() { self.viewStore.send(.cellTapped(row: 0, column: 1)) }
-  @objc private func gridCell13Tapped() { self.viewStore.send(.cellTapped(row: 0, column: 2)) }
-  @objc private func gridCell21Tapped() { self.viewStore.send(.cellTapped(row: 1, column: 0)) }
-  @objc private func gridCell22Tapped() { self.viewStore.send(.cellTapped(row: 1, column: 1)) }
-  @objc private func gridCell23Tapped() { self.viewStore.send(.cellTapped(row: 1, column: 2)) }
-  @objc private func gridCell31Tapped() { self.viewStore.send(.cellTapped(row: 2, column: 0)) }
-  @objc private func gridCell32Tapped() { self.viewStore.send(.cellTapped(row: 2, column: 1)) }
-  @objc private func gridCell33Tapped() { self.viewStore.send(.cellTapped(row: 2, column: 2)) }
+  @objc private func gridCell11Tapped() { store.send(.cellTapped(row: 0, column: 0)) }
+  @objc private func gridCell12Tapped() { store.send(.cellTapped(row: 0, column: 1)) }
+  @objc private func gridCell13Tapped() { store.send(.cellTapped(row: 0, column: 2)) }
+  @objc private func gridCell21Tapped() { store.send(.cellTapped(row: 1, column: 0)) }
+  @objc private func gridCell22Tapped() { store.send(.cellTapped(row: 1, column: 1)) }
+  @objc private func gridCell23Tapped() { store.send(.cellTapped(row: 1, column: 2)) }
+  @objc private func gridCell31Tapped() { store.send(.cellTapped(row: 2, column: 0)) }
+  @objc private func gridCell32Tapped() { store.send(.cellTapped(row: 2, column: 1)) }
+  @objc private func gridCell33Tapped() { store.send(.cellTapped(row: 2, column: 2)) }
 
   @objc private func quitButtonTapped() {
-    self.viewStore.send(.quitButtonTapped)
+    store.send(.quitButtonTapped)
   }
 
   @objc private func playAgainButtonTapped() {
-    self.viewStore.send(.playAgainButtonTapped)
+    store.send(.playAgainButtonTapped)
   }
 
   @objc private func logOutButtonTapped() {
-    self.viewStore.send(.logOutButtonTapped)
+    store.send(.logOutButtonTapped)
   }
 }
 
-struct Game: Reducer {
+@Reducer
+struct Game {
+  @ObservableState
   struct State: Equatable {
     let id = UUID()
     var board: Three<Three<Player?>> = .empty
