@@ -5,40 +5,39 @@ struct FinalScreenView: View {
   let store: StoreOf<FinalScreen>
 
   var body: some View {
-    WithViewStore(store, observe: { $0 }) { viewStore in
+    WithPerceptionTracking {
       Form {
         Section {
           Button {
-            viewStore.send(.returnToName)
+            store.send(.returnToName)
           } label: {
             LabelledRow("First name") {
-              Text(viewStore.firstName)
-            }.foregroundColor(viewStore.firstName.isEmpty ? .red : .black)
+              Text(store.firstName)
+            }.foregroundColor(store.firstName.isEmpty ? .red : .black)
           }
 
           Button {
-            viewStore.send(.returnToName)
+            store.send(.returnToName)
           } label: {
             LabelledRow("Last Name") {
-              Text(viewStore.lastName)
-            }.foregroundColor(viewStore.lastName.isEmpty ? .red : .black)
+              Text(store.lastName)
+            }.foregroundColor(store.lastName.isEmpty ? .red : .black)
           }
 
           Button {
-            viewStore.send(.returnToDateOfBirth)
+            store.send(.returnToDateOfBirth)
           } label: {
             LabelledRow("Date of Birth") {
-              Text(viewStore.dateOfBirth, format: .dateTime.day().month().year())
+              Text(store.dateOfBirth, format: .dateTime.day().month().year())
             }
           }
 
           Button {
-            viewStore.send(.returnToJob)
+            store.send(.returnToJob)
           } label: {
             LabelledRow("Job") {
-              Text(viewStore.job ?? "-")
-
-            }.foregroundColor((viewStore.job?.isEmpty ?? true) ? .red : .black)
+              Text(store.job ?? "-")
+            }.foregroundColor((store.job?.isEmpty ?? true) ? .red : .black)
           }
         } header: {
           Text("Confirm Your Info")
@@ -46,43 +45,43 @@ struct FinalScreenView: View {
         .buttonStyle(.plain)
 
         Button("Submit") {
-          viewStore.send(.submit)
-        }.disabled(viewStore.isIncomplete)
+          store.send(.submit)
+        }.disabled(store.isIncomplete)
       }
       .navigationTitle("Submit")
-      .disabled(viewStore.submissionInFlight)
+      .disabled(store.submissionInFlight)
       .overlay {
-        if viewStore.submissionInFlight {
+        if store.submissionInFlight {
           Text("Submitting")
             .padding()
             .background(.thinMaterial)
             .cornerRadius(8)
         }
       }
-      .animation(.spring(), value: viewStore.submissionInFlight)
+      .animation(.spring(), value: store.submissionInFlight)
     }
   }
 }
 
 struct LabelledRow<Content: View>: View {
   let label: String
-  @ViewBuilder var content: () -> Content
+  let content: Content
 
   init(
     _ label: String,
-    @ViewBuilder content: @escaping () -> Content
+    @ViewBuilder content: () -> Content
   ) {
     self.label = label
-    self.content = content
+    self.content = content()
   }
 
   var body: some View {
     HStack {
       Text(label)
       Spacer()
-      content()
+      content
     }
-    .contentShape(Rectangle())
+    .contentShape(.rect)
   }
 }
 
@@ -94,6 +93,7 @@ struct APIModel: Codable, Equatable {
 }
 
 struct FinalScreen: Reducer {
+  @ObservableState
   struct State: Equatable {
     let firstName: String
     let lastName: String
@@ -116,7 +116,7 @@ struct FinalScreen: Reducer {
   }
 
   @Dependency(\.mainQueue) var mainQueue
-  let submit: (APIModel) async -> Bool
+  @Dependency(FormScreenEnvironment.self) var environment
 
   var body: some ReducerOf<Self> {
     Reduce { state, action in
@@ -134,7 +134,7 @@ struct FinalScreen: Reducer {
 
         return .run { send in
           try await mainQueue.sleep(for: .seconds(0.8))
-          await send(.receiveAPIResponse(submit(apiModel)))
+          await send(.receiveAPIResponse(environment.submit(apiModel)))
         }
 
       case .receiveAPIResponse:

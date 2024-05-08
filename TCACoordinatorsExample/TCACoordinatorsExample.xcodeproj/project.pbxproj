@@ -39,6 +39,7 @@
 		529822D7283D76F60011112B /* WelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 529822D6283D76F60011112B /* WelcomeView.swift */; };
 		529822D9283D77060011112B /* LogInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 529822D8283D77060011112B /* LogInView.swift */; };
 		912FC7232BEBAB7A0036B444 /* LogInScreen+StateIdentifiable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 912FC7222BEBAB7A0036B444 /* LogInScreen+StateIdentifiable.swift */; };
+		912FC7252BEBAFAA0036B444 /* FormScreen+Identifiable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 912FC7242BEBAFAA0036B444 /* FormScreen+Identifiable.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -86,6 +87,7 @@
 		529822D6283D76F60011112B /* WelcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeView.swift; sourceTree = "<group>"; };
 		529822D8283D77060011112B /* LogInView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogInView.swift; sourceTree = "<group>"; };
 		912FC7222BEBAB7A0036B444 /* LogInScreen+StateIdentifiable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LogInScreen+StateIdentifiable.swift"; sourceTree = "<group>"; };
+		912FC7242BEBAFAA0036B444 /* FormScreen+Identifiable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FormScreen+Identifiable.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -197,6 +199,7 @@
 			children = (
 				528FEDE62880BC60007765AD /* FormAppCoordinator.swift */,
 				528FEDE42880BC60007765AD /* FormScreen.swift */,
+				912FC7242BEBAFAA0036B444 /* FormScreen+Identifiable.swift */,
 				528FEDE72880BC60007765AD /* FinalScreen.swift */,
 				528FEDE82880BC61007765AD /* Step1.swift */,
 				528FEDE92880BC61007765AD /* Step2.swift */,
@@ -361,6 +364,7 @@
 				528FEDF42880BD95007765AD /* FinalScreen.swift in Sources */,
 				529822D7283D76F60011112B /* WelcomeView.swift in Sources */,
 				528FEDF52880BD95007765AD /* FormScreen.swift in Sources */,
+				912FC7252BEBAFAA0036B444 /* FormScreen+Identifiable.swift in Sources */,
 				912FC7232BEBAB7A0036B444 /* LogInScreen+StateIdentifiable.swift in Sources */,
 				524087E5278E3D950048C6EE /* Screen.swift in Sources */,
 				528FEDF22880BD95007765AD /* Step3.swift in Sources */,

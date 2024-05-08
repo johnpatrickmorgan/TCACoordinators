@@ -4,6 +4,7 @@ import TCACoordinators
 
 @Reducer
 struct FormAppCoordinator {
+  @ObservableState
   struct State: Equatable {
     static let initialState = Self(routeIDs: [.root(.step1, embedInNavigationView: true)])
 
@@ -104,9 +105,7 @@ struct FormAppCoordinator {
         return .none
       }
     }
-    .forEachRoute(\.routes, action: \.router) {
-      FormScreen(environment: .test)
-    }
+    .forEachRoute(\.routes, action: \.router)
   }
 }
 
@@ -114,21 +113,19 @@ struct FormAppCoordinatorView: View {
   let store: StoreOf<FormAppCoordinator>
 
   var body: some View {
-    TCARouter(store.scope(state: \.routes, action: \.router)) { screen in
-      SwitchStore(screen) { screen in
-        switch screen {
-        case .step1:
-          CaseLet(\FormScreen.State.step1, action: FormScreen.Action.step1, then: Step1View.init(store:))
+    ObservedTCARouter(store.scope(state: \.routes, action: \.router)) { screen in
+      switch screen.case {
+      case let .step1(store):
+        Step1View(store: store)
 
-        case .step2:
-          CaseLet(\FormScreen.State.step2, action: FormScreen.Action.step2, then: Step2View.init(store:))
+      case let .step2(store):
+        Step2View(store: store)
 
-        case .step3:
-          CaseLet(\FormScreen.State.step3, action: FormScreen.Action.step3, then: Step3View.init(store:))
+      case let .step3(store):
+        Step3View(store: store)
 
-        case .finalScreen:
-          CaseLet(\FormScreen.State.finalScreen, action: FormScreen.Action.finalScreen, then: FinalScreenView.init(store:))
-        }
+      case let .finalScreen(store):
+        FinalScreenView(store: store)
       }
     }
   }

@@ -5,20 +5,20 @@ struct Step3View: View {
   let store: StoreOf<Step3>
 
   var body: some View {
-    WithViewStore(store, observe: { $0 }) { viewStore in
+    WithPerceptionTracking {
       Form {
         Section {
-          if !viewStore.occupations.isEmpty {
-            List(viewStore.occupations, id: \.self) { occupation in
+          if !store.occupations.isEmpty {
+            List(store.occupations, id: \.self) { occupation in
               Button {
-                viewStore.send(.selectOccupation(occupation))
+                store.send(.selectOccupation(occupation))
               } label: {
                 HStack {
                   Text(occupation)
 
                   Spacer()
 
-                  if let selected = viewStore.selectedOccupation, selected == occupation {
+                  if let selected = store.selectedOccupation, selected == occupation {
                     Image(systemName: "checkmark")
                   }
                 }
@@ -34,11 +34,11 @@ struct Step3View: View {
         }
 
         Button("Next") {
-          viewStore.send(.nextButtonTapped)
+          store.send(.nextButtonTapped)
         }
       }
       .onAppear {
-        viewStore.send(.getOccupations)
+        store.send(.getOccupations)
       }
       .navigationTitle("Step 3")
     }
@@ -46,6 +46,7 @@ struct Step3View: View {
 }
 
 struct Step3: Reducer {
+  @ObservableState
   struct State: Equatable {
     var selectedOccupation: String?
     var occupations: [String] = []
@@ -58,14 +59,14 @@ struct Step3: Reducer {
     case nextButtonTapped
   }
 
-  let getOccupations: () async -> [String]
+  @Dependency(FormScreenEnvironment.self) var environment
 
   var body: some ReducerOf<Self> {
     Reduce { state, action in
       switch action {
       case .getOccupations:
         return .run { send in
-          await send(.receiveOccupations(getOccupations()))
+          await send(.receiveOccupations(environment.getOccupations()))
         }
 
       case let .receiveOccupations(occupations):
