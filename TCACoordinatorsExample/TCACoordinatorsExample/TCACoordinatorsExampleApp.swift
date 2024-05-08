@@ -69,7 +69,7 @@ struct MainTabCoordinatorView: View {
 }
 
 @Reducer
-struct MainTabCoordinator: Reducer {
+struct MainTabCoordinator {
   enum Tab: Hashable {
     case identified, indexed, app, form, deeplinkOpened
   }

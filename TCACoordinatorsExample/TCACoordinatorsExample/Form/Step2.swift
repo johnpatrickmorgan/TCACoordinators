@@ -28,7 +28,8 @@ struct Step2View: View {
   }
 }
 
-struct Step2: Reducer {
+@Reducer
+struct Step2 {
   @ObservableState
   public struct State: Equatable {
     var dateOfBirth: Date = .now

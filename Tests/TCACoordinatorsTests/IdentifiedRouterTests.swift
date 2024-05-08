@@ -77,7 +77,7 @@ final class IdentifiedRouterTests: XCTestCase {
 }
 
 @Reducer
-private struct Child: Reducer {
+private struct Child {
   let scheduler: TestSchedulerOf<DispatchQueue>
   struct State: Equatable, Identifiable {
     var id: String
@@ -106,7 +106,7 @@ private struct Child: Reducer {
 }
 
 @Reducer
-private struct Parent: Reducer {
+private struct Parent {
   let scheduler: TestSchedulerOf<DispatchQueue>
   struct State: Equatable {
     var routes: IdentifiedArrayOf<Route<Child.State>>

@@ -92,7 +92,8 @@ struct APIModel: Codable, Equatable {
   let job: String
 }
 
-struct FinalScreen: Reducer {
+@Reducer
+struct FinalScreen {
   @ObservableState
   struct State: Equatable {
     let firstName: String

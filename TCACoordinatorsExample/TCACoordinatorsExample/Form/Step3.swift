@@ -47,7 +47,8 @@ struct Step3View: View {
   }
 }
 
-struct Step3: Reducer {
+@Reducer
+struct Step3 {
   @ObservableState
   struct State: Equatable {
     var selectedOccupation: String?

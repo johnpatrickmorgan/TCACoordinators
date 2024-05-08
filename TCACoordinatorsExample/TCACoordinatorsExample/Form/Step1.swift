@@ -1,7 +1,8 @@
 import ComposableArchitecture
 import SwiftUI
 
-struct Step1: Reducer {
+@Reducer
+struct Step1 {
   @ObservableState
   public struct State: Equatable {
     var firstName: String = ""

@@ -78,7 +78,7 @@ final class IndexedRouterTests: XCTestCase {
 }
 
 @Reducer
-private struct Child: Reducer {
+private struct Child {
   let scheduler: TestSchedulerOf<DispatchQueue>
   struct State: Equatable {
     var count = 0
@@ -106,7 +106,7 @@ private struct Child: Reducer {
 }
 
 @Reducer
-private struct Parent: Reducer {
+private struct Parent {
   struct State: Equatable {
     var routes: [Route<Child.State>]
   }
