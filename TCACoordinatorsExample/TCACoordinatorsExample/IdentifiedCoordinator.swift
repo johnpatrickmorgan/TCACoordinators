@@ -35,7 +35,7 @@ extension Screen.State: Identifiable {
 }
 
 @Reducer
-struct IdentifiedCoordinator: Reducer {
+struct IdentifiedCoordinator {
   enum Deeplink {
     case showNumber(Int)
   }
