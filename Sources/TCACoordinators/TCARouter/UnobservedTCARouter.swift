@@ -16,7 +16,7 @@ struct UnobservedTCARouter<
   let identifier: (Screen, Int) -> ID
   let screenContent: (Store<Screen, ScreenAction>) -> ScreenContent
 
-  public init(
+  init(
     store: Store<[Route<Screen>], RouterAction<ID, Screen, ScreenAction>>,
     identifier: @escaping (Screen, Int) -> ID,
     @ViewBuilder screenContent: @escaping (Store<Screen, ScreenAction>) -> ScreenContent
@@ -42,7 +42,7 @@ struct UnobservedTCARouter<
     )
   }
 
-  public var body: some View {
+  var body: some View {
     WithViewStore(store, observe: { $0 }) { viewStore in
       Router(
         viewStore
