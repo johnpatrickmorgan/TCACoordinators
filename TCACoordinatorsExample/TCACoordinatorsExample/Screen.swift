@@ -83,13 +83,13 @@ struct NumberDetailView: View {
         Button("Increment after delay") {
           store.send(.incrementAfterDelayTapped)
         }
-        Button("Show double") {
+        Button("Show double (\(store.number * 2))") {
           store.send(.showDouble(store.number))
         }
         Button("Go back") {
           store.send(.goBackTapped)
         }
-        Button("Go back to root") {
+        Button("Go back to root from \(store.number)") {
           store.send(.goBackToRootTapped)
         }
         Button("Go back to numbers list") {
