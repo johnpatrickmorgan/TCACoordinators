@@ -10,6 +10,8 @@ struct GameCoordinatorView: View {
       switch screen.case {
       case let .game(store):
         GameView(store: store)
+      case let .outcome(store):
+        OutcomeView(store: store)
       }
     }
   }
@@ -18,6 +20,7 @@ struct GameCoordinatorView: View {
 @Reducer(state: .equatable)
 enum GameScreen {
   case game(Game)
+  case outcome(Outcome)
 }
 
 @Reducer
@@ -37,7 +40,18 @@ struct GameCoordinator {
   }
 
   var body: some ReducerOf<Self> {
-    EmptyReducer()
-      .forEachRoute(\.routes, action: \.router)
+    Reduce { state, action in
+      guard case let .game(game) = state.routes.first?.screen else { return .none }
+      switch action {
+      case .router(.routeAction(id: _, action: .outcome(.newGameTapped))):
+        state.routes = [.root(.game(.init(oPlayerName: game.xPlayerName, xPlayerName: game.oPlayerName)), embedInNavigationView: true)]
+      case .router(.routeAction(id: _, action: .game(.gameCompleted(let winner)))):
+        state.routes.push(.outcome(.init(winner: winner, oPlayerName: game.oPlayerName, xPlayerName: game.xPlayerName)))
+      default:
+        break
+      }
+      return .none
+    }
+    .forEachRoute(\.routes, action: \.router)
   }
 }

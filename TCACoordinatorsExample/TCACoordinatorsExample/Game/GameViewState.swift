@@ -7,17 +7,7 @@ extension Game.State {
     !board.hasWinner && !board.isFilled
   }
 
-  var isPlayAgainButtonHidden: Bool {
-    !board.hasWinner && !board.isFilled
-  }
-
   var title: String {
-    if board.hasWinner {
-      "Winner! Congrats \(currentPlayerName)"
-    } else if board.isFilled {
-      "Tied game!"
-    } else {
-      "\(currentPlayerName), place your \(currentPlayer.label)"
-    }
+    "\(currentPlayerName), place your \(currentPlayer.label)"
   }
 }

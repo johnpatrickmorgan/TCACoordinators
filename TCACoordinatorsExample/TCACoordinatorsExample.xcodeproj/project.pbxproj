@@ -21,6 +21,7 @@
 		5248864D26F2A26500970899 /* TCACoordinatorsExampleUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5248864C26F2A26500970899 /* TCACoordinatorsExampleUITestsLaunchTests.swift */; };
 		5248866026F2A53B00970899 /* TCACoordinators in Frameworks */ = {isa = PBXBuildFile; productRef = 5248865F26F2A53B00970899 /* TCACoordinators */; };
 		528AE0E92BECE20F00E143C5 /* FormScreen+Identifiable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 912FC7242BEBAFAA0036B444 /* FormScreen+Identifiable.swift */; };
+		528AE0EB2BED197000E143C5 /* OutcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 528AE0EA2BED197000E143C5 /* OutcomeView.swift */; };
 		528FEDEB2880BD94007765AD /* Step3.swift in Sources */ = {isa = PBXBuildFile; fileRef = 528FEDEA2880BC61007765AD /* Step3.swift */; };
 		528FEDEC2880BD94007765AD /* Step1.swift in Sources */ = {isa = PBXBuildFile; fileRef = 528FEDE82880BC61007765AD /* Step1.swift */; };
 		528FEDED2880BD94007765AD /* FinalScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 528FEDE72880BC60007765AD /* FinalScreen.swift */; };
@@ -76,6 +77,7 @@
 		5248864A26F2A26500970899 /* TCACoordinatorsExampleUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TCACoordinatorsExampleUITests.swift; sourceTree = "<group>"; };
 		5248864C26F2A26500970899 /* TCACoordinatorsExampleUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TCACoordinatorsExampleUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		5248865A26F2A2C200970899 /* TCACoordinators */ = {isa = PBXFileReference; lastKnownFileType = folder; name = TCACoordinators; path = ..; sourceTree = "<group>"; };
+		528AE0EA2BED197000E143C5 /* OutcomeView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OutcomeView.swift; sourceTree = "<group>"; };
 		528FEDE42880BC60007765AD /* FormScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormScreen.swift; sourceTree = "<group>"; };
 		528FEDE62880BC60007765AD /* FormAppCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormAppCoordinator.swift; sourceTree = "<group>"; };
 		528FEDE72880BC60007765AD /* FinalScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinalScreen.swift; sourceTree = "<group>"; };
@@ -221,6 +223,7 @@
 				912FC7222BEBAB7A0036B444 /* LogInScreen+StateIdentifiable.swift */,
 				529822D1283D76AD0011112B /* GameCoordinator.swift */,
 				529822D6283D76F60011112B /* WelcomeView.swift */,
+				528AE0EA2BED197000E143C5 /* OutcomeView.swift */,
 				529822D8283D77060011112B /* LogInView.swift */,
 			);
 			path = Game;
@@ -374,6 +377,7 @@
 				528FEDF22880BD95007765AD /* Step3.swift in Sources */,
 				529822D3283D76AD0011112B /* AppCoordinator.swift in Sources */,
 				524087E6278E3D950048C6EE /* IdentifiedCoordinator.swift in Sources */,
+				528AE0EB2BED197000E143C5 /* OutcomeView.swift in Sources */,
 				528FEDF62880BD95007765AD /* FormAppCoordinator.swift in Sources */,
 				529822D2283D76AD0011112B /* GameView.swift in Sources */,
 				528FEDF32880BD95007765AD /* Step1.swift in Sources */,
