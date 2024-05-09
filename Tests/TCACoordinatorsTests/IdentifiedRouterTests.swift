@@ -2,8 +2,8 @@ import ComposableArchitecture
 @testable import TCACoordinators
 import XCTest
 
-@MainActor
 final class IdentifiedRouterTests: XCTestCase {
+  @MainActor
   func testActionPropagation() async {
     let scheduler = DispatchQueue.test
     let store = TestStore(
@@ -24,6 +24,7 @@ final class IdentifiedRouterTests: XCTestCase {
     }
   }
 
+  @MainActor
   func testActionCancellation() async {
     let scheduler = DispatchQueue.test
     let store = TestStore(
@@ -51,6 +52,7 @@ final class IdentifiedRouterTests: XCTestCase {
   }
 
   @available(iOS 16.0, *)
+  @MainActor
   func testWithDelaysIfUnsupported() async throws {
     let initialRoutes: IdentifiedArrayOf<Route<Child.State>> = [
       .root(.init(id: "first", count: 1)),
