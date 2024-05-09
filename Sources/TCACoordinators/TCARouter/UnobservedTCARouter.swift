@@ -1,14 +1,18 @@
 @_spi(Internals) import ComposableArchitecture
 import FlowStacks
+import Foundation
 import SwiftUI
 
-public struct ObservedTCARouter<
-  Screen: Equatable & ObservableState,
+/// UnobservedTCARouter manages a collection of Routes, i.e., a series of screens, each of which is either pushed or presented.
+/// The TCARouter translates that collection into a hierarchy of SwiftUI views, and updates it when the user navigates back.
+/// The unobserved router is used when the Screen does not conform to ObservableState.
+struct UnobservedTCARouter<
+  Screen: Equatable,
   ScreenAction,
   ID: Hashable,
   ScreenContent: View
 >: View {
-  @Perception.Bindable private var store: Store<[Route<Screen>], RouterAction<ID, Screen, ScreenAction>>
+  let store: Store<[Route<Screen>], RouterAction<ID, Screen, ScreenAction>>
   let identifier: (Screen, Int) -> ID
   let screenContent: (Store<Screen, ScreenAction>) -> ScreenContent
 
@@ -39,26 +43,17 @@ public struct ObservedTCARouter<
   }
 
   public var body: some View {
-    WithPerceptionTracking {
+    WithViewStore(store, observe: { $0 }) { viewStore in
       Router(
-        $store[],
+        viewStore
+          .binding(
+            get: { $0 },
+            send: RouterAction.updateRoutes
+          ),
         buildView: { screen, index in
-          WithPerceptionTracking {
-            screenContent(scopedStore(index: index, screen: screen))
-          }
+          screenContent(scopedStore(index: index, screen: screen))
         }
       )
-    }
-  }
-}
-
-private extension Store {
-  subscript<ID: Hashable, Screen, ScreenAction>() -> [Route<Screen>]
-    where State == [Route<Screen>], Action == RouterAction<ID, Screen, ScreenAction>
-  {
-    get { self.currentState }
-    set {
-      self.send(.updateRoutes(newValue))
     }
   }
 }

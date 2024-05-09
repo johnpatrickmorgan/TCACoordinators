@@ -1,16 +1,16 @@
 @_spi(Internals) import ComposableArchitecture
 import FlowStacks
-import Foundation
 import SwiftUI
 
-/// TCARouter manages a collection of Routes, i.e., a series of screens, each of which is either pushed or presented. The TCARouter translates that collection into a hierarchy of SwiftUI views, and ensures that `updateScreens`.
+/// TCARouter manages a collection of Routes, i.e., a series of screens, each of which is either pushed or presented.
+/// The TCARouter translates that collection into a hierarchy of SwiftUI views, and updates it when the user navigates back.
 public struct TCARouter<
   Screen: Equatable,
   ScreenAction,
   ID: Hashable,
   ScreenContent: View
 >: View {
-  let store: Store<[Route<Screen>], RouterAction<ID, Screen, ScreenAction>>
+  @Perception.Bindable private var store: Store<[Route<Screen>], RouterAction<ID, Screen, ScreenAction>>
   let identifier: (Screen, Int) -> ID
   let screenContent: (Store<Screen, ScreenAction>) -> ScreenContent
 
@@ -41,24 +41,30 @@ public struct TCARouter<
   }
 
   public var body: some View {
-    WithViewStore(store, observe: { $0 }) { viewStore in
-      Router(
-        viewStore
-          .binding(
-            get: { $0 },
-            send: RouterAction.updateRoutes
-          ),
-        buildView: { screen, index in
-          screenContent(scopedStore(index: index, screen: screen))
-        }
-      )
+    if Screen.self is ObservableState.Type {
+      WithPerceptionTracking {
+        Router(
+          $store[],
+          buildView: { screen, index in
+            WithPerceptionTracking {
+              screenContent(scopedStore(index: index, screen: screen))
+            }
+          }
+        )
+      }
+    } else {
+      UnobservedTCARouter(store: store, identifier: identifier, screenContent: screenContent)
     }
   }
 }
 
-extension Collection {
-  /// Returns the element at the specified index if it is within bounds, otherwise nil.
-  subscript(safe index: Index) -> Element? {
-    indices.contains(index) ? self[index] : nil
+private extension Store {
+  subscript<ID: Hashable, Screen, ScreenAction>() -> [Route<Screen>]
+    where State == [Route<Screen>], Action == RouterAction<ID, Screen, ScreenAction>
+  {
+    get { currentState }
+    set {
+      send(.updateRoutes(newValue))
+    }
   }
 }

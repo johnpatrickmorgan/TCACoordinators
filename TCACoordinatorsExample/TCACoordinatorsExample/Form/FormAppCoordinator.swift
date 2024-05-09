@@ -113,7 +113,7 @@ struct FormAppCoordinatorView: View {
   let store: StoreOf<FormAppCoordinator>
 
   var body: some View {
-    ObservedTCARouter(store.scope(state: \.routes, action: \.router)) { screen in
+    TCARouter(store.scope(state: \.routes, action: \.router)) { screen in
       switch screen.case {
       case let .step1(store):
         Step1View(store: store)
