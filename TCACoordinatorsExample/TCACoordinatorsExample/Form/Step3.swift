@@ -16,9 +16,9 @@ struct Step3View: View {
                 HStack {
                   WithPerceptionTracking {
                     Text(occupation)
-                    
+
                     Spacer()
-                    
+
                     if let selected = store.selectedOccupation, selected == occupation {
                       Image(systemName: "checkmark")
                     }

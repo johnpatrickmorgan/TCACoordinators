@@ -86,7 +86,7 @@ public extension Reducer {
     ScreenState.StateReducer.Action == ScreenAction,
     ScreenAction: CasePathable
   {
-    self.forEachRoute(
+    forEachRoute(
       routes,
       action: action,
       cancellationId: cancellationId
@@ -146,7 +146,7 @@ public extension Reducer {
     ScreenState.StateReducer.Action == ScreenAction,
     ScreenAction: CasePathable
   {
-    self.forEachRoute(routes, action: action, cancellationIdType: cancellationIdType) {
+    forEachRoute(routes, action: action, cancellationIdType: cancellationIdType) {
       ScreenState.StateReducer.body
     }
   }

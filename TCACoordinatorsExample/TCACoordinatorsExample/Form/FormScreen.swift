@@ -14,7 +14,7 @@ struct FormScreenEnvironment: DependencyKey {
         "Web Developer",
         "Project Manager",
         "Designer",
-        "The Big Cheese"
+        "The Big Cheese",
       ]
     },
     submit: { _ in true }

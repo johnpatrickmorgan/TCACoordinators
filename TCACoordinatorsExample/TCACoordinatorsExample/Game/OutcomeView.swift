@@ -34,7 +34,7 @@ struct Outcome {
     var xPlayerName: String
 
     var winnerName: String? {
-      guard let winner = winner else { return nil }
+      guard let winner else { return nil }
       return winner == .x ? xPlayerName : oPlayerName
     }
   }

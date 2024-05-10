@@ -15,9 +15,9 @@ public extension Effect {
   /// - Parameter transform: A closure transforming the routes into their new state.
   /// - Returns: An Effect stream of actions with incremental updates to routes over time. If the proposed change is supported
   ///   within a single update, the Effect stream will include only one element.
-  static func routeWithDelaysIfUnsupported<ScreenState, ScreenAction>(
+  static func routeWithDelaysIfUnsupported<ScreenState>(
     _ routes: [Route<ScreenState>],
-    action: CaseKeyPath<Action, IndexedRouterAction<ScreenState, ScreenAction>>,
+    action: CaseKeyPath<Action, IndexedRouterAction<ScreenState, some Any>>,
     scheduler: AnySchedulerOf<DispatchQueue> = .main,
     _ transform: (inout [Route<ScreenState>]) -> Void
   ) -> Self {
@@ -41,9 +41,9 @@ public extension Effect {
   /// - Parameter transform: A closure transforming the routes into their new state.
   /// - Returns: An Effect stream of actions with incremental updates to routes over time. If the proposed change is supported
   ///   within a single update, the Effect stream will include only one element.
-  static func routeWithDelaysIfUnsupported<ScreenState: Identifiable, ScreenAction>(
+  static func routeWithDelaysIfUnsupported<ScreenState: Identifiable>(
     _ routes: IdentifiedArrayOf<Route<ScreenState>>,
-    action: CaseKeyPath<Action, IdentifiedRouterAction<ScreenState, ScreenAction>>,
+    action: CaseKeyPath<Action, IdentifiedRouterAction<ScreenState, some Any>>,
     scheduler: AnySchedulerOf<DispatchQueue> = .main,
     _ transform: (inout IdentifiedArrayOf<Route<ScreenState>>) -> Void
   ) -> Self {

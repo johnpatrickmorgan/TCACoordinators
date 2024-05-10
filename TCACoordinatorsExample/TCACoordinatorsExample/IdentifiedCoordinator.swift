@@ -25,11 +25,11 @@ extension Screen.State: Identifiable {
   var id: UUID {
     switch self {
     case let .home(state):
-      return state.id
+      state.id
     case let .numbersList(state):
-      return state.id
+      state.id
     case let .numberDetail(state):
-      return state.id
+      state.id
     }
   }
 }

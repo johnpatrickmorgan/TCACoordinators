@@ -9,7 +9,7 @@ final class IdentifiedRouterTests: XCTestCase {
     let store = TestStore(
       initialState: Parent.State(routes: [
         .root(.init(id: "first", count: 42)),
-        .sheet(.init(id: "second", count: 11))
+        .sheet(.init(id: "second", count: 11)),
       ])
     ) {
       Parent(scheduler: scheduler)
@@ -31,7 +31,7 @@ final class IdentifiedRouterTests: XCTestCase {
       initialState: Parent.State(
         routes: [
           .root(.init(id: "first", count: 42)),
-          .sheet(.init(id: "second", count: 11))
+          .sheet(.init(id: "second", count: 11)),
         ]
       )
     ) {
@@ -57,7 +57,7 @@ final class IdentifiedRouterTests: XCTestCase {
     let initialRoutes: IdentifiedArrayOf<Route<Child.State>> = [
       .root(.init(id: "first", count: 1)),
       .sheet(.init(id: "second", count: 2)),
-      .sheet(.init(id: "third", count: 3))
+      .sheet(.init(id: "third", count: 3)),
     ]
     let scheduler = DispatchQueue.test
     let store = TestStore(initialState: Parent.State(routes: initialRoutes)) {
@@ -123,11 +123,11 @@ private struct Parent {
     Reduce { state, action in
       switch action {
       case .goBackToRoot:
-        return .routeWithDelaysIfUnsupported(state.routes, action: \.router, scheduler: scheduler.eraseToAnyScheduler()) {
+        .routeWithDelaysIfUnsupported(state.routes, action: \.router, scheduler: scheduler.eraseToAnyScheduler()) {
           $0.goBackToRoot()
         }
       default:
-        return .none
+        .none
       }
     }
     .forEachRoute(\.routes, action: \.router) {

@@ -10,7 +10,7 @@ final class IndexedRouterTests: XCTestCase {
       initialState: Parent.State(
         routes: [
           .root(.init(count: 42)),
-          .sheet(.init(count: 11))
+          .sheet(.init(count: 11)),
         ]
       )
     ) {
@@ -32,7 +32,7 @@ final class IndexedRouterTests: XCTestCase {
       initialState: Parent.State(
         routes: [
           .root(.init(count: 42)),
-          .sheet(.init(count: 11))
+          .sheet(.init(count: 11)),
         ]
       )
     ) {
@@ -58,7 +58,7 @@ final class IndexedRouterTests: XCTestCase {
     let initialRoutes: [Route<Child.State>] = [
       .root(.init(count: 1)),
       .sheet(.init(count: 2)),
-      .sheet(.init(count: 3))
+      .sheet(.init(count: 3)),
     ]
     let scheduler = DispatchQueue.test
     let store = TestStore(initialState: Parent.State(routes: initialRoutes)) {
@@ -124,11 +124,11 @@ private struct Parent {
     Reduce { state, action in
       switch action {
       case .goBackToRoot:
-        return .routeWithDelaysIfUnsupported(state.routes, action: \.router, scheduler: scheduler.eraseToAnyScheduler()) {
+        .routeWithDelaysIfUnsupported(state.routes, action: \.router, scheduler: scheduler.eraseToAnyScheduler()) {
           $0.goBackToRoot()
         }
       default:
-        return .none
+        .none
       }
     }
     .forEachRoute(\.routes, action: \.router) {
