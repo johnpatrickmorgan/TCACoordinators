@@ -7,7 +7,7 @@ public extension TCARouter where Screen: Identifiable {
   /// Convenience initializer for managing screens in an `IdentifiedArray`.
   init(
     _ store: Store<IdentifiedArrayOf<Route<Screen>>, IdentifiedRouterAction<Screen, ScreenAction>>,
-    screenContent: @escaping (Store<Screen, ScreenAction>) -> ScreenContent
+    @ViewBuilder screenContent: @escaping (Store<Screen, ScreenAction>) -> ScreenContent
   ) where Screen.ID == ID {
     self.init(
       store: store.scope(state: \.elements, action: \.self),

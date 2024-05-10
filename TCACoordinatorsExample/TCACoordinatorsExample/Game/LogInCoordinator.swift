@@ -2,35 +2,10 @@ import ComposableArchitecture
 import SwiftUI
 import TCACoordinators
 
-@Reducer
-struct LogInScreen {
-  enum Action {
-    case welcome(Welcome.Action)
-    case logIn(LogIn.Action)
-  }
-
-  enum State: Equatable, Identifiable {
-    case welcome(Welcome.State)
-    case logIn(LogIn.State)
-
-    var id: UUID {
-      switch self {
-      case let .welcome(state):
-        state.id
-      case let .logIn(state):
-        state.id
-      }
-    }
-  }
-
-  var body: some ReducerOf<Self> {
-    Scope(state: \.welcome, action: \.welcome) {
-      Welcome()
-    }
-    Scope(state: \.logIn, action: \.logIn) {
-      LogIn()
-    }
-  }
+@Reducer(state: .equatable)
+enum LogInScreen {
+  case welcome(Welcome)
+  case logIn(LogIn)
 }
 
 struct LogInCoordinatorView: View {
@@ -38,29 +13,20 @@ struct LogInCoordinatorView: View {
 
   var body: some View {
     TCARouter(store.scope(state: \.routes, action: \.router)) { screen in
-      SwitchStore(screen) { screen in
-        switch screen {
-        case .welcome:
-          CaseLet(
-            \LogInScreen.State.welcome,
-            action: LogInScreen.Action.welcome,
-            then: WelcomeView.init
-          )
+      switch screen.case {
+      case let .welcome(store):
+        WelcomeView(store: store)
 
-        case .logIn:
-          CaseLet(
-            \LogInScreen.State.logIn,
-            action: LogInScreen.Action.logIn,
-            then: LogInView.init
-          )
-        }
+      case let .logIn(store):
+        LogInView(store: store)
       }
     }
   }
 }
 
 @Reducer
-struct LogInCoordinator: Reducer {
+struct LogInCoordinator {
+  @ObservableState
   struct State: Equatable {
     static let initialState = LogInCoordinator.State(
       routes: [.root(.welcome(.init()), embedInNavigationView: true)]
@@ -83,8 +49,6 @@ struct LogInCoordinator: Reducer {
       }
       return .none
     }
-    .forEachRoute(\.routes, action: \.router) {
-      LogInScreen()
-    }
+    .forEachRoute(\.routes, action: \.router)
   }
 }

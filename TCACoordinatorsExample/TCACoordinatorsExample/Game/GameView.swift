@@ -10,94 +10,69 @@ struct GameView: UIViewControllerRepresentable {
 
   typealias UIViewControllerType = GameViewController
 
-  func makeUIViewController(context: Context) -> GameViewController {
-    GameViewController(store: self.store)
+  func makeUIViewController(context _: Context) -> GameViewController {
+    GameViewController(store: store)
   }
 
-  func updateUIViewController(_ uiViewController: GameViewController, context: Context) {}
+  func updateUIViewController(_: GameViewController, context _: Context) {}
 }
 
 final class GameViewController: UIViewController {
   let store: StoreOf<Game>
-  let viewStore: ViewStore<ViewState, Game.Action>
-  private var cancellables: Set<AnyCancellable> = []
-
-  struct ViewState: Equatable {
-    let board: Three<Three<String>>
-    let isGameEnabled: Bool
-    let isPlayAgainButtonHidden: Bool
-    let title: String?
-
-    init(state: Game.State) {
-      self.board = state.board.map { $0.map { $0?.label ?? "" } }
-      self.isGameEnabled = !state.board.hasWinner && !state.board.isFilled
-      self.isPlayAgainButtonHidden = !state.board.hasWinner && !state.board.isFilled
-      self.title =
-        state.board.hasWinner
-          ? "Winner! Congrats \(state.currentPlayerName)!"
-          : state.board.isFilled
-          ? "Tied game!"
-          : "\(state.currentPlayerName), place your \(state.currentPlayer.label)"
-    }
-  }
+  private var observationToken: ObservationToken?
 
   init(store: StoreOf<Game>) {
     self.store = store
-    self.viewStore = ViewStore(store, observe: ViewState.init)
     super.init(nibName: nil, bundle: nil)
   }
 
   @available(*, unavailable)
-  required init?(coder: NSCoder) {
+  required init?(coder _: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }
 
   override func viewDidLoad() {
     super.viewDidLoad()
 
-    self.navigationItem.title = "Tic-Tac-Toe"
-    self.view.backgroundColor = .systemBackground
+    navigationItem.title = "Tic-Tac-Toe"
+    view.backgroundColor = .systemBackground
 
-    self.navigationItem.leftBarButtonItem = UIBarButtonItem(
+    navigationItem.leftBarButtonItem = UIBarButtonItem(
       title: "Quit",
       style: .done,
       target: self,
-      action: #selector(self.quitButtonTapped)
+      action: #selector(quitButtonTapped)
     )
 
     let titleLabel = UILabel()
     titleLabel.textAlignment = .center
 
-    let playAgainButton = UIButton(type: .system)
-    playAgainButton.setTitle("Play again?", for: .normal)
-    playAgainButton.addTarget(self, action: #selector(self.playAgainButtonTapped), for: .touchUpInside)
-
     let logOutButton = UIButton(type: .system)
     logOutButton.setTitle("Log out", for: .normal)
-    logOutButton.addTarget(self, action: #selector(self.logOutButtonTapped), for: .touchUpInside)
+    logOutButton.addTarget(self, action: #selector(logOutButtonTapped), for: .touchUpInside)
 
-    let titleStackView = UIStackView(arrangedSubviews: [titleLabel, playAgainButton, logOutButton])
+    let titleStackView = UIStackView(arrangedSubviews: [titleLabel, logOutButton])
     titleStackView.axis = .vertical
     titleStackView.spacing = 2
 
     let gridCell11 = UIButton()
-    gridCell11.addTarget(self, action: #selector(self.gridCell11Tapped), for: .touchUpInside)
+    gridCell11.addTarget(self, action: #selector(gridCell11Tapped), for: .touchUpInside)
     let gridCell21 = UIButton()
-    gridCell21.addTarget(self, action: #selector(self.gridCell21Tapped), for: .touchUpInside)
+    gridCell21.addTarget(self, action: #selector(gridCell21Tapped), for: .touchUpInside)
     let gridCell31 = UIButton()
-    gridCell31.addTarget(self, action: #selector(self.gridCell31Tapped), for: .touchUpInside)
+    gridCell31.addTarget(self, action: #selector(gridCell31Tapped), for: .touchUpInside)
     let gridCell12 = UIButton()
-    gridCell12.addTarget(self, action: #selector(self.gridCell12Tapped), for: .touchUpInside)
+    gridCell12.addTarget(self, action: #selector(gridCell12Tapped), for: .touchUpInside)
     let gridCell22 = UIButton()
-    gridCell22.addTarget(self, action: #selector(self.gridCell22Tapped), for: .touchUpInside)
+    gridCell22.addTarget(self, action: #selector(gridCell22Tapped), for: .touchUpInside)
     let gridCell32 = UIButton()
-    gridCell32.addTarget(self, action: #selector(self.gridCell32Tapped), for: .touchUpInside)
+    gridCell32.addTarget(self, action: #selector(gridCell32Tapped), for: .touchUpInside)
     let gridCell13 = UIButton()
-    gridCell13.addTarget(self, action: #selector(self.gridCell13Tapped), for: .touchUpInside)
+    gridCell13.addTarget(self, action: #selector(gridCell13Tapped), for: .touchUpInside)
     let gridCell23 = UIButton()
-    gridCell23.addTarget(self, action: #selector(self.gridCell23Tapped), for: .touchUpInside)
+    gridCell23.addTarget(self, action: #selector(gridCell23Tapped), for: .touchUpInside)
     let gridCell33 = UIButton()
-    gridCell33.addTarget(self, action: #selector(self.gridCell33Tapped), for: .touchUpInside)
+    gridCell33.addTarget(self, action: #selector(gridCell33Tapped), for: .touchUpInside)
 
     let cells = [
       [gridCell11, gridCell12, gridCell13],
@@ -130,12 +105,12 @@ final class GameViewController: UIViewController {
     rootStackView.axis = .vertical
     rootStackView.spacing = 100
 
-    self.view.addSubview(rootStackView)
+    view.addSubview(rootStackView)
 
     NSLayoutConstraint.activate([
-      rootStackView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
-      rootStackView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
-      rootStackView.centerYAnchor.constraint(equalTo: self.view.centerYAnchor),
+      rootStackView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+      rootStackView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+      rootStackView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
     ])
 
     gameStackView.arrangedSubviews
@@ -148,57 +123,47 @@ final class GameViewController: UIViewController {
         ])
       }
 
-    self.viewStore.publisher.title
-      .assign(to: \.text, on: titleLabel)
-      .store(in: &self.cancellables)
+    observationToken = observe { [weak self] in
+      guard let self else { return }
 
-    self.viewStore.publisher.isPlayAgainButtonHidden
-      .assign(to: \.isHidden, on: playAgainButton)
-      .store(in: &self.cancellables)
+      titleLabel.text = store.title
 
-    self.viewStore.publisher.isPlayAgainButtonHidden
-      .assign(to: \.isHidden, on: logOutButton)
-      .store(in: &self.cancellables)
-
-    self.viewStore.publisher
-      .map(\.board, \.isGameEnabled)
-      .removeDuplicates(by: ==)
-      .sink { board, isGameEnabled in
-        for (rowIdx, row) in board.enumerated() {
-          for (colIdx, label) in row.enumerated() {
-            let button = cells[rowIdx][colIdx]
-            button.setTitle(label, for: .normal)
-            button.isEnabled = isGameEnabled
-          }
+      for (rowIdx, row) in store.gameBoard.enumerated() {
+        for (colIdx, label) in row.enumerated() {
+          let button = cells[rowIdx][colIdx]
+          button.setTitle(label, for: .normal)
+          button.isEnabled = store.isGameEnabled
         }
       }
-      .store(in: &self.cancellables)
+    }
   }
 
-  @objc private func gridCell11Tapped() { self.viewStore.send(.cellTapped(row: 0, column: 0)) }
-  @objc private func gridCell12Tapped() { self.viewStore.send(.cellTapped(row: 0, column: 1)) }
-  @objc private func gridCell13Tapped() { self.viewStore.send(.cellTapped(row: 0, column: 2)) }
-  @objc private func gridCell21Tapped() { self.viewStore.send(.cellTapped(row: 1, column: 0)) }
-  @objc private func gridCell22Tapped() { self.viewStore.send(.cellTapped(row: 1, column: 1)) }
-  @objc private func gridCell23Tapped() { self.viewStore.send(.cellTapped(row: 1, column: 2)) }
-  @objc private func gridCell31Tapped() { self.viewStore.send(.cellTapped(row: 2, column: 0)) }
-  @objc private func gridCell32Tapped() { self.viewStore.send(.cellTapped(row: 2, column: 1)) }
-  @objc private func gridCell33Tapped() { self.viewStore.send(.cellTapped(row: 2, column: 2)) }
+  @objc private func gridCell11Tapped() { store.send(.cellTapped(row: 0, column: 0)) }
+  @objc private func gridCell12Tapped() { store.send(.cellTapped(row: 0, column: 1)) }
+  @objc private func gridCell13Tapped() { store.send(.cellTapped(row: 0, column: 2)) }
+  @objc private func gridCell21Tapped() { store.send(.cellTapped(row: 1, column: 0)) }
+  @objc private func gridCell22Tapped() { store.send(.cellTapped(row: 1, column: 1)) }
+  @objc private func gridCell23Tapped() { store.send(.cellTapped(row: 1, column: 2)) }
+  @objc private func gridCell31Tapped() { store.send(.cellTapped(row: 2, column: 0)) }
+  @objc private func gridCell32Tapped() { store.send(.cellTapped(row: 2, column: 1)) }
+  @objc private func gridCell33Tapped() { store.send(.cellTapped(row: 2, column: 2)) }
 
   @objc private func quitButtonTapped() {
-    self.viewStore.send(.quitButtonTapped)
+    store.send(.quitButtonTapped)
   }
 
   @objc private func playAgainButtonTapped() {
-    self.viewStore.send(.playAgainButtonTapped)
+    store.send(.playAgainButtonTapped)
   }
 
   @objc private func logOutButtonTapped() {
-    self.viewStore.send(.logOutButtonTapped)
+    store.send(.logOutButtonTapped)
   }
 }
 
-struct Game: Reducer {
+@Reducer
+struct Game {
+  @ObservableState
   struct State: Equatable {
     let id = UUID()
     var board: Three<Three<Player?>> = .empty
@@ -212,9 +177,9 @@ struct Game: Reducer {
     }
 
     var currentPlayerName: String {
-      switch self.currentPlayer {
-      case .o: return self.oPlayerName
-      case .x: return self.xPlayerName
+      switch currentPlayer {
+      case .o: return oPlayerName
+      case .x: return xPlayerName
       }
     }
   }
@@ -224,6 +189,7 @@ struct Game: Reducer {
     case playAgainButtonTapped
     case logOutButtonTapped
     case quitButtonTapped
+    case gameCompleted(winner: Player?)
   }
 
   var body: some ReducerOf<Self> {
@@ -241,13 +207,19 @@ struct Game: Reducer {
           state.currentPlayer.toggle()
         }
 
+        if state.board.hasWinner || state.board.isFilled {
+          return .run { [winner = state.board.winner] send in
+            await send(.gameCompleted(winner: winner))
+          }
+        }
+
         return .none
 
       case .playAgainButtonTapped:
         state = Game.State(oPlayerName: state.oPlayerName, xPlayerName: state.xPlayerName)
         return .none
 
-      case .quitButtonTapped, .logOutButtonTapped:
+      case .quitButtonTapped, .logOutButtonTapped, .gameCompleted:
         return .none
       }
     }
@@ -267,11 +239,11 @@ struct Three<Element>: CustomStringConvertible {
   }
 
   func map<T>(_ transform: (Element) -> T) -> Three<T> {
-    .init(transform(self.first), transform(self.second), transform(self.third))
+    .init(transform(first), transform(second), transform(third))
   }
 
   var description: String {
-    "[\(self.first),\(self.second),\(self.third)]"
+    "[\(first),\(second),\(third)]"
   }
 }
 
@@ -332,11 +304,15 @@ extension Three where Element == Three<Player?> {
   )
 
   var isFilled: Bool {
-    self.allSatisfy { $0.allSatisfy { $0 != nil } }
+    allSatisfy { $0.allSatisfy { $0 != nil } }
+  }
+
+  var winner: Player? {
+    if hasWin(.o) { .o } else if hasWin(.x) { .x } else { nil }
   }
 
   var hasWinner: Bool {
-    self.hasWin(.o) || self.hasWin(.x)
+    hasWin(.o) || hasWin(.x)
   }
 
   func hasWin(_ player: Player) -> Bool {

@@ -16,16 +16,13 @@ struct WelcomeView: View {
   }
 }
 
-struct Welcome: Reducer {
+@Reducer
+struct Welcome {
   struct State: Equatable {
     let id = UUID()
   }
 
   enum Action {
     case logInTapped
-  }
-
-  var body: some ReducerOf<Self> {
-    EmptyReducer()
   }
 }

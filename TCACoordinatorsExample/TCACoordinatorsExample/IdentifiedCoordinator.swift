@@ -3,44 +3,44 @@ import SwiftUI
 import TCACoordinators
 
 struct IdentifiedCoordinatorView: View {
-  let store: StoreOf<IdentifiedCoordinator>
+  @State var store: StoreOf<IdentifiedCoordinator>
 
   var body: some View {
     TCARouter(store.scope(state: \.routes, action: \.router)) { screen in
-      SwitchStore(screen) { screen in
-        switch screen {
-        case .home:
-          CaseLet(
-            \Screen.State.home,
-            action: Screen.Action.home,
-            then: HomeView.init
-          )
+      switch screen.case {
+      case let .home(store):
+        HomeView(store: store)
 
-        case .numbersList:
-          CaseLet(
-            \Screen.State.numbersList,
-            action: Screen.Action.numbersList,
-            then: NumbersListView.init
-          )
+      case let .numbersList(store):
+        NumbersListView(store: store)
 
-        case .numberDetail:
-          CaseLet(
-            \Screen.State.numberDetail,
-            action: Screen.Action.numberDetail,
-            then: NumberDetailView.init
-          )
-        }
+      case let .numberDetail(store):
+        NumberDetailView(store: store)
       }
     }
   }
 }
 
+extension Screen.State: Identifiable {
+  var id: UUID {
+    switch self {
+    case let .home(state):
+      return state.id
+    case let .numbersList(state):
+      return state.id
+    case let .numberDetail(state):
+      return state.id
+    }
+  }
+}
+
 @Reducer
-struct IdentifiedCoordinator: Reducer {
+struct IdentifiedCoordinator {
   enum Deeplink {
     case showNumber(Int)
   }
 
+  @ObservableState
   struct State: Equatable {
     static let initialState = State(
       routes: [.root(.home(.init()), embedInNavigationView: true)]
@@ -83,8 +83,6 @@ struct IdentifiedCoordinator: Reducer {
       }
       return .none
     }
-    .forEachRoute(\.routes, action: \.router) {
-      Screen()
-    }
+    .forEachRoute(\.routes, action: \.router)
   }
 }

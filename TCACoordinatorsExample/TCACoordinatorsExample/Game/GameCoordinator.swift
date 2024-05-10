@@ -7,42 +7,20 @@ struct GameCoordinatorView: View {
 
   var body: some View {
     TCARouter(store.scope(state: \.routes, action: \.router)) { screen in
-      SwitchStore(screen) { screen in
-        switch screen {
-        case .game:
-          CaseLet(
-            \GameScreen.State.game,
-            action: GameScreen.Action.game,
-            then: GameView.init
-          )
-        }
+      switch screen.case {
+      case let .game(store):
+        GameView(store: store)
+      case let .outcome(store):
+        OutcomeView(store: store)
       }
     }
   }
 }
 
-@Reducer
-struct GameScreen {
-  enum State: Equatable, Identifiable {
-    case game(Game.State)
-
-    var id: UUID {
-      switch self {
-      case let .game(state):
-        return state.id
-      }
-    }
-  }
-
-  enum Action {
-    case game(Game.Action)
-  }
-
-  var body: some ReducerOf<Self> {
-    Scope(state: \.game, action: \.game) {
-      Game()
-    }
-  }
+@Reducer(state: .equatable)
+enum GameScreen {
+  case game(Game)
+  case outcome(Outcome)
 }
 
 @Reducer
@@ -62,9 +40,18 @@ struct GameCoordinator {
   }
 
   var body: some ReducerOf<Self> {
-    EmptyReducer()
-      .forEachRoute(\.routes, action: \.router) {
-        GameScreen()
+    Reduce { state, action in
+      guard case let .game(game) = state.routes.first?.screen else { return .none }
+      switch action {
+      case .router(.routeAction(id: _, action: .outcome(.newGameTapped))):
+        state.routes = [.root(.game(.init(oPlayerName: game.xPlayerName, xPlayerName: game.oPlayerName)), embedInNavigationView: true)]
+      case .router(.routeAction(id: _, action: .game(.gameCompleted(let winner)))):
+        state.routes.push(.outcome(.init(winner: winner, oPlayerName: game.oPlayerName, xPlayerName: game.xPlayerName)))
+      default:
+        break
       }
+      return .none
+    }
+    .forEachRoute(\.routes, action: \.router)
   }
 }

@@ -1,20 +1,22 @@
 @_spi(Internals) import ComposableArchitecture
 import FlowStacks
+import Foundation
 import SwiftUI
 
-/// TCARouter manages a collection of Routes, i.e., a series of screens, each of which is either pushed or presented.
+/// UnobservedTCARouter manages a collection of Routes, i.e., a series of screens, each of which is either pushed or presented.
 /// The TCARouter translates that collection into a hierarchy of SwiftUI views, and updates it when the user navigates back.
-public struct TCARouter<
+/// The unobserved router is used when the Screen does not conform to ObservableState.
+struct UnobservedTCARouter<
   Screen: Equatable,
   ScreenAction,
   ID: Hashable,
   ScreenContent: View
 >: View {
-  @Perception.Bindable private var store: Store<[Route<Screen>], RouterAction<ID, Screen, ScreenAction>>
+  let store: Store<[Route<Screen>], RouterAction<ID, Screen, ScreenAction>>
   let identifier: (Screen, Int) -> ID
   let screenContent: (Store<Screen, ScreenAction>) -> ScreenContent
 
-  public init(
+  init(
     store: Store<[Route<Screen>], RouterAction<ID, Screen, ScreenAction>>,
     identifier: @escaping (Screen, Int) -> ID,
     @ViewBuilder screenContent: @escaping (Store<Screen, ScreenAction>) -> ScreenContent
@@ -40,31 +42,18 @@ public struct TCARouter<
     )
   }
 
-  public var body: some View {
-    if Screen.self is ObservableState.Type {
-      WithPerceptionTracking {
-        Router(
-          $store[],
-          buildView: { screen, index in
-            WithPerceptionTracking {
-              screenContent(scopedStore(index: index, screen: screen))
-            }
-          }
-        )
-      }
-    } else {
-      UnobservedTCARouter(store: store, identifier: identifier, screenContent: screenContent)
-    }
-  }
-}
-
-private extension Store {
-  subscript<ID: Hashable, Screen, ScreenAction>() -> [Route<Screen>]
-    where State == [Route<Screen>], Action == RouterAction<ID, Screen, ScreenAction>
-  {
-    get { currentState }
-    set {
-      send(.updateRoutes(newValue))
+  var body: some View {
+    WithViewStore(store, observe: { $0 }) { viewStore in
+      Router(
+        viewStore
+          .binding(
+            get: { $0 },
+            send: RouterAction.updateRoutes
+          ),
+        buildView: { screen, index in
+          screenContent(scopedStore(index: index, screen: screen))
+        }
+      )
     }
   }
 }

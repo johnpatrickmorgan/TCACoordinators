@@ -1,10 +1,12 @@
 import ComposableArchitecture
 import SwiftUI
 
-struct Step1: Reducer {
+@Reducer
+struct Step1 {
+  @ObservableState
   public struct State: Equatable {
-    @BindingState var firstName: String = ""
-    @BindingState var lastName: String = ""
+    var firstName: String = ""
+    var lastName: String = ""
   }
 
   public enum Action: Equatable, BindableAction {
@@ -18,17 +20,17 @@ struct Step1: Reducer {
 }
 
 struct Step1View: View {
-  let store: StoreOf<Step1>
+  @Perception.Bindable var store: StoreOf<Step1>
 
   var body: some View {
-    WithViewStore(store, observe: { $0 }) { viewStore in
+    WithPerceptionTracking {
       Form {
-        TextField("First Name", text: viewStore.$firstName)
-        TextField("Last Name", text: viewStore.$lastName)
+        TextField("First Name", text: $store.firstName)
+        TextField("Last Name", text: $store.lastName)
 
         Section {
           Button("Next") {
-            viewStore.send(.nextButtonTapped)
+            store.send(.nextButtonTapped)
           }
         }
       }

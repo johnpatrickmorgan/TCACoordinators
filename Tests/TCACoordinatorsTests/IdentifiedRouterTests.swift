@@ -2,8 +2,8 @@ import ComposableArchitecture
 @testable import TCACoordinators
 import XCTest
 
-@MainActor
 final class IdentifiedRouterTests: XCTestCase {
+  @MainActor
   func testActionPropagation() async {
     let scheduler = DispatchQueue.test
     let store = TestStore(
@@ -24,6 +24,7 @@ final class IdentifiedRouterTests: XCTestCase {
     }
   }
 
+  @MainActor
   func testActionCancellation() async {
     let scheduler = DispatchQueue.test
     let store = TestStore(
@@ -51,6 +52,7 @@ final class IdentifiedRouterTests: XCTestCase {
   }
 
   @available(iOS 16.0, *)
+  @MainActor
   func testWithDelaysIfUnsupported() async throws {
     let initialRoutes: IdentifiedArrayOf<Route<Child.State>> = [
       .root(.init(id: "first", count: 1)),
@@ -77,7 +79,7 @@ final class IdentifiedRouterTests: XCTestCase {
 }
 
 @Reducer
-private struct Child: Reducer {
+private struct Child {
   let scheduler: TestSchedulerOf<DispatchQueue>
   struct State: Equatable, Identifiable {
     var id: String
@@ -106,7 +108,7 @@ private struct Child: Reducer {
 }
 
 @Reducer
-private struct Parent: Reducer {
+private struct Parent {
   let scheduler: TestSchedulerOf<DispatchQueue>
   struct State: Equatable {
     var routes: IdentifiedArrayOf<Route<Child.State>>

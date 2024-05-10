@@ -8,9 +8,9 @@ struct AppCoordinatorView: View {
   let store: StoreOf<GameApp>
 
   var body: some View {
-    WithViewStore(store, observe: \.isLoggedIn) { viewStore in
+    WithPerceptionTracking {
       VStack {
-        if viewStore.state {
+        if store.isLoggedIn {
           GameCoordinatorView(store: store.scope(state: \.game, action: \.game))
             .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading)))
         } else {
@@ -18,13 +18,14 @@ struct AppCoordinatorView: View {
             .transition(.asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading)))
         }
       }
-      .animation(.default, value: viewStore.state)
+      .animation(.default, value: store.isLoggedIn)
     }
   }
 }
 
 @Reducer
-struct GameApp: Reducer {
+struct GameApp {
+  @ObservableState
   struct State: Equatable {
     static let initialState = State(logIn: .initialState, game: .initialState(), isLoggedIn: false)
 
