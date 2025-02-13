@@ -159,9 +159,9 @@ public extension Reducer {
 extension Case {
   subscript<Element: Identifiable>() -> Case<IdentifiedArray<Element.ID, Element>> where Value == [Element] {
     Case<IdentifiedArrayOf<Element>>(
-      embed: { self.embed($0.elements) },
+      embed: { self._embed($0.elements) },
       extract: {
-        self.extract(from: $0).flatMap { IdentifiedArrayOf(uniqueElements: $0) }
+        self._extract(from: $0).flatMap { IdentifiedArrayOf(uniqueElements: $0) }
       }
     )
   }
@@ -171,11 +171,11 @@ extension Case {
       embed: { action in
         switch action {
         case let .element(id, action):
-          self.embed((id, action))
+          self._embed((id, action))
         }
       },
       extract: {
-        self.extract(from: $0).flatMap {
+        self._extract(from: $0).flatMap {
           .element(id: $0, action: $1)
         }
       }

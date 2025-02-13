@@ -19,7 +19,7 @@ struct GameView: UIViewControllerRepresentable {
 
 final class GameViewController: UIViewController {
   let store: StoreOf<Game>
-  private var observationToken: ObservationToken?
+  private var observationToken: ObserveToken?
 
   init(store: StoreOf<Game>) {
     self.store = store
