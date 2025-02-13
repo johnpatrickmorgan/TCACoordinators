@@ -68,7 +68,7 @@ struct TagRouteEffectsForCancellation<
 
       if let (id: routeId, _) = action[case: routeAction] {
         let identity = CancellationIdentity(coordinatorId: coordinatorId, routeId: routeId)
-        return effect.cancellable(id: AnyHashable(identity))
+        return effect.cancellable(id: identity)
       } else {
         return effect
       }
@@ -101,7 +101,7 @@ struct CancelTaggedRouteEffectsOnDismiss<
       let dismissedIds = Set(preIds).subtracting(postIds)
       for dismissedId in dismissedIds {
         let identity = CancellationIdentity(coordinatorId: coordinatorId, routeId: dismissedId)
-        effects.append(Effect<Action>.cancel(id: AnyHashable(identity)))
+        effects.append(Effect<Action>.cancel(id: identity))
       }
 
       return .merge(effects)
