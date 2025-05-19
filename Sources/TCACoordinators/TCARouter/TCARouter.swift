@@ -24,21 +24,17 @@ public struct TCARouter<
     self.screenContent = screenContent
   }
 
-  func scopedStore(index: Int, screen: Screen) -> Store<Screen, ScreenAction> {
-    var screen = screen
-    let id = identifier(screen, index)
-    return store.scope(
-      id: store.id(state: \.[index], action: \.[id: id]),
-      state: ToState {
-        screen = $0[safe: index]?.screen ?? screen
-        return screen
-      },
-      action: {
-        .routeAction(id: id, action: $0)
-      },
-      isInvalid: { !$0.indices.contains(index) }
-    )
-  }
+	func scopedStore(index: Int, screen: Screen) -> Store<Screen, ScreenAction> {
+		let routesStore = store
+
+		return routesStore.scope(
+			state: {
+				guard $0.indices.contains(index) else { return screen }
+				return $0[index].screen
+			},
+			action: { .routeAction(id: identifier(screen, index), action: $0) }
+		)
+	}
 
   public var body: some View {
     if Screen.self is ObservableState.Type {
