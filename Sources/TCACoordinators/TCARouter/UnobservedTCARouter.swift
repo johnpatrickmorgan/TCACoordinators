@@ -7,7 +7,7 @@ import SwiftUI
 /// The TCARouter translates that collection into a hierarchy of SwiftUI views, and updates it when the user navigates back.
 /// The unobserved router is used when the Screen does not conform to ObservableState.
 struct UnobservedTCARouter<
-  Screen: Equatable,
+  Screen: Hashable,
   ScreenAction,
   ID: Hashable,
   ScreenContent: View
@@ -26,17 +26,12 @@ struct UnobservedTCARouter<
     self.screenContent = screenContent
   }
 
-	func scopedStore(index: Int, screen: Screen) -> Store<Screen, ScreenAction> {
-	  let routesStore = store
-
-	  return routesStore.scope(
-		state: {
-		  guard $0.indices.contains(index) else { return screen }
-		  return $0[index].screen
-		},
-		action: { .routeAction(id: identifier(screen, index), action: $0) }
-	  )
-	}
+  func scopedStore(index: Int, screen: Screen) -> Store<Screen, ScreenAction> {
+    store.scope(
+      state: \.[index, defaultingTo: screen],
+      action: \.[id: identifier(screen, index)]
+    )
+  }
 
   var body: some View {
     WithViewStore(store, observe: { $0 }) { viewStore in
