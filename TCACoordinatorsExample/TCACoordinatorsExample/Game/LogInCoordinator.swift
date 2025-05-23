@@ -2,7 +2,7 @@ import ComposableArchitecture
 import SwiftUI
 import TCACoordinators
 
-@Reducer(state: .equatable)
+@Reducer(state: .equatable, .hashable)
 enum LogInScreen {
   case welcome(Welcome)
   case logIn(LogIn)

@@ -27,7 +27,7 @@ struct OutcomeView: View {
 @Reducer
 struct Outcome {
   @ObservableState
-  struct State: Equatable {
+  struct State: Hashable {
     let id = UUID()
     var winner: Player?
     var oPlayerName: String

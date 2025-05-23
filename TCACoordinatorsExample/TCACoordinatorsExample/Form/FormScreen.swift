@@ -21,7 +21,7 @@ struct FormScreenEnvironment: DependencyKey {
   )
 }
 
-@Reducer(state: .equatable)
+@Reducer(state: .equatable, .hashable)
 enum FormScreen {
   case step1(Step1)
   case step2(Step2)
