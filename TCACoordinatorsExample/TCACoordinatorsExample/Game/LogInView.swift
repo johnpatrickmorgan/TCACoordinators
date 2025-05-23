@@ -22,7 +22,7 @@ struct LogInView: View {
 
 @Reducer
 struct LogIn {
-  struct State: Equatable {
+  struct State: Hashable {
     let id = UUID()
   }
 

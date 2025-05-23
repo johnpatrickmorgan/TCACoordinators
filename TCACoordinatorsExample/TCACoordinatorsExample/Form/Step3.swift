@@ -50,7 +50,7 @@ struct Step3View: View {
 @Reducer
 struct Step3 {
   @ObservableState
-  struct State: Equatable {
+  struct State: Hashable {
     var selectedOccupation: String?
     var occupations: [String] = []
   }

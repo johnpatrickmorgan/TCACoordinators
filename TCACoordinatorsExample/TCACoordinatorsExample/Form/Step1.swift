@@ -4,7 +4,7 @@ import SwiftUI
 @Reducer
 struct Step1 {
   @ObservableState
-  public struct State: Equatable {
+  public struct State: Hashable {
     var firstName: String = ""
     var lastName: String = ""
   }

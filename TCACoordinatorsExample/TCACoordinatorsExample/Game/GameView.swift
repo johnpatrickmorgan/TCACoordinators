@@ -164,7 +164,7 @@ final class GameViewController: UIViewController {
 @Reducer
 struct Game {
   @ObservableState
-  struct State: Equatable {
+  struct State: Hashable {
     let id = UUID()
     var board: Three<Three<Player?>> = .empty
     var currentPlayer: Player = .x

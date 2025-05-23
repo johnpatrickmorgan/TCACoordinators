@@ -95,7 +95,7 @@ struct APIModel: Codable, Equatable {
 @Reducer
 struct FinalScreen {
   @ObservableState
-  struct State: Equatable {
+  struct State: Hashable {
     let firstName: String
     let lastName: String
     let dateOfBirth: Date

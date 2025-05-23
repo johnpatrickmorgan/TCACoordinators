@@ -2,7 +2,7 @@ import ComposableArchitecture
 import Foundation
 import SwiftUI
 
-@Reducer(state: .equatable)
+@Reducer(state: .equatable, .hashable)
 enum Screen {
   case home(Home)
   case numbersList(NumbersList)
@@ -26,7 +26,7 @@ struct HomeView: View {
 
 @Reducer
 struct Home {
-  struct State: Equatable {
+  struct State: Hashable {
     let id = UUID()
   }
 
@@ -58,7 +58,7 @@ struct NumbersListView: View {
 @Reducer
 struct NumbersList {
   @ObservableState
-  struct State: Equatable {
+  struct State: Hashable {
     let id = UUID()
     let numbers: [Int]
   }
@@ -104,7 +104,7 @@ struct NumberDetailView: View {
 @Reducer
 struct NumberDetail {
   @ObservableState
-  struct State: Equatable {
+  struct State: Hashable {
     let id = UUID()
     var number: Int
   }

@@ -31,7 +31,7 @@ struct Step2View: View {
 @Reducer
 struct Step2 {
   @ObservableState
-  public struct State: Equatable {
+  public struct State: Hashable {
     var dateOfBirth: Date = .now
   }
 

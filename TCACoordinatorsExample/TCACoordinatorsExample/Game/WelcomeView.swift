@@ -18,7 +18,7 @@ struct WelcomeView: View {
 
 @Reducer
 struct Welcome {
-  struct State: Equatable {
+  struct State: Hashable {
     let id = UUID()
   }
 
