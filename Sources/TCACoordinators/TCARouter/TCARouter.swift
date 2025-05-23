@@ -5,7 +5,7 @@ import SwiftUI
 /// TCARouter manages a collection of Routes, i.e., a series of screens, each of which is either pushed or presented.
 /// The TCARouter translates that collection into a hierarchy of SwiftUI views, and updates it when the user navigates back.
 public struct TCARouter<
-  Screen: Equatable,
+  Screen: Hashable,
   ScreenAction,
   ID: Hashable,
   ScreenContent: View
@@ -24,17 +24,12 @@ public struct TCARouter<
     self.screenContent = screenContent
   }
 
-	func scopedStore(index: Int, screen: Screen) -> Store<Screen, ScreenAction> {
-		let routesStore = store
-
-		return routesStore.scope(
-			state: {
-				guard $0.indices.contains(index) else { return screen }
-				return $0[index].screen
-			},
-			action: { .routeAction(id: identifier(screen, index), action: $0) }
-		)
-	}
+  private func scopedStore(index: Int, screen: Screen) -> Store<Screen, ScreenAction> {
+    store.scope(
+      state: \.[index, defaultingTo: screen],
+      action: \.[id: identifier(screen, index)]
+    )
+  }
 
   public var body: some View {
     if Screen.self is ObservableState.Type {
@@ -62,5 +57,19 @@ private extension Store {
     set {
       send(.updateRoutes(newValue))
     }
+  }
+
+  subscript<ID: Hashable, Screen, ScreenAction>(index: Int, defaultingTo defaultScreen: Screen) -> Screen
+    where State == [Route<Screen>], Action == RouterAction<ID, Screen, ScreenAction>
+  {
+    guard currentState.indices.contains(index) else { return defaultScreen }
+    return currentState[index].screen
+  }
+}
+
+extension Array where Element: RouteProtocol {
+  subscript(index: Int, defaultingTo defaultScreen: Element.Screen) -> Element.Screen {
+    guard indices.contains(index) else { return defaultScreen }
+    return self[index].screen
   }
 }
