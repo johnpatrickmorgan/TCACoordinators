@@ -28,7 +28,7 @@ The library works by translating the array of screens into a hierarchy of nested
 First, identify all possible screens that are part of the particular navigation flow you're modelling. The goal will be to combine their reducers into a single reducer - one that can drive the behaviour of any of those screens. Thanks to the `@Reducer macro`, this can be easily achieved with an enum reducer, e.g. the following (where `Home`, `NumbersList` and `NumberDetail` are the individual screen reducers):
 
 ```swift
-@Reducer(state: .equatable)
+@Reducer(state: .hashable)
 enum Screen {
   case home(Home)
   case numbersList(NumbersList)
@@ -189,6 +189,12 @@ If the flow of screens needs to change, the change can be made easily in one pla
 This library uses [FlowStacks](https://github.com/johnpatrickmorgan/FlowStacks) for hoisting navigation state out of individual screens. FlowStacks can also be used in SwiftUI projects that do not use the Composable Architecture.
 
 
-## Migrating from v0.8 and lower
+## Migrating from earlier versions
+
+### From v0.8 and lower
 
 There has been an API change from v0.8 to v0.9, to bring the library's APIs more in-line with the Composable Architecture, including the use of case paths. If you're migrating to these new APIs please see the [migration docs](Docs/Migration/Migrating%20from%200.8.md).
+
+### From v0.11 and lower
+
+v0.12 introduced a requirement that the screen reducer's state conform to `Hashable`: see the [migration docs](Docs/Migration/Migrating%20from%200.11.md).
