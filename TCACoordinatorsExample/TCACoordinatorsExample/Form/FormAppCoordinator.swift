@@ -1,6 +1,6 @@
 import ComposableArchitecture
 import SwiftUI
-@preconcurrency import TCACoordinators
+import TCACoordinators
 
 @Reducer
 struct FormAppCoordinator {

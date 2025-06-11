@@ -1,6 +1,6 @@
 import ComposableArchitecture
 import SwiftUI
-@preconcurrency import TCACoordinators
+import TCACoordinators
 
 struct IndexedCoordinatorView: View {
   @State var store: StoreOf<IndexedCoordinator>
