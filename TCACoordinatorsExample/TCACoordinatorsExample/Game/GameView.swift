@@ -227,7 +227,7 @@ struct Game {
 }
 
 /// A collection of three elements.
-struct Three<Element>: CustomStringConvertible {
+struct Three<Element: Sendable>: CustomStringConvertible, Sendable {
   var first: Element
   var second: Element
   var third: Element

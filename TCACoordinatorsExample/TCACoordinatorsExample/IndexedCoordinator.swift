@@ -1,6 +1,6 @@
 import ComposableArchitecture
 import SwiftUI
-import TCACoordinators
+@preconcurrency import TCACoordinators
 
 struct IndexedCoordinatorView: View {
   @State var store: StoreOf<IndexedCoordinator>
@@ -24,7 +24,7 @@ struct IndexedCoordinatorView: View {
 @Reducer
 struct IndexedCoordinator {
   @ObservableState
-  struct State: Equatable {
+  struct State: Equatable, Sendable {
     static let initialState = State(
       routes: [.root(.home(.init()), embedInNavigationView: true)]
     )

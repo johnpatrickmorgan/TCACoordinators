@@ -1,6 +1,6 @@
 import ComposableArchitecture
 import SwiftUI
-import TCACoordinators
+@preconcurrency import TCACoordinators
 
 struct IdentifiedCoordinatorView: View {
   @State var store: StoreOf<IdentifiedCoordinator>
@@ -41,7 +41,7 @@ struct IdentifiedCoordinator {
   }
 
   @ObservableState
-  struct State: Equatable {
+  struct State: Equatable, Sendable {
     static let initialState = State(
       routes: [.root(.home(.init()), embedInNavigationView: true)]
     )
