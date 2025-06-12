@@ -27,7 +27,7 @@ struct LogInCoordinatorView: View {
 @Reducer
 struct LogInCoordinator {
   @ObservableState
-  struct State: Equatable {
+  struct State: Equatable, Sendable {
     static let initialState = LogInCoordinator.State(
       routes: [.root(.welcome(.init()), embedInNavigationView: true)]
     )

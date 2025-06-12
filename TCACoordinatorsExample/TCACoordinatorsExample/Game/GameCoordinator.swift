@@ -25,7 +25,7 @@ enum GameScreen {
 
 @Reducer
 struct GameCoordinator {
-  struct State: Equatable {
+  struct State: Equatable, Sendable {
     static func initialState(playerName: String = "") -> Self {
       Self(
         routes: [.root(.game(.init(oPlayerName: "Opponent", xPlayerName: playerName.isEmpty ? "Player" : playerName)), embedInNavigationView: true)]

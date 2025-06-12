@@ -2,9 +2,9 @@ import ComposableArchitecture
 import Foundation
 
 @DependencyClient
-struct FormScreenEnvironment: DependencyKey {
-  var getOccupations: () async -> [String] = { [] }
-  var submit: (APIModel) async -> Bool = { _ in false }
+struct FormScreenEnvironment: DependencyKey, Sendable {
+  var getOccupations: @Sendable () async -> [String] = { [] }
+  var submit: @Sendable (APIModel) async -> Bool = { _ in false }
 
   static let liveValue = FormScreenEnvironment(
     getOccupations: {

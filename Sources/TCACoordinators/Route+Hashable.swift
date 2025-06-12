@@ -5,3 +5,5 @@ extension Route: @retroactive Hashable where Screen: Hashable {
     hasher.combine(screen)
   }
 }
+
+extension Route: @unchecked @retroactive Sendable { }
