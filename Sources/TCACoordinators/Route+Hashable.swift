@@ -6,4 +6,4 @@ extension Route: @retroactive Hashable where Screen: Hashable {
   }
 }
 
-extension Route: @unchecked @retroactive Sendable { }
+extension Route: @unchecked @retroactive Sendable where Screen: Sendable { }
