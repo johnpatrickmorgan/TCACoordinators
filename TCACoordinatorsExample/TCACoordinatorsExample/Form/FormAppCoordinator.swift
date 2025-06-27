@@ -5,7 +5,7 @@ import TCACoordinators
 @Reducer
 struct FormAppCoordinator {
   @ObservableState
-  struct State: Equatable {
+  struct State: Equatable, Sendable {
     static let initialState = Self(routeIDs: [.root(.step1, embedInNavigationView: true)])
 
     var step1State = Step1.State()

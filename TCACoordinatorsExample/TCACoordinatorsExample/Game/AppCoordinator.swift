@@ -26,7 +26,7 @@ struct AppCoordinatorView: View {
 @Reducer
 struct GameApp {
   @ObservableState
-  struct State: Equatable {
+  struct State: Equatable, Sendable {
     static let initialState = State(logIn: .initialState, game: .initialState(), isLoggedIn: false)
 
     var logIn: LogInCoordinator.State
