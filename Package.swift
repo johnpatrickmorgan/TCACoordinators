@@ -5,7 +5,7 @@ import PackageDescription
 let package = Package(
   name: "TCACoordinators",
   platforms: [
-    .iOS(.v13), .watchOS(.v7), .macOS(.v11), .tvOS(.v13),
+    .iOS(.v14), .watchOS(.v7), .macOS(.v11), .tvOS(.v14),
   ],
   products: [
     .library(
@@ -14,14 +14,14 @@ let package = Package(
     ),
   ],
   dependencies: [
-    .package(url: "https://github.com/johnpatrickmorgan/FlowStacks", "0.3.6" ..< "0.6.0"),
+    .package(url: "https://github.com/johnpatrickmorgan/FlowStacks", from: "0.10.0"),
     .package(url: "https://github.com/pointfreeco/swift-composable-architecture", from: "1.12.0"),
   ],
   targets: [
     .target(
       name: "TCACoordinators",
       dependencies: [
-        .product(name: "FlowStacks", package: "FlowStacks"),
+        .product(name: "FlowStacksForTCACoordinators", package: "FlowStacks"),
         .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
       ]
     ),

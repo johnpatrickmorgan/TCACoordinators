@@ -1,5 +1,6 @@
 import XCTest
 
+@MainActor
 class TCACoordinatorsExampleUITests: XCTestCase {
   override func setUpWithError() throws {
     continueAfterFailure = false

@@ -50,32 +50,6 @@ final class IdentifiedRouterTests: XCTestCase {
       $0.routes = [.root(.init(id: "first", count: 42))]
     }
   }
-
-  @available(iOS 16.0, *)
-  @MainActor
-  func testWithDelaysIfUnsupported() async throws {
-    let initialRoutes: IdentifiedArrayOf<Route<Child.State>> = [
-      .root(.init(id: "first", count: 1)),
-      .sheet(.init(id: "second", count: 2)),
-      .sheet(.init(id: "third", count: 3)),
-    ]
-    let scheduler = DispatchQueue.test
-    let store = TestStore(initialState: Parent.State(routes: initialRoutes)) {
-      Parent(scheduler: scheduler)
-    }
-    let goBackToRoot = await store.send(.goBackToRoot)
-    await store.receive(\.router.updateRoutes, initialRoutes.elements)
-    let firstTwo = IdentifiedArrayOf(initialRoutes.prefix(2))
-    await store.receive(\.router.updateRoutes, firstTwo.elements) {
-      $0.routes = firstTwo
-    }
-    await scheduler.advance(by: .milliseconds(650))
-    let firstOne = IdentifiedArrayOf(initialRoutes.prefix(1))
-    await store.receive(\.router.updateRoutes, firstOne.elements) {
-      $0.routes = firstOne
-    }
-    await goBackToRoot.finish()
-  }
 }
 
 @Reducer
@@ -123,11 +97,10 @@ private struct Parent {
     Reduce { state, action in
       switch action {
       case .goBackToRoot:
-        .routeWithDelaysIfUnsupported(state.routes, action: \.router, scheduler: scheduler.eraseToAnyScheduler()) {
-          $0.goBackToRoot()
-        }
+        state.routes.goBackToRoot()
+        return .none
       default:
-        .none
+        return .none
       }
     }
     .forEachRoute(\.routes, action: \.router) {

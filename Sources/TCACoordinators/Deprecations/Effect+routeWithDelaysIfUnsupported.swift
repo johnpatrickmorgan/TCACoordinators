@@ -15,6 +15,7 @@ public extension Effect {
   /// - Parameter transform: A closure transforming the routes into their new state.
   /// - Returns: An Effect stream of actions with incremental updates to routes over time. If the proposed change is supported
   ///   within a single update, the Effect stream will include only one element.
+  @available(*, deprecated, message: "No longer necessary, desired state changes can be made directly in one update")
   static func routeWithDelaysIfUnsupported<ScreenState>(
     _ routes: [Route<ScreenState>],
     action: CaseKeyPath<Action, IndexedRouterAction<ScreenState, some Any>>,
@@ -41,6 +42,7 @@ public extension Effect {
   /// - Parameter transform: A closure transforming the routes into their new state.
   /// - Returns: An Effect stream of actions with incremental updates to routes over time. If the proposed change is supported
   ///   within a single update, the Effect stream will include only one element.
+  @available(*, deprecated, message: "No longer necessary, desired state changes can be made directly in one update")
   static func routeWithDelaysIfUnsupported<ScreenState: Identifiable>(
     _ routes: IdentifiedArrayOf<Route<ScreenState>>,
     action: CaseKeyPath<Action, IdentifiedRouterAction<ScreenState, some Any>>,

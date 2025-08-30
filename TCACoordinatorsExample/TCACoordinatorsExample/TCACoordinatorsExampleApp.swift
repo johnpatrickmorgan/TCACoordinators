@@ -125,7 +125,7 @@ struct MainTabCoordinator {
         if state.identified.routes.canPush == true {
           state.identified.routes.push(.numberDetail(.init(number: number)))
         } else {
-          state.identified.routes.presentSheet(.numberDetail(.init(number: number)), embedInNavigationView: true)
+          state.identified.routes.presentSheet(.numberDetail(.init(number: number)), withNavigation: true)
         }
       case let .tabSelected(tab):
         state.selectedTab = tab

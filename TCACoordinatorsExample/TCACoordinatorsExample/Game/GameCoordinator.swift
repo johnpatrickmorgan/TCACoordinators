@@ -28,7 +28,7 @@ struct GameCoordinator {
   struct State: Equatable, Sendable {
     static func initialState(playerName: String = "") -> Self {
       Self(
-        routes: [.root(.game(.init(oPlayerName: "Opponent", xPlayerName: playerName.isEmpty ? "Player" : playerName)), embedInNavigationView: true)]
+        routes: [.root(.game(.init(oPlayerName: "Opponent", xPlayerName: playerName.isEmpty ? "Player" : playerName)), withNavigation: true)]
       )
     }
 
@@ -44,7 +44,7 @@ struct GameCoordinator {
       guard case let .game(game) = state.routes.first?.screen else { return .none }
       switch action {
       case .router(.routeAction(id: _, action: .outcome(.newGameTapped))):
-        state.routes = [.root(.game(.init(oPlayerName: game.xPlayerName, xPlayerName: game.oPlayerName)), embedInNavigationView: true)]
+        state.routes = [.root(.game(.init(oPlayerName: game.xPlayerName, xPlayerName: game.oPlayerName)), withNavigation: true)]
       case .router(.routeAction(id: _, action: .game(.gameCompleted(let winner)))):
         state.routes.push(.outcome(.init(winner: winner, oPlayerName: game.oPlayerName, xPlayerName: game.xPlayerName)))
       default:

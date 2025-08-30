@@ -43,7 +43,7 @@ struct IdentifiedCoordinator {
   @ObservableState
   struct State: Equatable, Sendable {
     static let initialState = State(
-      routes: [.root(.home(.init()), embedInNavigationView: true)]
+      routes: [.root(.home(.init()), withNavigation: true)]
     )
 
     var routes: IdentifiedArrayOf<Route<Screen.State>>
@@ -57,26 +57,22 @@ struct IdentifiedCoordinator {
     Reduce<State, Action> { state, action in
       switch action {
       case .router(.routeAction(_, .home(.startTapped))):
-        state.routes.presentSheet(.numbersList(.init(numbers: Array(0 ..< 4))), embedInNavigationView: true)
+        state.routes.presentSheet(.numbersList(.init(numbers: Array(0 ..< 4))), withNavigation: true)
 
       case let .router(.routeAction(_, .numbersList(.numberSelected(number)))):
         state.routes.push(.numberDetail(.init(number: number)))
 
       case let .router(.routeAction(_, .numberDetail(.showDouble(number)))):
-        state.routes.presentSheet(.numberDetail(.init(number: number * 2)), embedInNavigationView: true)
+        state.routes.presentSheet(.numberDetail(.init(number: number * 2)), withNavigation: true)
 
       case .router(.routeAction(_, .numberDetail(.goBackTapped))):
         state.routes.goBack()
 
       case .router(.routeAction(_, .numberDetail(.goBackToNumbersList))):
-        return .routeWithDelaysIfUnsupported(state.routes, action: \.router, scheduler: .main) {
-          $0.goBackTo(\.numbersList)
-        }
+        state.routes.goBackTo(\.numbersList)
 
       case .router(.routeAction(_, .numberDetail(.goBackToRootTapped))):
-        return .routeWithDelaysIfUnsupported(state.routes, action: \.router, scheduler: .main) {
-          $0.goBackToRoot()
-        }
+        state.routes.goBackToRoot()
 
       default:
         break

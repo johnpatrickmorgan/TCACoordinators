@@ -150,24 +150,9 @@ If the user taps the back button, the routes array will be automatically updated
 By default, any in-flight effects initiated by a particular screen are cancelled automatically when that screen is popped or dismissed. To opt out of automatic cancellation, pass `cancellationId: nil` to `forEachRoute`.
 
 
-## Making complex navigation updates
+## Deeplinking
 
-SwiftUI does not allow more than one screen to be pushed, presented or dismissed within a single update. This makes it tricky to make large updates to the navigation state, e.g. when deeplinking straight to a view several layers deep in the navigation hierarchy, when going back multiple presentation layers to the root, or when restoring arbitrary navigation state. This library provides a workaround: it can break down large unsupported updates into a series of smaller updates that SwiftUI does support, interspersed with the necessary delays, and make that available as an Effect to be returned from a coordinator reducer. You just need to wrap route mutations in a call to `Effect.routeWithDelaysIfUnsupported`, e.g.:
-
-```swift
-return Effect.routeWithDelaysIfUnsupported(state.routes, action: \.router) {
-  $0.goBackToRoot()
-}
-```
-
-```swift
-return Effect.routeWithDelaysIfUnsupported(state.routes, action: \.router) {
-  $0.push(...)
-  $0.push(...)
-  $0.presentSheet(...)
-}
-```
-
+ SwiftUI does not support presenting more than one screen within a single state update. Before the `NavigationStack` APIs were introduced, the same was true of pushing more than one screen in a single state update. This made it difficult to deep-linking to a screen multiple layers deep in a navigation hierarchy. With *TCACoordinators*, you can make any such changes, and the library will, behind the scenes, break down the larger update into a series of smaller updates that SwiftUI supports, with delays added if necessary in between.
 
 ## Composing child coordinators
 

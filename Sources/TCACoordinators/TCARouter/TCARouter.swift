@@ -34,14 +34,18 @@ public struct TCARouter<
   public var body: some View {
     if Screen.self is ObservableState.Type {
       WithPerceptionTracking {
-        Router(
-          $store[],
-          buildView: { screen, index in
+        if let firstRoute = store.currentState.first {
+          FlowStack($store[firstRoute: firstRoute], withNavigation: firstRoute.withNavigation) {
             WithPerceptionTracking {
-              screenContent(scopedStore(index: index, screen: screen))
+              screenContent(scopedStore(index: 0, screen: firstRoute.screen))
+                .flowDestination(for: Screen.self) { screen, index in
+                  WithPerceptionTracking {
+                    screenContent(scopedStore(index: index + 1, screen: screen))
+                  }
+                }
             }
           }
-        )
+        }
       }
     } else {
       UnobservedTCARouter(store: store, identifier: identifier, screenContent: screenContent)
@@ -50,12 +54,12 @@ public struct TCARouter<
 }
 
 private extension Store {
-  subscript<ID: Hashable, Screen, ScreenAction>() -> [Route<Screen>]
+  subscript<ID: Hashable, Screen, ScreenAction>(firstRoute firstRoute: Route<Screen>) -> [Route<Screen>]
     where State == [Route<Screen>], Action == RouterAction<ID, Screen, ScreenAction>
   {
-    get { currentState }
+    get { Array(currentState.dropFirst()) }
     set {
-      send(.updateRoutes(newValue))
+      send(.updateRoutes([firstRoute] + newValue))
     }
   }
 
@@ -71,5 +75,24 @@ extension Array where Element: RouteProtocol {
   subscript(index: Int, defaultingTo defaultScreen: Element.Screen) -> Element.Screen {
     guard indices.contains(index) else { return defaultScreen }
     return self[index].screen
+  }
+}
+
+private struct IndexedFlowDestination<D: Hashable, Destination: View>: View {
+  var data: D
+  var builder: (D, Int) -> Destination
+  @Environment(\.routeIndex) var routeIndex
+
+  var body: some View {
+    builder(data, routeIndex ?? -1)
+  }
+}
+
+extension View {
+  /// Allows an index to be passed to the destination builder closure.
+  func flowDestination<D: Hashable>(for dataType: D.Type, @ViewBuilder destination builder: @escaping (D, Int) -> some View) -> some View {
+    flowDestination(for: dataType) { data in
+      IndexedFlowDestination(data: data, builder: builder)
+    }
   }
 }
