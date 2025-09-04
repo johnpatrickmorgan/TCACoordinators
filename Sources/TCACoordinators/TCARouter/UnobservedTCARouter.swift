@@ -42,8 +42,9 @@ struct UnobservedTCARouter<
             send: { RouterAction.updateRoutes([firstRoute] + $0) }
           ), withNavigation: firstRoute.withNavigation) {
             screenContent(scopedStore(index: 0, screen: firstRoute.screen))
-          }.flowDestination(for: Screen.self) { screen, index in
-            screenContent(scopedStore(index: index, screen: screen))
+              .flowDestination(for: Screen.self) { screen, index in
+                screenContent(scopedStore(index: index + 1, screen: screen))
+              }
           }
       }
     }
