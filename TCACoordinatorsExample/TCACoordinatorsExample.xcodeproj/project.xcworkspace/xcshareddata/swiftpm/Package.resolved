@@ -14,8 +14,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/johnpatrickmorgan/FlowStacks",
       "state" : {
-        "revision" : "95f1f2af2ccbb0648550e39b1bc9312574a7424a",
-        "version" : "0.10.0"
+        "branch" : "tcacoordinators",
+        "revision" : "e589b1d9a17e73d038ce5089376e434725e632f5"
       }
     },
     {

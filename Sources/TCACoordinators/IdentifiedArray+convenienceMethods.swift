@@ -2,6 +2,8 @@ import ComposableArchitecture
 import FlowStacks
 import Foundation
 
+let rootIndex = 0
+
 public extension Array where Element: RouteProtocol {
   /// Goes back to the topmost (most recently shown) screen in the stack
   /// that matches the given case path. If no screens satisfy the condition,
@@ -319,13 +321,7 @@ public extension IdentifiedArray where Element: RouteProtocol {
     assert(count >= 0)
     var index = endIndex - 1
     var dismissed = 0
-    while dismissed < count, indices.contains(index) {
-      assert(
-        index >= 0,
-        "Can't dismiss\(count == 1 ? "" : " \(count) screens") - the number of presented screens is \(dismissed)"
-      )
-      guard index >= 0 else { return }
-
+    while dismissed < count, index + 1 > rootIndex {
       if self[index].isPresented {
         dismissed += 1
       }
@@ -337,7 +333,7 @@ public extension IdentifiedArray where Element: RouteProtocol {
   /// Dismisses all presented sheets and modals, without popping any pushed screens in the bottommost
   /// presentation layer.
   mutating func dismissAll() {
-    let count = filter(\.isPresented).count
+    let count = self[(rootIndex + 1)...].filter(\.isPresented).count
     guard count > 0 else { return }
     dismiss(count: count)
   }

@@ -19,6 +19,7 @@ public struct TCARouter<
     identifier: @escaping (Screen, Int) -> ID,
     @ViewBuilder screenContent: @escaping (Store<Screen, ScreenAction>) -> ScreenContent
   ) {
+    let _ = setUpLibraryOnce
     self.store = store
     self.identifier = identifier
     self.screenContent = screenContent
