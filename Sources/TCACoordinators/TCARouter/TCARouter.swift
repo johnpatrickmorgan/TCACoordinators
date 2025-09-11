@@ -13,15 +13,18 @@ public struct TCARouter<
   @Perception.Bindable private var store: Store<[Route<Screen>], RouterAction<ID, Screen, ScreenAction>>
   let identifier: (Screen, Int) -> ID
   let screenContent: (Store<Screen, ScreenAction>) -> ScreenContent
+  let useObservation: Bool
 
   public init(
     store: Store<[Route<Screen>], RouterAction<ID, Screen, ScreenAction>>,
     identifier: @escaping (Screen, Int) -> ID,
+    useObservation: Bool = true,
     @ViewBuilder screenContent: @escaping (Store<Screen, ScreenAction>) -> ScreenContent
   ) {
     let _ = setUpLibraryOnce
     self.store = store
     self.identifier = identifier
+    self.useObservation = useObservation
     self.screenContent = screenContent
   }
 
@@ -33,7 +36,7 @@ public struct TCARouter<
   }
 
   public var body: some View {
-    if Screen.self is ObservableState.Type {
+    if Screen.self is ObservableState.Type && useObservation {
       WithPerceptionTracking {
         if let firstRoute = store.currentState.first {
           FlowStack($store[firstRoute: firstRoute], withNavigation: firstRoute.withNavigation) {
