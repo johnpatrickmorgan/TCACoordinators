@@ -29,7 +29,7 @@ struct LogInCoordinator {
   @ObservableState
   struct State: Equatable, Sendable {
     static let initialState = LogInCoordinator.State(
-      routes: [.root(.welcome(.init()), embedInNavigationView: true)]
+      routes: [.root(.welcome(.init()), withNavigation: true)]
     )
     var routes: IdentifiedArrayOf<Route<LogInScreen.State>>
   }

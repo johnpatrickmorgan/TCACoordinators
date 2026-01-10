@@ -35,16 +35,18 @@ struct UnobservedTCARouter<
 
   var body: some View {
     WithViewStore(store, observe: { $0 }) { viewStore in
-      Router(
-        viewStore
+      if let firstRoute = viewStore.first {
+        FlowStack(viewStore
           .binding(
-            get: { $0 },
-            send: RouterAction.updateRoutes
-          ),
-        buildView: { screen, index in
-          screenContent(scopedStore(index: index, screen: screen))
-        }
-      )
+            get: { Array($0.dropFirst()) },
+            send: { RouterAction.updateRoutes([firstRoute] + $0) }
+          ), withNavigation: firstRoute.withNavigation) {
+            screenContent(scopedStore(index: 0, screen: firstRoute.screen))
+              .flowDestination(for: Screen.self) { screen, index in
+                screenContent(scopedStore(index: index + 1, screen: screen))
+              }
+          }
+      }
     }
   }
 }
