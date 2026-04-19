@@ -17,11 +17,13 @@ struct GameCoordinatorView: View {
   }
 }
 
-@Reducer(state: .equatable, .hashable)
+@Reducer
 enum GameScreen {
   case game(Game)
   case outcome(Outcome)
 }
+
+extension GameScreen.State: Hashable { }
 
 @Reducer
 struct GameCoordinator {

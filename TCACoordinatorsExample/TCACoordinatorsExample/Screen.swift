@@ -2,12 +2,14 @@ import ComposableArchitecture
 import Foundation
 import SwiftUI
 
-@Reducer(state: .equatable, .hashable)
+@Reducer
 enum Screen {
   case home(Home)
   case numbersList(NumbersList)
   case numberDetail(NumberDetail)
 }
+
+extension Screen.State: Hashable { }
 
 // Home
 
