@@ -21,10 +21,12 @@ struct FormScreenEnvironment: DependencyKey, Sendable {
   )
 }
 
-@Reducer(state: .equatable, .hashable)
+@Reducer
 enum FormScreen {
   case step1(Step1)
   case step2(Step2)
   case step3(Step3)
   case finalScreen(FinalScreen)
 }
+
+extension FormScreen.State: Hashable { }

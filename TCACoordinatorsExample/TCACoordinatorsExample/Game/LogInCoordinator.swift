@@ -2,11 +2,13 @@ import ComposableArchitecture
 import SwiftUI
 import TCACoordinators
 
-@Reducer(state: .equatable, .hashable)
+@Reducer
 enum LogInScreen {
   case welcome(Welcome)
   case logIn(LogIn)
 }
+
+extension LogInScreen.State: Hashable { }
 
 struct LogInCoordinatorView: View {
   let store: StoreOf<LogInCoordinator>
